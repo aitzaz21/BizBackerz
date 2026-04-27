@@ -3,7 +3,13 @@ import { motion } from 'framer-motion'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Container from '../ui/Container'
-import { CheckCircle, Users, Target, Sparkles } from 'lucide-react'
+import { CheckCircle, Users, Target, Sparkles, ArrowRight } from 'lucide-react'
+
+const checks = [
+  'Constant Improvement',
+  'Commitment to Customers',
+  'Best Quality You Can Get',
+]
 
 export default function About() {
   const sectionRef = useRef(null)
@@ -13,49 +19,72 @@ export default function About() {
     if (!el) return
 
     const ctx = gsap.context(() => {
-
-      /* ── Left visual: slides from left with 3D flip ── */
-      gsap.from('[data-about-left]', {
-        opacity: 0, x: -90, rotateY: -10, filter: 'blur(12px)',
-        duration: 1.3, ease: 'power3.out', transformPerspective: 1000,
+      /* ── Label slide ── */
+      gsap.from('[data-ab-label]', {
+        opacity: 0, x: -24, duration: 1.1, ease: 'power3.out',
         scrollTrigger: { trigger: el, start: 'top 78%', toggleActions: 'play reverse play reverse' },
       })
 
-      /* ── Right section label ── */
-      gsap.from('[data-about-label]', {
-        opacity: 0, x: -20,
-        duration: 1, ease: 'power3.out',
+      /* ── Heading lines: clip-reveal upward ── */
+      gsap.from('[data-ab-line]', {
+        yPercent: 110, duration: 1.4, stagger: 0.11, ease: 'power4.out',
         scrollTrigger: { trigger: el, start: 'top 75%', toggleActions: 'play reverse play reverse' },
       })
 
-      /* ── Heading lines: clip-path reveal ── */
-      gsap.from('[data-about-line]', {
-        yPercent: 112,
-        duration: 1.3,
-        stagger: 0.1,
-        ease: 'power4.out',
-        scrollTrigger: { trigger: el, start: 'top 72%', toggleActions: 'play reverse play reverse' },
+      /* ── Body text + checklist ── */
+      gsap.from('[data-ab-body]', {
+        opacity: 0, y: 28, duration: 1, stagger: 0.1, ease: 'power2.out',
+        scrollTrigger: { trigger: el, start: 'top 68%', toggleActions: 'play reverse play reverse' },
       })
 
-      /* ── Paragraphs + checklist stagger ── */
-      gsap.from('[data-about-body]', {
-        opacity: 0, y: 22,
-        duration: 1, stagger: 0.12, ease: 'power2.out',
-        scrollTrigger: { trigger: el, start: 'top 65%', toggleActions: 'play reverse play reverse' },
+      /* ── Left visual: depth reveal ── */
+      gsap.from('[data-ab-visual]', {
+        opacity: 0, x: -80, rotateY: -12, filter: 'blur(14px)', scale: 0.96,
+        duration: 1.4, ease: 'power3.out', transformPerspective: 1000,
+        scrollTrigger: { trigger: el, start: 'top 76%', toggleActions: 'play reverse play reverse' },
       })
 
-      /* ── Vision / Mission cards ── */
-      gsap.from('[data-card-left]', {
+      /* ── Stat number pop on visual ── */
+      gsap.from('[data-ab-stat]', {
+        scale: 0.7, opacity: 0, filter: 'blur(6px)',
+        duration: 1, ease: 'back.out(1.7)', delay: 0.4,
+        scrollTrigger: { trigger: el, start: 'top 70%', toggleActions: 'play reverse play reverse' },
+      })
+
+      /* ── Cards: slam in from sides ── */
+      gsap.from('[data-ab-card-l]', {
         opacity: 0, x: -70, rotateY: -8, filter: 'blur(8px)',
-        duration: 1, ease: 'power3.out', transformPerspective: 1000,
-        scrollTrigger: { trigger: '[data-about-cards]', start: 'top 82%', toggleActions: 'play reverse play reverse' },
+        duration: 1.2, ease: 'power3.out', transformPerspective: 1000,
+        scrollTrigger: { trigger: '[data-ab-cards]', start: 'top 82%', toggleActions: 'play reverse play reverse' },
       })
-      gsap.from('[data-card-right]', {
+      gsap.from('[data-ab-card-r]', {
         opacity: 0, x: 70, rotateY: 8, filter: 'blur(8px)',
-        duration: 1, delay: 0.15, ease: 'power3.out', transformPerspective: 1000,
-        scrollTrigger: { trigger: '[data-about-cards]', start: 'top 82%', toggleActions: 'play reverse play reverse' },
+        duration: 1.2, delay: 0.12, ease: 'power3.out', transformPerspective: 1000,
+        scrollTrigger: { trigger: '[data-ab-cards]', start: 'top 82%', toggleActions: 'play reverse play reverse' },
       })
 
+      /* ── Scroll-driven horizontal line that grows ── */
+      gsap.fromTo('[data-ab-rule]', { scaleX: 0, transformOrigin: 'left center' }, {
+        scaleX: 1, ease: 'none',
+        scrollTrigger: { trigger: el, start: 'top 80%', end: 'center 40%', scrub: 1.5 },
+      })
+
+      /* ── Subtle counter on the 50+ number ── */
+      const counterEl = el.querySelector('[data-ab-count]')
+      if (counterEl) {
+        let ran = false
+        ScrollTrigger.create({
+          trigger: counterEl, start: 'top 80%',
+          onEnter: () => {
+            if (ran) return; ran = true
+            const obj = { v: 0 }
+            gsap.to(obj, {
+              v: 50, duration: 1.8, ease: 'power2.out',
+              onUpdate: () => { counterEl.textContent = Math.round(obj.v) + '+' },
+            })
+          },
+        })
+      }
     }, el)
 
     return () => ctx.revert()
@@ -64,146 +93,164 @@ export default function About() {
   return (
     <section ref={sectionRef} id="about" className="relative py-24 lg:py-36 overflow-hidden">
 
-      {/* Background glow */}
-      <div className="absolute top-1/2 left-[-5%] -translate-y-1/2 w-[550px] h-[550px] bg-brand-500/4 rounded-full blur-[160px] pointer-events-none" />
-      <div className="absolute top-1/3 right-[-5%] w-[350px] h-[350px] bg-accent-500/3 rounded-full blur-[130px] pointer-events-none" />
+      {/* Atmosphere */}
+      <div className="absolute top-1/2 left-[-5%] -translate-y-1/2 w-[500px] h-[500px] bg-brand-500/5 rounded-full blur-[160px] pointer-events-none" />
+      <div className="absolute top-1/3 right-[-5%] w-[340px] h-[340px] bg-accent-500/4 rounded-full blur-[130px] pointer-events-none" />
+
+      {/* Animated horizontal rule — GSAP scrub */}
+      <div className="absolute top-0 left-0 right-0 h-px pointer-events-none overflow-hidden">
+        <div data-ab-rule className="h-full bg-gradient-to-r from-brand-500/25 via-accent-500/18 to-transparent" />
+      </div>
 
       <Container>
-
-        {/* ═══ Top grid: visual + text ═══ */}
+        {/* ═══ Top grid ═══ */}
         <div className="grid lg:grid-cols-2 gap-16 lg:gap-20 items-center mb-24 lg:mb-32">
 
-          {/* Left: Visual card */}
-          <div data-about-left className="relative">
+          {/* LEFT — Visual card */}
+          <div data-ab-visual className="relative">
             <div className="relative rounded-3xl overflow-hidden aspect-[4/3]">
-
-              {/* Background gradient */}
               <div className="absolute inset-0 bg-gradient-to-br from-brand-500/18 via-navy-800 to-accent-500/18" />
 
+              {/* Grid overlay */}
+              <div className="absolute inset-0 opacity-[0.15]"
+                style={{
+                  backgroundImage: 'linear-gradient(rgba(42,139,255,0.08) 1px,transparent 1px),linear-gradient(90deg,rgba(42,139,255,0.08) 1px,transparent 1px)',
+                  backgroundSize: '40px 40px',
+                }} />
+
               {/* Center stat */}
-              <div className="absolute inset-0 flex items-center justify-center">
+              <div data-ab-stat className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center">
-                  <div className="w-28 h-28 mx-auto mb-5 rounded-3xl bg-gradient-to-br from-brand-500/25 to-accent-500/25 flex items-center justify-center border border-white/8 glow-sm">
-                    <Users className="w-14 h-14 text-brand-400" />
+                  <div className="w-24 h-24 mx-auto mb-4 rounded-3xl bg-gradient-to-br from-brand-500/22 to-accent-500/22 flex items-center justify-center border border-white/10 glow-sm">
+                    <Users className="w-12 h-12 text-brand-400" />
                   </div>
-                  <div className="text-[4rem] font-display font-bold text-gradient leading-none mb-2">50+</div>
-                  <p className="text-white/40 text-[11px] font-body font-bold uppercase tracking-[0.22em]">
+                  <div className="text-[3.8rem] font-display font-bold text-gradient leading-none mb-1.5">
+                    <span data-ab-count>50+</span>
+                  </div>
+                  <p className="text-white/52 text-[11px] font-body font-bold uppercase tracking-[0.22em]">
                     Trusted Clients
                   </p>
                 </div>
               </div>
 
-              {/* Floating badge top-right */}
-              <div className="absolute top-5 right-5 w-14 h-14 rounded-2xl bg-accent-500/10 border border-accent-500/18 flex items-center justify-center animate-float">
-                <Sparkles className="w-6 h-6 text-accent-400" />
+              {/* Float badge */}
+              <div className="absolute top-5 right-5 w-13 h-13 rounded-2xl bg-accent-500/12 border border-accent-500/20 flex items-center justify-center animate-float">
+                <Sparkles className="w-5 h-5 text-accent-400" />
               </div>
 
-              {/* Bottom left tag */}
+              {/* Tag */}
               <div className="absolute bottom-5 left-5">
                 <div className="glass-light rounded-xl px-4 py-2.5">
-                  <p className="text-[10px] font-body font-bold text-white/35 uppercase tracking-[0.18em]">Since 2019</p>
+                  <p className="text-[10px] font-body font-bold text-white/52 uppercase tracking-[0.18em]">Since 2019</p>
                 </div>
               </div>
 
-              {/* Decorative number */}
-              <div className="absolute top-4 left-4 font-display font-bold text-[6rem] leading-none text-white/[0.025] select-none pointer-events-none">
+              <div className="absolute top-4 left-4 font-display font-bold text-[5rem] leading-none text-white/[0.03] select-none pointer-events-none">
                 01
               </div>
             </div>
 
             {/* Outer glow ring */}
-            <div className="absolute -inset-4 bg-brand-500/4 rounded-[2rem] blur-2xl -z-10" />
+            <div className="absolute -inset-4 bg-brand-500/5 rounded-[2rem] blur-2xl -z-10" />
           </div>
 
-          {/* Right: Text content */}
+          {/* RIGHT — Text */}
           <div>
-            {/* Label */}
-            <div data-about-label className="mb-6">
+            <div data-ab-label className="mb-6">
               <span className="section-label">About Us</span>
             </div>
 
-            {/* Heading with clip-path reveal */}
             <h2 className="font-display font-bold tracking-[-0.04em] mb-8">
               <div style={{ overflow: 'hidden', lineHeight: 1.08, paddingBottom: '0.06em' }}>
-                <span data-about-line className="block text-3xl sm:text-4xl lg:text-5xl text-white">
+                <span data-ab-line className="block text-3xl sm:text-4xl lg:text-5xl text-white">
                   Helping Business Owners
                 </span>
               </div>
               <div style={{ overflow: 'hidden', lineHeight: 1.08, paddingBottom: '0.06em' }}>
-                <span data-about-line className="block text-3xl sm:text-4xl lg:text-5xl">
+                <span data-ab-line className="block text-3xl sm:text-4xl lg:text-5xl">
                   Focus on <span className="text-gradient">What Matters Most</span>
                 </span>
               </div>
             </h2>
 
-            {/* Body text */}
-            <p data-about-body className="text-white/45 leading-[1.85] mb-4 font-body">
-              We take the hassle out of managing everyday tasks so you can focus on growing your business.
-              From administrative support to social media management, our reliable virtual assistants are
-              here to make your life easier and your business run smoother.
+            <p data-ab-body className="text-white/68 leading-[1.88] mb-4 font-body text-[15px]">
+              We take the hassle out of managing everyday tasks so you can focus on growing your
+              business. From administrative support to social media management, our reliable virtual
+              assistants are here to make your life easier.
             </p>
-            <p data-about-body className="text-white/45 leading-[1.85] mb-9 font-body">
-              Running a business doesn't have to be overwhelming. BizBackerz provides skilled virtual
-              assistants to handle your routine tasks, giving you more time to focus on your goals.
+            <p data-ab-body className="text-white/58 leading-[1.88] mb-9 font-body text-[15px]">
+              Running a business doesn't have to be overwhelming. BizBackerz provides skilled
+              virtual assistants to handle routine tasks — giving you more time to focus on what
+              moves the needle.
             </p>
 
             {/* Checklist */}
-            <div data-about-body className="space-y-3.5">
-              {['Constant Improvement', 'Commitment to Customers', 'Best Quality You Can Get'].map((item) => (
+            <div data-ab-body className="space-y-3.5 mb-10">
+              {checks.map((item) => (
                 <div key={item} className="flex items-center gap-3.5">
                   <div className="w-5 h-5 rounded-full bg-accent-500/15 border border-accent-500/25 flex items-center justify-center flex-shrink-0">
                     <CheckCircle className="w-3 h-3 text-accent-400" />
                   </div>
-                  <span className="text-white/65 font-body font-semibold text-[15px]">{item}</span>
+                  <span className="text-white/75 font-body font-semibold text-[15px]">{item}</span>
                 </div>
               ))}
+            </div>
+
+            <div data-ab-body>
+              <a
+                href="/about"
+                className="inline-flex items-center gap-2.5 text-[13px] font-body font-bold uppercase tracking-[0.15em] text-brand-400 hover:text-brand-300 transition-colors duration-300 group"
+              >
+                Learn more about us
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-300" />
+              </a>
             </div>
           </div>
         </div>
 
-        {/* ═══ Vision & Mission cards ═══ */}
-        <div data-about-cards className="grid md:grid-cols-2 gap-5">
-
+        {/* ═══ Vision & Mission ═══ */}
+        <div data-ab-cards className="grid md:grid-cols-2 gap-5">
           <motion.div
-            data-card-left
-            whileHover={{ y: -7, scale: 1.01 }}
-            transition={{ type: 'spring', stiffness: 280, damping: 20 }}
-            className="group glass card-glow rounded-3xl p-8 lg:p-10 cursor-default"
+            data-ab-card-l
+            whileHover={{ y: -8, scale: 1.012 }}
+            transition={{ type: 'spring', stiffness: 280, damping: 22 }}
+            className="group relative rounded-3xl p-8 lg:p-10 cursor-default overflow-hidden border border-white/[0.07] hover:border-white/[0.13] transition-colors duration-500"
+            style={{ background: 'rgba(6,15,29,0.55)', backdropFilter: 'blur(20px)' }}
           >
+            {/* top highlight on hover */}
+            <div className="absolute top-0 left-0 right-0 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+              style={{ background: 'linear-gradient(90deg,transparent,rgba(42,139,255,0.5),transparent)' }} />
             <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-brand-500/18 to-brand-700/12 flex items-center justify-center mb-6 border border-brand-500/18 group-hover:scale-110 transition-transform duration-500">
               <Target className="w-6 h-6 text-brand-400" />
             </div>
             <h3 className="text-xl font-display font-bold text-white mb-2 leading-snug">
               Build Business In A Solid Way And Grow More
             </h3>
-            <h4 className="text-sm font-display font-semibold text-brand-400 mb-4 tracking-[-0.01em]">
-              Our Vision & Mission
-            </h4>
-            <p className="text-white/42 leading-[1.85] font-body text-[14px]">
+            <p className="text-[10px] font-body font-bold uppercase tracking-[0.2em] text-brand-400/75 mb-4">Our Vision & Mission</p>
+            <p className="text-white/62 leading-[1.88] font-body text-[14px]">
               We aim to transform how businesses operate by delivering dependable virtual solutions
               that inspire productivity, innovation, and lasting success.
             </p>
           </motion.div>
 
           <motion.div
-            data-card-right
-            whileHover={{ y: -7, scale: 1.01 }}
-            transition={{ type: 'spring', stiffness: 280, damping: 20 }}
-            className="group glass card-glow rounded-3xl p-8 lg:p-10 cursor-default"
-            style={{ '--hover-color': 'rgba(56,217,169,0.08)' }}
+            data-ab-card-r
+            whileHover={{ y: -8, scale: 1.012 }}
+            transition={{ type: 'spring', stiffness: 280, damping: 22 }}
+            className="group relative rounded-3xl p-8 lg:p-10 cursor-default overflow-hidden border border-white/[0.07] hover:border-accent-500/[0.2] transition-colors duration-500"
+            style={{ background: 'rgba(6,15,29,0.55)', backdropFilter: 'blur(20px)' }}
           >
+            <div className="absolute top-0 left-0 right-0 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+              style={{ background: 'linear-gradient(90deg,transparent,rgba(56,217,169,0.5),transparent)' }} />
             <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-accent-500/18 to-accent-600/12 flex items-center justify-center mb-6 border border-accent-500/18 group-hover:scale-110 transition-transform duration-500">
               <Sparkles className="w-6 h-6 text-accent-400" />
             </div>
-            <h3 className="text-xl font-display font-bold text-white mb-4 leading-snug">
-              Inspiration
-            </h3>
-            <p className="text-white/42 leading-[1.85] font-body text-[14px]">
+            <h3 className="text-xl font-display font-bold text-white mb-4 leading-snug">Inspiration</h3>
+            <p className="text-white/62 leading-[1.88] font-body text-[14px]">
               Driven by passion and progress, we help businesses move forward with confidence
               and creativity — turning challenges into opportunities for lasting growth.
             </p>
           </motion.div>
-
         </div>
       </Container>
     </section>

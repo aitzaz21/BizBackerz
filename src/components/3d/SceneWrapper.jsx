@@ -46,6 +46,11 @@ export default function SceneWrapper() {
         pointerEvents: 'none',
       }}
     >
+      {/* ── Dimming veil — keeps 3D visible but doesn't fight text ── */}
+      <div style={{
+        position: 'absolute', inset: 0, zIndex: 1, pointerEvents: 'none',
+        background: 'rgba(3,9,18,0.62)',
+      }} />
       <Canvas
         camera={{ position: [0, 0, 6], fov: 60 }}
         dpr={1}

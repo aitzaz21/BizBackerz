@@ -89,49 +89,37 @@ export default function SiteLoader({ onComplete }) {
           borderBottom: '1px solid rgba(255,255,255,0.04)',
         }}
       >
-        <div style={{ textAlign: 'center' }}>
-          {/* Logo image */}
-          <div
-            ref={logoRef}
-            style={{
-              margin: '0 auto 16px', width: 76, height: 76,
-              borderRadius: 18,
-              background: '#ffffff',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              padding: 6,
-              boxShadow: '0 0 50px rgba(42,139,255,0.55), 0 8px 28px rgba(0,0,0,0.3)',
-              border: '1px solid rgba(255,255,255,0.25)',
-            }}
-          >
-            <img
-              src="/logo/navbar.png"
-              alt="BizBackerz"
-              style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-            />
-          </div>
-
-          {/* Brand name + tagline */}
-          <div ref={labelRef} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0 }}>
+        {/* Brand wordmark — no logo image for now */}
+        <div ref={logoRef} style={{ textAlign: 'center' }}>
+          <div ref={labelRef} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <span
               style={{
                 fontFamily: "'Poppins', sans-serif",
-                fontWeight: 800, fontSize: 22,
-                color: '#f1f5f9', letterSpacing: '0.08em',
+                fontWeight: 800,
+                fontSize: 28,
+                color: '#f1f5f9',
+                letterSpacing: '0.08em',
                 lineHeight: 1,
               }}
             >
               BIZBACKERZ
             </span>
-            <div style={{
-              height: '1px', width: '120px', margin: '5px 0',
-              background: 'linear-gradient(90deg, transparent, rgba(42,139,255,0.7), rgba(56,217,169,0.5), transparent)',
-            }} />
+            <div
+              style={{
+                height: 1,
+                width: 140,
+                margin: '7px 0',
+                background: 'linear-gradient(90deg, transparent, rgba(42,139,255,0.7), rgba(56,217,169,0.5), transparent)',
+              }}
+            />
             <span
               style={{
                 fontFamily: "'Poppins', sans-serif",
-                fontWeight: 500, fontSize: 9,
-                color: 'rgba(255,255,255,0.3)',
-                letterSpacing: '0.28em', textTransform: 'uppercase',
+                fontWeight: 500,
+                fontSize: 9,
+                color: 'rgba(255,255,255,0.32)',
+                letterSpacing: '0.28em',
+                textTransform: 'uppercase',
               }}
             >
               Delegate to Dominate

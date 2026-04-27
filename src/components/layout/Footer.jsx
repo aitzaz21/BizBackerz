@@ -1,114 +1,184 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import Container from '../ui/Container'
-import { Facebook, Twitter, Instagram, Youtube, Linkedin, Phone } from 'lucide-react'
+import { Facebook, Twitter, Instagram, Youtube, Linkedin, Phone, Mail, ArrowUpRight } from 'lucide-react'
 
-const socialLinks = [
-  { Icon: Facebook, href: 'https://www.facebook.com/BizBackerz' },
-  { Icon: Twitter, href: 'https://x.com/Bizbackerz' },
-  { Icon: Instagram, href: 'https://www.instagram.com/bizbackerzltd/' },
-  { Icon: Youtube, href: 'https://www.youtube.com/@BIZBACKERZ' },
-  { Icon: Linkedin, href: 'https://www.linkedin.com/company/105424987/' },
+const socials = [
+  { Icon: Facebook,  href: 'https://www.facebook.com/BizBackerz',         label: 'Facebook'  },
+  { Icon: Twitter,   href: 'https://x.com/Bizbackerz',                    label: 'Twitter'   },
+  { Icon: Instagram, href: 'https://www.instagram.com/bizbackerzltd/',     label: 'Instagram' },
+  { Icon: Youtube,   href: 'https://www.youtube.com/@BIZBACKERZ',          label: 'YouTube'   },
+  { Icon: Linkedin,  href: 'https://www.linkedin.com/company/105424987/',  label: 'LinkedIn'  },
 ]
 
-const quickLinks = [
-  { label: 'About Us', href: '/#about' },
-  { label: 'Services', href: '/#services' },
-  { label: 'Contact', href: '/contact' },
+const navCols = [
+  {
+    heading: 'Company',
+    links: [
+      { label: 'Home',     to: '/' },
+      { label: 'About Us', to: '/about' },
+      { label: 'Services', to: '/services' },
+      { label: 'Blog',     to: '/blog' },
+      { label: 'Contact',  to: '/contact' },
+    ],
+  },
+  {
+    heading: 'Services',
+    links: [
+      { label: 'Administrative Support',  to: '/services' },
+      { label: 'Social Media Management', to: '/services' },
+      { label: 'Lead Generation',         to: '/services' },
+      { label: 'Customer Support',        to: '/services' },
+      { label: 'E-Commerce Services',     to: '/services' },
+    ],
+  },
+  {
+    heading: 'Legal',
+    links: [
+      { label: 'Privacy Policy',     href: '#' },
+      { label: 'Terms & Conditions', href: '#' },
+      { label: 'FAQs',               href: '#' },
+    ],
+  },
 ]
-
-const colHead = 'font-display font-semibold text-white/80 mb-5 text-[11px] tracking-[0.2em] uppercase'
-const linkCls = 'text-white/40 hover:text-brand-400 text-[14px] font-body transition-colors duration-300'
 
 export default function Footer() {
   return (
-    <footer
-      id="contact"
-      className="relative isolate z-[120] mt-24 min-h-[360px] bg-navy-950/95 border-t border-white/[0.06] overflow-hidden backdrop-blur-sm"
-    >
-      <div className="absolute inset-0 bg-gradient-to-b from-navy-900/85 via-navy-950/96 to-[#02070f] pointer-events-none" />
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[700px] h-[280px] bg-brand-500/5 rounded-full blur-[130px] pointer-events-none" />
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-px bg-gradient-to-r from-transparent via-brand-500/18 to-transparent" />
+    <footer className="relative isolate z-[120] mt-20 bg-navy-950 border-t border-white/[0.07] overflow-hidden">
+
+      {/* Background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-navy-900/60 via-navy-950 to-[#02070f] pointer-events-none" />
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[250px] bg-brand-500/6 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-px bg-gradient-to-r from-transparent via-brand-500/22 to-transparent" />
 
       <Container className="relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 py-16 lg:py-20">
-          <div data-animate>
-            <div className="flex items-center gap-3 mb-5">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-accent-500 flex items-center justify-center font-bold text-white font-display text-lg shadow-lg shadow-brand-500/20">
-                B
+
+        {/* ── Main grid ── */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[2fr,1fr,1fr,1fr] gap-12 py-16 lg:py-20">
+
+          {/* Brand column */}
+          <div>
+            {/* Wordmark — no logo image for now */}
+            <Link to="/" className="inline-block mb-6 group">
+              <div style={{ lineHeight: 1 }}>
+                <div
+                  style={{
+                    fontFamily: "'Poppins', sans-serif",
+                    fontWeight: 800,
+                    fontSize: '20px',
+                    color: '#f1f5f9',
+                    letterSpacing: '0.07em',
+                  }}
+                >
+                  BIZBACKERZ
+                </div>
+                <div
+                  style={{
+                    height: 1,
+                    margin: '4px 0',
+                    background: 'linear-gradient(90deg, rgba(42,139,255,0.65), rgba(56,217,169,0.45), transparent)',
+                  }}
+                />
+                <div
+                  style={{
+                    fontFamily: "'Poppins', sans-serif",
+                    fontWeight: 500,
+                    fontSize: '8px',
+                    color: 'rgba(255,255,255,0.35)',
+                    letterSpacing: '0.22em',
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  Delegate to Dominate
+                </div>
               </div>
-              <span className="text-[20px] font-display font-bold tracking-[-0.03em] text-white">
-                Biz<span className="text-gradient">Backerz</span>
-              </span>
-            </div>
-            <p className="text-white/38 text-[14px] font-body leading-[1.85] mb-6">
-              Simplify your operations and get more done with BizBackerz. We&apos;re here to provide
-              the dedicated support you need to help your business grow smoothly and efficiently.
+            </Link>
+
+            <p className="text-white/62 text-[14px] font-body leading-[1.85] mb-7 max-w-[300px]">
+              Simplify your operations and get more done with BizBackerz — dedicated virtual
+              support that helps your business grow smoothly and efficiently.
             </p>
-            <div className="flex items-center gap-2.5">
-              {socialLinks.map(({ Icon, href }) => (
+
+            {/* Contact links */}
+            <div className="space-y-3 mb-7">
+              <a
+                href="tel:9046686362"
+                className="flex items-center gap-3 text-[13px] font-body text-white/55 hover:text-brand-400 transition-colors duration-300 group"
+              >
+                <span className="w-8 h-8 rounded-lg bg-brand-500/10 border border-brand-500/15 flex items-center justify-center flex-shrink-0 group-hover:bg-brand-500/18 transition-colors duration-300">
+                  <Phone className="w-3.5 h-3.5 text-brand-400" />
+                </span>
+                (904) 668-6362
+              </a>
+              <a
+                href="https://calendly.com/oliver-reid-bizbackerz/30min"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 text-[13px] font-body text-white/55 hover:text-brand-400 transition-colors duration-300 group"
+              >
+                <span className="w-8 h-8 rounded-lg bg-brand-500/10 border border-brand-500/15 flex items-center justify-center flex-shrink-0 group-hover:bg-brand-500/18 transition-colors duration-300">
+                  <Mail className="w-3.5 h-3.5 text-brand-400" />
+                </span>
+                Book a Free Consultation
+              </a>
+            </div>
+
+            {/* Social icons */}
+            <div className="flex items-center gap-2">
+              {socials.map(({ Icon, href, label }) => (
                 <a
                   key={href}
                   href={href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-9 h-9 rounded-lg bg-white/[0.04] flex items-center justify-center text-white/30 hover:text-brand-400 hover:bg-brand-500/10 border border-white/[0.04] transition-all duration-300"
+                  aria-label={label}
+                  className="w-9 h-9 rounded-lg bg-white/[0.05] flex items-center justify-center text-white/38 hover:text-brand-400 hover:bg-brand-500/12 border border-white/[0.06] hover:border-brand-500/22 transition-all duration-300"
                 >
-                  <Icon className="w-4 h-4" />
+                  <Icon className="w-3.5 h-3.5" />
                 </a>
               ))}
             </div>
           </div>
 
-          <div data-animate>
-            <h4 className={colHead}>Quick Links</h4>
-            <ul className="space-y-3">
-              {quickLinks.map(({ label, href }) => (
-                <li key={label}>
-                  <a href={href} className={linkCls}>{label}</a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div data-animate>
-            <h4 className={colHead}>Useful Links</h4>
-            <ul className="space-y-3">
-              {['Privacy Policy', 'Terms and Conditions', 'FAQs'].map((label) => (
-                <li key={label}>
-                  <a href="#" className={linkCls}>{label}</a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div data-animate>
-            <h4 className={colHead}>Work Hours</h4>
-            <p className="text-white/38 text-[14px] font-body mb-5 leading-relaxed">
-              8 AM - 5 PM
-              <br />
-              Monday - Saturday
-            </p>
-            <a
-              href="tel:9046686362"
-              className="inline-flex items-center gap-2.5 text-brand-400 hover:text-brand-300 font-body font-semibold text-[14px] transition-colors duration-300"
-            >
-              <span className="w-8 h-8 rounded-lg bg-brand-500/10 border border-brand-500/15 flex items-center justify-center">
-                <Phone className="w-3.5 h-3.5" />
-              </span>
-              Call Us Today
-            </a>
-          </div>
+          {/* Nav columns */}
+          {navCols.map((col) => (
+            <div key={col.heading}>
+              <h4 className="font-display font-semibold text-white/85 mb-5 text-[11px] tracking-[0.22em] uppercase">
+                {col.heading}
+              </h4>
+              <ul className="space-y-3.5">
+                {col.links.map(({ label, to, href }) => {
+                  const inner = (
+                    <span className="group inline-flex items-center gap-1.5 text-[13.5px] font-body text-white/50 hover:text-white transition-colors duration-300">
+                      {label}
+                      <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-60 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300" />
+                    </span>
+                  )
+                  return (
+                    <li key={label}>
+                      {to ? (
+                        <Link to={to}>{inner}</Link>
+                      ) : (
+                        <a href={href}>{inner}</a>
+                      )}
+                    </li>
+                  )
+                })}
+              </ul>
+            </div>
+          ))}
         </div>
 
-        <div className="border-t border-white/[0.04] py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-white/25 text-[13px] font-body">
-            Virtual Assistance by{' '}
-            <a href="/#hero" className="text-white/40 hover:text-brand-400 transition-colors">
-              BizBackerz
-            </a>
+        {/* ── Bottom bar ── */}
+        <div className="border-t border-white/[0.06] py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-white/38 text-[12px] font-body">
+            © 2026 BizBackerz. All rights reserved.
           </p>
-          <p className="text-white/25 text-[13px] font-body">Copyright © 2026. All rights reserved.</p>
+          <p className="text-white/25 text-[12px] font-body">
+            Virtual Assistance · Delegate to Dominate
+          </p>
         </div>
+
       </Container>
     </footer>
   )

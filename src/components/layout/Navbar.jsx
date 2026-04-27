@@ -108,47 +108,30 @@ export default function Navbar() {
 
         <Container className="flex items-center justify-between h-[72px]">
 
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 relative z-10 group">
-            <div
-              className="flex-shrink-0 transition-all duration-500 group-hover:scale-105"
-              style={{
-                width: 42, height: 42,
-                borderRadius: 10,
-                background: '#ffffff',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                padding: '3px',
-                boxShadow: '0 0 22px rgba(42,139,255,0.35), 0 4px 14px rgba(0,0,0,0.28)',
-                border: '1px solid rgba(255,255,255,0.18)',
-                overflow: 'hidden',
-              }}
-            >
-              <img
-                src="/logo/navbar.png"
-                alt="BizBackerz"
-                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-              />
-            </div>
-            <div className="flex flex-col" style={{ lineHeight: 1 }}>
-              <span
+          {/* Wordmark — no logo image for now */}
+          <Link to="/" className="relative z-10 group">
+            <div style={{ lineHeight: 1 }}>
+              <div
                 style={{
                   fontFamily: "'Poppins', sans-serif",
                   fontWeight: 800,
                   fontSize: '16px',
                   color: '#f1f5f9',
                   letterSpacing: '0.07em',
+                  transition: 'color 0.3s',
                 }}
+                className="group-hover:text-brand-300"
               >
                 BIZBACKERZ
-              </span>
+              </div>
               <div
                 style={{
-                  height: '1px',
+                  height: 1,
                   margin: '3px 0',
-                  background: 'linear-gradient(90deg, rgba(42,139,255,0.7), rgba(56,217,169,0.5), transparent)',
+                  background: 'linear-gradient(90deg, rgba(42,139,255,0.65), rgba(56,217,169,0.45), transparent)',
                 }}
               />
-              <span
+              <div
                 style={{
                   fontFamily: "'Poppins', sans-serif",
                   fontWeight: 500,
@@ -159,7 +142,7 @@ export default function Navbar() {
                 }}
               >
                 Delegate to Dominate
-              </span>
+              </div>
             </div>
           </Link>
 
