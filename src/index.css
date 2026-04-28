@@ -539,3 +539,60 @@ html.lenis, html.lenis body {
   pointer-events: none;
 }
 .gradient-border-card:hover::before { opacity: 1; }
+
+/* ── Hero glow orb float (desktop only — animated blur = GPU crash on Android) ── */
+.hero-glow-orb-float {
+  animation: float 7s ease-in-out 1.5s infinite;
+}
+
+/* ═══════════════════════════════════
+   MOBILE / TOUCH OVERRIDES
+   ═══════════════════════════════════ */
+@media (max-width: 1023px) {
+  /* Remove backdrop-filter entirely on mobile — inconsistent GPU support on
+     Android Chrome < 76 and low-end devices causes blank compositor frames */
+  .glass {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  .glass-light {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  .glass-premium {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* Disable filter:blur AND animation on hero glow orbs.
+     Animated blur forces the GPU to reapply the blur kernel every frame,
+     which causes render crashes on mid-range Android devices. */
+  .hero-glow-orb {
+    filter: none !important;
+    animation: none !important;
+  }
+  .hero-glow-orb-float {
+    animation: none !important;
+  }
+
+  /* Stop all float animations on mobile — transform+filter combo is expensive */
+  .animate-float-slow,
+  .animate-float {
+    animation: none;
+  }
+
+  /* Disable marquee pause-on-hover (hover doesn't exist on touch) */
+  .marquee-track:hover { animation-play-state: running; }
+
+  /* Disable shimmer button hover effect (use tap instead) */
+  .btn-shimmer:hover::after { animation: none; }
+
+  /* Ensure card-glow gradient shows statically on mobile (no hover) */
+  .card-glow::before { opacity: 0.6; }
+
+  /* gradient-border-card always slightly visible on mobile */
+  .gradient-border-card::before { opacity: 0.5; }
+
+  /* Grain overlay: disable heavy animation on mobile */
+  .noise-overlay::before { animation: none; }
+}

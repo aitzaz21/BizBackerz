@@ -22,6 +22,10 @@ export default function SiteLoader({ onComplete }) {
   const labelRef  = useRef(null)
 
   useEffect(() => {
+    /* Safety: if GSAP never fires onComplete (e.g. tab backgrounded, RAF paused),
+       force-complete after 8 s so the loader never blocks the page permanently */
+    const safetyTimer = setTimeout(() => onComplete?.(), 8000)
+
     const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
 
     /* ── 1. Logo + label appear ── */
@@ -61,7 +65,10 @@ export default function SiteLoader({ onComplete }) {
       '+=0.15'
     )
 
-    return () => tl.kill()
+    return () => {
+      tl.kill()
+      clearTimeout(safetyTimer)
+    }
   }, [onComplete])
 
   const panel = {

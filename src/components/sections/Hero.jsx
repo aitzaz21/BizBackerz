@@ -83,12 +83,19 @@ function NeuralCanvas() {
       const rect = canvas.getBoundingClientRect()
       mouseRef.current = { x: e.clientX - rect.left, y: e.clientY - rect.top }
     }
+    const onTouch = (e) => {
+      const rect = canvas.getBoundingClientRect()
+      const t = e.touches[0]
+      mouseRef.current = { x: t.clientX - rect.left, y: t.clientY - rect.top }
+    }
     const onLeave = () => { mouseRef.current = { x: -9999, y: -9999 } }
 
     init()
     window.addEventListener('resize', init)
     canvas.parentElement?.addEventListener('mousemove', onMouse)
     canvas.parentElement?.addEventListener('mouseleave', onLeave)
+    canvas.parentElement?.addEventListener('touchmove', onTouch, { passive: true })
+    canvas.parentElement?.addEventListener('touchend', onLeave, { passive: true })
 
     const LINK_DIST  = 130
     const REPEL_DIST = 90
@@ -144,6 +151,8 @@ function NeuralCanvas() {
       window.removeEventListener('resize', init)
       canvas.parentElement?.removeEventListener('mousemove', onMouse)
       canvas.parentElement?.removeEventListener('mouseleave', onLeave)
+      canvas.parentElement?.removeEventListener('touchmove', onTouch)
+      canvas.parentElement?.removeEventListener('touchend', onLeave)
     }
   }, [])
 
@@ -171,7 +180,14 @@ export default function Hero() {
       const r = el.getBoundingClientRect()
       gsap.to(spot, { x: e.clientX - r.left - 400, y: e.clientY - r.top - 400, duration: 1.6, ease: 'power2.out' })
     }
+    const onTouchMove = (e) => {
+      if (!spot) return
+      const r = el.getBoundingClientRect()
+      const t = e.touches[0]
+      gsap.to(spot, { x: t.clientX - r.left - 400, y: t.clientY - r.top - 400, duration: 1.6, ease: 'power2.out' })
+    }
     el.addEventListener('mousemove', onMove)
+    el.addEventListener('touchmove', onTouchMove, { passive: true })
 
     const ctx = gsap.context(() => {
       /* initial states */
@@ -235,7 +251,11 @@ export default function Hero() {
       })
     }, el)
 
-    return () => { ctx.revert(); el.removeEventListener('mousemove', onMove) }
+    return () => {
+      ctx.revert()
+      el.removeEventListener('mousemove', onMove)
+      el.removeEventListener('touchmove', onTouchMove)
+    }
   }, [])
 
   const features = [
@@ -308,10 +328,10 @@ export default function Hero() {
       {/* Gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-navy-950/20 to-navy-950 z-[2] pointer-events-none" />
 
-      {/* Glow orbs */}
-      <div className="absolute top-[-15%] left-[10%]  w-[800px] h-[800px] bg-brand-500/7  rounded-full blur-[200px] z-[1] pointer-events-none animate-float-slow" />
-      <div className="absolute bottom-[0%]  right-[-6%] w-[520px] h-[520px] bg-accent-500/6 rounded-full blur-[160px] z-[1] pointer-events-none" style={{ animation: 'float 7s ease-in-out 1.5s infinite' }} />
-      <div className="absolute top-[30%]   left-[-6%]  w-[360px] h-[360px] bg-brand-700/5  rounded-full blur-[120px] z-[1] pointer-events-none" />
+      {/* Glow orbs — blur disabled on mobile via .hero-glow-orb (filter+animation = GPU crash on Android) */}
+      <div className="hero-glow-orb absolute top-[-15%] left-[10%]  w-[280px] h-[280px] md:w-[550px] md:h-[550px] lg:w-[800px] lg:h-[800px] bg-brand-500/7  rounded-full blur-[70px] md:blur-[130px] lg:blur-[200px] z-[1] pointer-events-none animate-float-slow" />
+      <div className="hero-glow-orb absolute bottom-[0%]  right-[-6%] w-[200px] h-[200px] md:w-[360px] md:h-[360px] lg:w-[520px] lg:h-[520px] bg-accent-500/6 rounded-full blur-[50px] md:blur-[100px] lg:blur-[160px] z-[1] pointer-events-none hero-glow-orb-float" />
+      <div className="hero-glow-orb absolute top-[30%]   left-[-6%]  w-[160px] h-[160px] md:w-[250px] md:h-[250px] lg:w-[360px] lg:h-[360px] bg-brand-700/5  rounded-full blur-[40px] md:blur-[70px] lg:blur-[120px] z-[1] pointer-events-none" />
 
       {/* Grain */}
       <div

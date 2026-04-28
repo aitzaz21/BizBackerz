@@ -9,6 +9,55 @@ import CustomCursor from './components/ui/CustomCursor'
 import SiteLoader from './components/ui/SiteLoader'
 import FloatingCTA from './components/ui/FloatingCTA'
 
+/* ── CSS gradient shown when WebGL fails or is unavailable ── */
+const SceneCSSFallback = () => (
+  <div
+    style={{
+      position: 'fixed', top: 0, left: 0,
+      width: '100vw', height: '100vh',
+      zIndex: 0, pointerEvents: 'none',
+      background: [
+        'radial-gradient(ellipse 130% 65% at 10% 20%, rgba(42,139,255,0.13) 0%, transparent 50%)',
+        'radial-gradient(ellipse 90% 55% at 88% 75%, rgba(56,217,169,0.09) 0%, transparent 50%)',
+        'radial-gradient(ellipse 70% 45% at 50% 105%, rgba(139,92,246,0.07) 0%, transparent 50%)',
+      ].join(', '),
+    }}
+  />
+)
+
+/* ── Catches WebGL / Three.js runtime errors so the page stays visible ── */
+class SceneErrorBoundary extends React.Component {
+  state = { failed: false }
+  static getDerivedStateFromError() { return { failed: true } }
+  componentDidCatch(e) { console.warn('[SceneWrapper] render error — falling back to CSS:', e.message) }
+  render() {
+    if (this.state.failed) return <SceneCSSFallback />
+    return this.props.children
+  }
+}
+
+/* ── Top-level boundary: prevents a completely blank dark screen on any error ── */
+class AppErrorBoundary extends React.Component {
+  state = { failed: false }
+  static getDerivedStateFromError() { return { failed: true } }
+  componentDidCatch(e, info) { console.error('[App] uncaught render error:', e, info) }
+  render() {
+    if (this.state.failed) {
+      return (
+        <div style={{
+          minHeight: '100vh', background: '#030912',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <div style={{ textAlign: 'center', color: '#c8d2de', fontFamily: 'sans-serif' }}>
+            <p style={{ fontSize: 16, opacity: 0.6 }}>Something went wrong. Please refresh the page.</p>
+          </div>
+        </div>
+      )
+    }
+    return this.props.children
+  }
+}
+
 const Home        = lazy(() => import('./pages/Home'))
 const AboutPage   = lazy(() => import('./components/about/AboutPage'))
 const BlogPage    = lazy(() => import('./pages/Blog'))
@@ -29,13 +78,21 @@ function AppContent({ onLoaded }) {
   const isHome   = location.pathname === '/'
   const lenisRef = useRef(null)
 
-  /* ── Lenis smooth scroll — created once, lives for app lifetime ── */
+  /* ── Lenis smooth scroll — desktop only, native scroll on touch/mobile ── */
   useEffect(() => {
+    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+
+    if (isTouch) {
+      // On mobile/touch, use native scroll — Lenis interferes with GSAP ticker on touch
+      const onScroll = () => ScrollTrigger.update()
+      window.addEventListener('scroll', onScroll, { passive: true })
+      return () => window.removeEventListener('scroll', onScroll)
+    }
+
     const lenis = new Lenis({
       duration: 1.25,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
-      touchMultiplier: 2,
     })
     lenisRef.current = lenis
 
@@ -66,9 +123,11 @@ function AppContent({ onLoaded }) {
       <FloatingCTA />
 
       {isHome && (
-        <Suspense fallback={null}>
-          <SceneWrapper />
-        </Suspense>
+        <SceneErrorBoundary>
+          <Suspense fallback={null}>
+            <SceneWrapper />
+          </Suspense>
+        </SceneErrorBoundary>
       )}
 
       <div className="relative z-10">
@@ -94,10 +153,12 @@ export default function App() {
   const [loaded, setLoaded] = useState(false)
 
   return (
-    <BrowserRouter>
-      {/* Loader shows once on first visit */}
-      {!loaded && <SiteLoader onComplete={() => setLoaded(true)} />}
-      <AppContent />
-    </BrowserRouter>
+    <AppErrorBoundary>
+      <BrowserRouter>
+        {/* Loader shows once on first visit */}
+        {!loaded && <SiteLoader onComplete={() => setLoaded(true)} />}
+        <AppContent />
+      </BrowserRouter>
+    </AppErrorBoundary>
   )
 }

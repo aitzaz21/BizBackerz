@@ -31,7 +31,24 @@ export default function SceneWrapper() {
     return () => media.removeEventListener('change', syncEnabled)
   }, [])
 
-  if (!enabled) return null
+  if (!enabled) {
+    return (
+      <div
+        style={{
+          position: 'fixed',
+          top: 0, left: 0,
+          width: '100vw', height: '100vh',
+          zIndex: 0,
+          pointerEvents: 'none',
+          background: [
+            'radial-gradient(ellipse 130% 65% at 10% 20%, rgba(42,139,255,0.13) 0%, transparent 50%)',
+            'radial-gradient(ellipse 90% 55% at 88% 75%, rgba(56,217,169,0.09) 0%, transparent 50%)',
+            'radial-gradient(ellipse 70% 45% at 50% 105%, rgba(139,92,246,0.07) 0%, transparent 50%)',
+          ].join(', '),
+        }}
+      />
+    )
+  }
 
   return (
     <div
