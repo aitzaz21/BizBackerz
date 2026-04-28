@@ -121,9 +121,9 @@ const ATMOS_FRAG = `
   }
 `
 
-/* ─────────────────────────────────────────
-   MAIN GLowing ORB
-───────────────────────────────────────── */
+
+// MAIN GLowing ORB
+
 const GlowingOrb = memo(function GlowingOrb() {
   const meshRef  = useRef()
   const wire1Ref = useRef()
