@@ -62,11 +62,12 @@ class AppErrorBoundary extends React.Component {
    race on initial render (removeChild fails when the chunk resolves mid-commit) */
 import Home from './pages/Home'
 
-const AboutPage   = lazy(() => import('./components/about/AboutPage'))
-const BlogPage    = lazy(() => import('./pages/Blog'))
-const ServicesPage= lazy(() => import('./pages/ServicesPage'))
-const ContactPage = lazy(() => import('./pages/Contact'))
-const SceneWrapper= lazy(() => import('./components/3d/SceneWrapper'))
+const AboutPage         = lazy(() => import('./components/about/AboutPage'))
+const BlogPage          = lazy(() => import('./pages/Blog'))
+const ServicesPage      = lazy(() => import('./pages/ServicesPage'))
+const ServiceDetailPage = lazy(() => import('./pages/services/ServiceDetailPage'))
+const ContactPage       = lazy(() => import('./pages/Contact'))
+const SceneWrapper      = lazy(() => import('./components/3d/SceneWrapper'))
 
 function SuspenseFallback() {
   return (
@@ -142,11 +143,12 @@ function AppContent({ onLoaded }) {
         <main>
           <Suspense fallback={<SuspenseFallback />} >
             <Routes>
-              <Route path="/"        element={<Home />} />
-              <Route path="/about"   element={<AboutPage />} />
-              <Route path="/services"element={<ServicesPage />} />
-              <Route path="/blog"    element={<BlogPage />} />
-              <Route path="/contact" element={<ContactPage />} />
+              <Route path="/"                    element={<Home />} />
+              <Route path="/about"             element={<AboutPage />} />
+              <Route path="/services"          element={<ServicesPage />} />
+              <Route path="/services/:slug"    element={<ServiceDetailPage />} />
+              <Route path="/blog"              element={<BlogPage />} />
+              <Route path="/contact"           element={<ContactPage />} />
             </Routes>
           </Suspense>
         </main>

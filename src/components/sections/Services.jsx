@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Container from '../ui/Container'
@@ -48,13 +49,17 @@ function ServiceCard({ service, index }) {
   }
 
   return (
+    <Link
+      to={`/services/${service.slug}`}
+      className="flex-shrink-0"
+      style={{ display: 'block', textDecoration: 'none' }}
+    >
     <div
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => { setHovered(false); setTilt({ x: 0, y: 0 }) }}
       onMouseMove={onMove}
-      className="flex-shrink-0"
       style={{
-        width: 210, height: 270,
+        width: 210, height: 270, cursor: 'pointer',
         transform: `perspective(1100px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
         transition: `transform 0.3s ${ease}`,
       }}
@@ -167,20 +172,19 @@ function ServiceCard({ service, index }) {
             }}>
               {service.metric}
             </span>
-            <a
-              href={`/services#${service.slug}`}
+            <span
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: 4,
                 fontFamily: '"Clash Display",sans-serif',
                 fontSize: 9.5, fontWeight: 700, letterSpacing: '0.1em',
-                textTransform: 'uppercase', color: c, textDecoration: 'none',
+                textTransform: 'uppercase', color: c,
                 opacity: hovered ? 1 : 0,
                 transform: hovered ? 'translateX(0)' : 'translateX(-6px)',
                 transition: `opacity 0.25s ${hovered ? '0.08s' : '0s'}, transform 0.3s ${hovered ? '0.06s' : '0s'} ${ease}`,
               }}
             >
               Explore <ArrowRight size={9} />
-            </a>
+            </span>
           </div>
         </div>
 
@@ -192,6 +196,7 @@ function ServiceCard({ service, index }) {
         }} />
       </div>
     </div>
+    </Link>
   )
 }
 

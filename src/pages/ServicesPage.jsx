@@ -77,9 +77,9 @@ function ServiceCard({ service, index }) {
         </div>
         <h3 className="text-lg font-display font-bold text-white/85 mb-3 leading-snug">{service.title}</h3>
         <p className="text-[13px] text-white/35 leading-[1.75] mb-5">{service.text}</p>
-        <span className="inline-flex items-center gap-1.5 text-[13px] font-semibold transition-all duration-300 group-hover:gap-2" style={{ color: service.color }}>
+        <a href={`/services/${service.slug}`} className="inline-flex items-center gap-1.5 text-[13px] font-semibold transition-all duration-300 group-hover:gap-2" style={{ color: service.color, textDecoration: 'none' }}>
           Read More <ArrowRight className="w-3.5 h-3.5" />
-        </span>
+        </a>
       </div>
     </div>
   )
