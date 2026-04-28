@@ -83,10 +83,13 @@ function AppContent({ onLoaded }) {
 
   /* ── Lenis smooth scroll — desktop only, native scroll on touch/mobile ── */
   useEffect(() => {
-    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+    /* (pointer: coarse) is true on phones/tablets but false on laptops, even
+       those with touchscreens — navigator.maxTouchPoints fires false-positives
+       on Windows 10/11 machines that have no physical touchscreen. */
+    const isCoarseTouch = window.matchMedia('(pointer: coarse)').matches
 
-    if (isTouch) {
-      // On mobile/touch, use native scroll — Lenis interferes with GSAP ticker on touch
+    if (isCoarseTouch) {
+      // On mobile/tablet use native scroll; Lenis smooth-wheel doesn't apply to touch
       const onScroll = () => ScrollTrigger.update()
       window.addEventListener('scroll', onScroll, { passive: true })
       return () => window.removeEventListener('scroll', onScroll)

@@ -426,7 +426,6 @@ function MobileServices() {
       gsap.from('[data-mob-card]', {
         opacity: 0,
         y: 30,
-        filter: 'blur(6px)',
         duration: 0.8,
         stagger: 0.08,
         ease: 'power2.out',

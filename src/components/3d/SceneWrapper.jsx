@@ -23,7 +23,7 @@ export default function SceneWrapper() {
   useEffect(() => {
     if (typeof window === 'undefined') return undefined
 
-    const media = window.matchMedia('(min-width: 1024px) and (prefers-reduced-motion: no-preference)')
+    const media = window.matchMedia('(min-width: 1024px)')
     const syncEnabled = () => setEnabled(media.matches)
 
     syncEnabled()
