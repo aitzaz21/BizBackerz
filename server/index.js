@@ -17,9 +17,7 @@ app.get('/api/health', (req, res) => {
 
 app.use('/api', exampleRoutes)
 
-// MongoDB placeholder:
-// import mongoose from 'mongoose'
-// mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/bizbackerz')
+
 
 app.listen(PORT, () => console.log(`🚀 BizBackerz API → http://localhost:${PORT}`))
 export default app
