@@ -23,6 +23,11 @@ export default function SceneWrapper() {
   useEffect(() => {
     if (typeof window === 'undefined') return undefined
 
+    /* Touch / mobile devices never get WebGL — context loss on mobile causes
+       React DOM reconciliation errors (removeChild on a detached node) */
+    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+    if (isTouch) return undefined
+
     const media = window.matchMedia('(min-width: 1024px) and (prefers-reduced-motion: no-preference)')
     const syncEnabled = () => setEnabled(media.matches)
 
@@ -79,6 +84,13 @@ export default function SceneWrapper() {
         }}
         style={{ background: 'transparent' }}
         resize={{ debounce: 100 }}
+        onCreated={({ gl }) => {
+          /* Switch to CSS fallback if GPU kills the WebGL context.
+             Without this, context loss propagates as a React removeChild error. */
+          gl.domElement.addEventListener('webglcontextlost', () => {
+            setEnabled(false)
+          }, { once: true })
+        }}
       >
         <Suspense fallback={null}>
           <Lights />

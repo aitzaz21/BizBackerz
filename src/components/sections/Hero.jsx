@@ -197,7 +197,7 @@ export default function Hero() {
       gsap.set('[data-hero-desc]',      { opacity: 0, y: 18 })
       gsap.set('[data-hero-cta]',       { opacity: 0, y: 22, scale: 0.93 })
       gsap.set('[data-hero-stats]',     { opacity: 0, y: 24 })
-      gsap.set('[data-hero-card]',      { opacity: 0, x: 60, filter: 'blur(12px)' })
+      gsap.set('[data-hero-card]',      { opacity: 0, x: 60 })
       gsap.set('[data-hero-draw]',      { scaleX: 0, transformOrigin: 'left center' })
       gsap.set('[data-hero-bg]',        { opacity: 0 })
       gsap.set('[data-hero-ticker]',    { opacity: 0, y: 12 })
@@ -227,7 +227,7 @@ export default function Hero() {
       tl.to('[data-hero-bg]',     { opacity: 1,           duration: 2.2, ease: 'power1.out' }, '-=2.4')
 
       gsap.to('[data-hero-card]', {
-        opacity: 1, x: 0, filter: 'blur(0px)',
+        opacity: 1, x: 0,
         duration: 1.6, stagger: 0.16, delay: 0.6, ease: 'power3.out',
       })
 

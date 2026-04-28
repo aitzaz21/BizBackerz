@@ -369,8 +369,7 @@ const BackgroundScene = memo(function BackgroundScene() {
   const velRef     = useRef({ x: 0, y: 0 })
   const prevMouse  = useRef({ x: 0, y: 0 })
 
-  useMemo(() => {
-    if (typeof window === 'undefined') return
+  useEffect(() => {
     const h = (e) => {
       const x = (e.clientX / window.innerWidth) - 0.5
       const y = (e.clientY / window.innerHeight) - 0.5
