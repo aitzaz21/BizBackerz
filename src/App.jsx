@@ -58,7 +58,10 @@ class AppErrorBoundary extends React.Component {
   }
 }
 
-const Home        = lazy(() => import('./pages/Home'))
+/* Home is eagerly imported — lazy loading causes a React 18 concurrent Suspense
+   race on initial render (removeChild fails when the chunk resolves mid-commit) */
+import Home from './pages/Home'
+
 const AboutPage   = lazy(() => import('./components/about/AboutPage'))
 const BlogPage    = lazy(() => import('./pages/Blog'))
 const ServicesPage= lazy(() => import('./pages/ServicesPage'))

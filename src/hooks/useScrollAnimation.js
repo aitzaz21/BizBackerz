@@ -79,7 +79,7 @@ export function useStaggerReveal(options = {}) {
       y: 0,
       x: 0,
       rotateX: 0,
-      filter: 'blur(0px)',
+      filter: 'none',
       duration: options.duration || 1.2,
       stagger: options.stagger || 0.12,
       ease: options.ease || 'power2.out',

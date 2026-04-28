@@ -314,15 +314,26 @@ function ServiceCard({ service, index }) {
 }
 
 function DesktopServices() {
-  const sectionRef = useRef(null)
+  /* wrapperRef creates the scroll space that GSAP pin used to create via .pin-spacer.
+     Using CSS position:sticky on the section instead of GSAP pin avoids the pin-spacer
+     wrapper div that GSAP inserts into the DOM — which breaks React's removeChild calls. */
+  const wrapperRef  = useRef(null)
+  const sectionRef  = useRef(null)
   const viewportRef = useRef(null)
-  const trackRef = useRef(null)
+  const trackRef    = useRef(null)
 
   useEffect(() => {
-    const section = sectionRef.current
+    const wrapper  = wrapperRef.current
+    const section  = sectionRef.current
     const viewport = viewportRef.current
-    const track = trackRef.current
-    if (!section || !viewport || !track) return
+    const track    = trackRef.current
+    if (!wrapper || !section || !viewport || !track) return
+
+    const getDistance = () => Math.max(0, track.scrollWidth - viewport.clientWidth)
+    const updateWrapperHeight = () => {
+      wrapper.style.height = `${window.innerHeight + getDistance() + 220}px`
+    }
+    updateWrapperHeight()
 
     const ctx = gsap.context(() => {
       gsap.from('[data-svc-label]', {
@@ -330,7 +341,7 @@ function DesktopServices() {
         x: -20,
         duration: 1,
         ease: 'power3.out',
-        scrollTrigger: { trigger: section, start: 'top 54%', toggleActions: 'play reverse play reverse' },
+        scrollTrigger: { trigger: wrapper, start: 'top 54%', toggleActions: 'play reverse play reverse' },
       })
 
       gsap.from('[data-svc-line]', {
@@ -338,10 +349,8 @@ function DesktopServices() {
         duration: 2.8,
         stagger: 0.1,
         ease: 'power4.out',
-        scrollTrigger: { trigger: section, start: 'top 50%', toggleActions: 'play reverse play reverse' },
+        scrollTrigger: { trigger: wrapper, start: 'top 50%', toggleActions: 'play reverse play reverse' },
       })
-
-      const getDistance = () => Math.max(0, track.scrollWidth - viewport.clientWidth)
 
       gsap.set(track, { x: 0 })
 
@@ -349,13 +358,12 @@ function DesktopServices() {
         x: () => -getDistance(),
         ease: 'none',
         scrollTrigger: {
-          trigger: section,
+          trigger: wrapper,
           start: 'top top',
           end: () => `+=${getDistance() + 220}`,
-          pin: true,
           scrub: 1.35,
-          anticipatePin: 1,
           invalidateOnRefresh: true,
+          onRefresh: updateWrapperHeight,
         },
       })
     }, section)
@@ -364,7 +372,8 @@ function DesktopServices() {
   }, [])
 
   return (
-    <section ref={sectionRef} id="services" className="relative" style={{ height: '100vh' }}>
+    <div ref={wrapperRef} style={{ position: 'relative' }}>
+    <section ref={sectionRef} id="services" className="relative" style={{ height: '100vh', position: 'sticky', top: 0 }}>
       <div className="absolute top-[18%] right-0 h-[480px] w-[480px] rounded-full bg-accent-500/3 blur-[160px] pointer-events-none" />
       <div className="absolute bottom-[18%] left-0 h-[430px] w-[430px] rounded-full bg-brand-500/3 blur-[150px] pointer-events-none" />
 
@@ -402,6 +411,7 @@ function DesktopServices() {
         </div>
       </div>
     </section>
+    </div>
   )
 }
 
