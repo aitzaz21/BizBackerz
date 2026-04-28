@@ -91,6 +91,7 @@ export default function ServicesPage() {
 
   useEffect(() => {
     const el = pageRef.current; if (!el) return
+    if (window.matchMedia('(pointer: coarse)').matches) return
     const ctx = gsap.context(() => {
       gsap.from('[data-svc-hero]', { opacity: 0, y: 20, filter: 'blur(3px)', duration: 1.4, stagger: 0.12, delay: 0.3, ease: 'power2.out' })
       gsap.utils.toArray('[data-svc-item]').forEach((item, i) => {

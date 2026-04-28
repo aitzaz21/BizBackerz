@@ -16,48 +16,51 @@ export default function VideoSection() {
     const container = containerRef.current
     if (!section || !container) return
 
+    const isMobile = window.matchMedia('(pointer: coarse)').matches
+
     const ctx = gsap.context(() => {
+      if (!isMobile) {
+        /* ── Header label ── */
+        gsap.from('[data-vid-label]', {
+          opacity: 0, x: -20,
+          duration: 1, ease: 'power3.out',
+          scrollTrigger: { trigger: section, start: 'top 75%', toggleActions: 'play reverse play reverse' },
+        })
 
-      /* ── Header label ── */
-      gsap.from('[data-vid-label]', {
-        opacity: 0, x: -20,
-        duration: 1, ease: 'power3.out',
-        scrollTrigger: { trigger: section, start: 'top 80%', toggleActions: 'play reverse play reverse' },
-      })
+        /* ── Heading clip-path reveal ── */
+        gsap.from('[data-vid-line]', {
+          yPercent: 112,
+          duration: 1.3, stagger: 0.1, ease: 'power4.out',
+          scrollTrigger: { trigger: section, start: 'top 72%', toggleActions: 'play reverse play reverse' },
+        })
 
-      /* ── Heading clip-path reveal ── */
-      gsap.from('[data-vid-line]', {
-        yPercent: 112,
-        duration: 1.3, stagger: 0.1, ease: 'power4.out',
-        scrollTrigger: { trigger: section, start: 'top 78%', toggleActions: 'play reverse play reverse' },
-      })
+        gsap.from('[data-vid-desc]', {
+          opacity: 0, y: 18,
+          duration: 1, ease: 'power2.out',
+          scrollTrigger: { trigger: section, start: 'top 68%', toggleActions: 'play reverse play reverse' },
+        })
 
-      gsap.from('[data-vid-desc]', {
-        opacity: 0, y: 18,
-        duration: 1, ease: 'power2.out',
-        scrollTrigger: { trigger: section, start: 'top 75%', toggleActions: 'play reverse play reverse' },
-      })
+        /* ── Video zoom-in on scroll — tighter window for a crisper pop ── */
+        gsap.fromTo(container,
+          { scale: 0.82, opacity: 0, filter: 'blur(10px)', borderRadius: '3rem' },
+          {
+            scale: 1, opacity: 1, filter: 'blur(0px)', borderRadius: '1.5rem',
+            ease: 'power1.out',
+            scrollTrigger: {
+              trigger: container, start: 'top 85%', end: 'top 18%', scrub: 1.4,
+            },
+          }
+        )
 
-      /* ── Video zoom-in on scroll ── */
-      gsap.fromTo(container,
-        { scale: 0.78, opacity: 0, filter: 'blur(14px)', borderRadius: '3rem' },
-        {
-          scale: 1, opacity: 1, filter: 'blur(0px)', borderRadius: '1.5rem',
+        /* ── Parallax on scroll past ── */
+        gsap.to(container, {
+          y: -55,
           ease: 'none',
           scrollTrigger: {
-            trigger: container, start: 'top 92%', end: 'top 28%', scrub: 1.2,
+            trigger: container, start: 'top center', end: 'bottom top', scrub: 2,
           },
-        }
-      )
-
-      /* ── Parallax on scroll past ── */
-      gsap.to(container, {
-        y: -55,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: container, start: 'top center', end: 'bottom top', scrub: 2,
-        },
-      })
+        })
+      }
     }, section)
 
     /* ── Auto-play when in view ── */

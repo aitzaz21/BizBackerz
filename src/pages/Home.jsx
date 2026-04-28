@@ -37,6 +37,16 @@ export default function Home() {
       />
 
       <Services />
+
+      {/* Kinetic 3 — breather strip between Services and Video */}
+      <KineticStrip
+        texts={['TRUSTED BY 50+ CLIENTS', '·', 'DELEGATE TO DOMINATE', '·', 'PREMIUM EXECUTION', '·', 'SINCE 2024', '·']}
+        direction={-1}
+        opacity={0.038}
+        fontSize="clamp(3.8rem,8.5vw,9.5rem)"
+        speed={1.1}
+      />
+
       <VideoSection />
       <CTA />
     </>

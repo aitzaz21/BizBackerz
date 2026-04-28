@@ -173,7 +173,9 @@ export default function Hero() {
     const el = sectionRef.current
     if (!el) return
 
-    /* spotlight */
+    const isMobile = window.matchMedia('(pointer: coarse)').matches
+
+    /* spotlight — desktop mouse only */
     const spot = el.querySelector('[data-spotlight]')
     const onMove = (e) => {
       if (!spot) return
@@ -186,8 +188,13 @@ export default function Hero() {
       const t = e.touches[0]
       gsap.to(spot, { x: t.clientX - r.left - 400, y: t.clientY - r.top - 400, duration: 1.6, ease: 'power2.out' })
     }
-    el.addEventListener('mousemove', onMove)
+    if (!isMobile) el.addEventListener('mousemove', onMove)
     el.addEventListener('touchmove', onTouchMove, { passive: true })
+
+    /* On mobile: skip all GSAP — content is visible by default CSS */
+    if (isMobile) {
+      return () => el.removeEventListener('touchmove', onTouchMove)
+    }
 
     const ctx = gsap.context(() => {
       /* initial states */
@@ -253,7 +260,7 @@ export default function Hero() {
 
     return () => {
       ctx.revert()
-      el.removeEventListener('mousemove', onMove)
+      if (!isMobile) el.removeEventListener('mousemove', onMove)
       el.removeEventListener('touchmove', onTouchMove)
     }
   }, [])
@@ -489,7 +496,7 @@ export default function Hero() {
 
             <div data-hero-card className="flex items-center justify-between mb-6">
               <p className="section-label">Expert Team</p>
-              <span className="text-[10px] font-body font-bold uppercase tracking-[0.2em] text-white/18">Est. 2019</span>
+              <span className="text-[10px] font-body font-bold uppercase tracking-[0.2em] text-white/18">Est. 2024</span>
             </div>
 
             <p data-hero-card className="text-white/32 text-[14px] leading-[1.9] mb-7 font-body">
@@ -502,40 +509,43 @@ export default function Hero() {
                   key={f.title}
                   data-hero-card
                   data-cursor-label="VIEW"
-                  whileHover={{ y: -6, scale: 1.015 }}
-                  transition={{ type: 'spring', stiffness: 320, damping: 24 }}
+                  whileHover={{ y: -5, scale: 1.012 }}
+                  transition={{ type: 'spring', stiffness: 340, damping: 26 }}
                   className="group glass card-glow rounded-2xl p-5 cursor-default relative overflow-hidden"
                 >
-                  {/* card inner glow on hover */}
+                  {/* Full-card radial fill on hover */}
                   <div
                     className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                    style={{ background: `radial-gradient(ellipse at top left, ${f.color}12, transparent 60%)` }}
+                    style={{ background: `radial-gradient(ellipse at top left, ${f.color}1e, transparent 65%)` }}
+                  />
+                  {/* Left colour accent strip */}
+                  <div
+                    className="absolute left-0 top-4 bottom-4 w-[2px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                    style={{ background: `linear-gradient(180deg, transparent, ${f.color}70, transparent)` }}
                   />
                   <div className="flex items-start gap-4 relative z-10">
-                    <motion.div
-                      className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
-                      whileHover={{ rotate: [0, -8, 8, 0] }}
-                      transition={{ duration: 0.5 }}
+                    <div
+                      className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-500"
                       style={{
-                        background: `linear-gradient(135deg, ${f.color}22, ${f.color}06)`,
-                        border: `1px solid ${f.color}20`,
-                        boxShadow: `0 4px 20px ${f.color}10`,
+                        background: `linear-gradient(135deg, ${f.color}26, ${f.color}08)`,
+                        border: `1px solid ${f.color}25`,
+                        boxShadow: `0 4px 20px ${f.color}14`,
                       }}
                     >
-                      <f.icon className="w-5 h-5" style={{ color: f.color }} />
-                    </motion.div>
+                      <f.icon className="w-4 h-4 transition-transform duration-500 group-hover:scale-110" style={{ color: f.color }} />
+                    </div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-2 mb-1">
+                      <div className="flex items-start justify-between gap-2 mb-1.5">
                         <div>
                           <h3 className="font-display font-semibold text-white text-[14px] leading-snug">{f.title}</h3>
                           <span className="inline-block text-[9px] font-body font-bold uppercase tracking-[0.18em] px-1.5 py-0.5 rounded-full mt-0.5"
-                            style={{ color: f.color, background: `${f.color}10`, border: `1px solid ${f.color}18` }}>
+                            style={{ color: f.color, background: `${f.color}12`, border: `1px solid ${f.color}20` }}>
                             {f.tag}
                           </span>
                         </div>
-                        <ArrowUpRight className="w-4 h-4 flex-shrink-0 text-white/10 group-hover:text-white/50 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300 mt-0.5" />
+                        <ArrowUpRight className="w-3.5 h-3.5 flex-shrink-0 text-white/18 group-hover:text-white/55 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300 mt-0.5" />
                       </div>
-                      <p className="text-[12px] text-white/28 leading-relaxed font-body">{f.text}</p>
+                      <p className="text-[12px] text-white/35 leading-relaxed font-body">{f.text}</p>
                     </div>
                   </div>
                 </motion.div>

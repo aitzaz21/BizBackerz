@@ -18,6 +18,9 @@ export default function About() {
     const el = sectionRef.current
     if (!el) return
 
+    /* Skip all GSAP on touch devices — content is visible by default */
+    if (window.matchMedia('(pointer: coarse)').matches) return
+
     const ctx = gsap.context(() => {
       /* ── Label slide ── */
       gsap.from('[data-ab-label]', {
@@ -109,49 +112,74 @@ export default function About() {
           {/* LEFT — Visual card */}
           <div data-ab-visual className="relative">
             <div className="relative rounded-3xl overflow-hidden aspect-[4/3]">
-              <div className="absolute inset-0 bg-gradient-to-br from-brand-500/18 via-navy-800 to-accent-500/18" />
+              {/* Layered gradient background */}
+              <div className="absolute inset-0" style={{
+                background: 'linear-gradient(135deg, rgba(42,139,255,0.18) 0%, rgba(3,9,18,0.88) 45%, rgba(56,217,169,0.14) 100%)',
+              }} />
 
               {/* Grid overlay */}
-              <div className="absolute inset-0 opacity-[0.15]"
+              <div className="absolute inset-0 opacity-[0.18]"
                 style={{
-                  backgroundImage: 'linear-gradient(rgba(42,139,255,0.08) 1px,transparent 1px),linear-gradient(90deg,rgba(42,139,255,0.08) 1px,transparent 1px)',
-                  backgroundSize: '40px 40px',
+                  backgroundImage: 'linear-gradient(rgba(42,139,255,0.1) 1px,transparent 1px),linear-gradient(90deg,rgba(42,139,255,0.1) 1px,transparent 1px)',
+                  backgroundSize: '36px 36px',
                 }} />
+
+              {/* Radial glow at center */}
+              <div className="absolute inset-0 pointer-events-none"
+                style={{ background: 'radial-gradient(ellipse 60% 50% at 50% 50%, rgba(42,139,255,0.08), transparent)' }} />
 
               {/* Center stat */}
               <div data-ab-stat className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="w-24 h-24 mx-auto mb-4 rounded-3xl bg-gradient-to-br from-brand-500/22 to-accent-500/22 flex items-center justify-center border border-white/10 glow-sm">
-                    <Users className="w-12 h-12 text-brand-400" />
+                <div className="text-center relative">
+                  {/* Decorative rings */}
+                  <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-36 h-36 rounded-full border border-brand-500/10 pointer-events-none" />
+                  <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-52 h-52 rounded-full border border-brand-500/6 pointer-events-none" />
+
+                  <div className="w-20 h-20 mx-auto mb-4 rounded-2xl flex items-center justify-center border border-white/12"
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(42,139,255,0.28), rgba(56,217,169,0.18))',
+                      boxShadow: '0 8px 32px rgba(42,139,255,0.2), inset 0 1px 0 rgba(255,255,255,0.1)',
+                    }}>
+                    <Users className="w-10 h-10 text-brand-400" />
                   </div>
-                  <div className="text-[3.8rem] font-display font-bold text-gradient leading-none mb-1.5">
+                  <div className="text-[3.5rem] font-display font-bold text-gradient leading-none mb-1">
                     <span data-ab-count>50+</span>
                   </div>
-                  <p className="text-white/52 text-[11px] font-body font-bold uppercase tracking-[0.22em]">
+                  <p className="text-white/45 text-[10px] font-body font-bold uppercase tracking-[0.24em]">
                     Trusted Clients
                   </p>
                 </div>
               </div>
 
+              {/* Top-left mini stat */}
+              <div className="absolute top-5 left-5">
+                <div className="text-[1.4rem] font-display font-bold text-gradient leading-none">3+</div>
+                <p className="text-[8px] text-white/32 font-body font-bold uppercase tracking-[0.18em] mt-0.5">Yrs Exp.</p>
+              </div>
+
               {/* Float badge */}
-              <div className="absolute top-5 right-5 w-13 h-13 rounded-2xl bg-accent-500/12 border border-accent-500/20 flex items-center justify-center animate-float">
-                <Sparkles className="w-5 h-5 text-accent-400" />
+              <div className="absolute top-5 right-5 w-11 h-11 rounded-2xl border border-accent-500/22 flex items-center justify-center animate-float"
+                style={{ background: 'rgba(56,217,169,0.1)' }}>
+                <Sparkles className="w-4.5 h-4.5 text-accent-400" />
+              </div>
+
+              {/* Bottom-right mini stat */}
+              <div className="absolute bottom-5 right-5 text-right">
+                <div className="text-[1.4rem] font-display font-bold text-gradient leading-none">98%</div>
+                <p className="text-[8px] text-white/32 font-body font-bold uppercase tracking-[0.18em] mt-0.5">Satisfaction</p>
               </div>
 
               {/* Tag */}
               <div className="absolute bottom-5 left-5">
-                <div className="glass-light rounded-xl px-4 py-2.5">
-                  <p className="text-[10px] font-body font-bold text-white/52 uppercase tracking-[0.18em]">Since 2019</p>
+                <div className="rounded-xl px-3 py-1.5 border border-white/8"
+                  style={{ background: 'rgba(42,139,255,0.08)' }}>
+                  <p className="text-[9px] font-body font-bold text-white/45 uppercase tracking-[0.2em]">Since 2024</p>
                 </div>
-              </div>
-
-              <div className="absolute top-4 left-4 font-display font-bold text-[5rem] leading-none text-white/[0.03] select-none pointer-events-none">
-                01
               </div>
             </div>
 
             {/* Outer glow ring */}
-            <div className="absolute -inset-4 bg-brand-500/5 rounded-[2rem] blur-2xl -z-10" />
+            <div className="absolute -inset-5 bg-brand-500/6 rounded-[2.5rem] blur-2xl -z-10" />
           </div>
 
           {/* RIGHT — Text */}

@@ -122,6 +122,8 @@ export default function BlogPage() {
     const el = pageRef.current
     if (!el) return
 
+    if (window.matchMedia('(pointer: coarse)').matches) return
+
     const ctx = gsap.context(() => {
       gsap.from('[data-blog-header]', {
         opacity: 0, y: 20, filter: 'blur(3px)',

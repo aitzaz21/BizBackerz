@@ -32,11 +32,15 @@ function SlotCounter({ target, suffix = '', duration = 2.4 }) {
   return <span ref={elRef}>0{suffix}</span>
 }
 
+/* ─── shared mobile check ─── */
+const isTouchDevice = () => window.matchMedia('(pointer: coarse)').matches
+
 /* ─── Challenge banner ─── */
 function ChallengeBanner() {
   const ref = useRef(null)
   useEffect(() => {
     const el = ref.current; if (!el) return
+    if (isTouchDevice()) return
     const ctx = gsap.context(() => {
       gsap.from(el, {
         opacity: 0, scale: 0.92, y: 60,
@@ -89,6 +93,7 @@ function ImpactNumbers() {
 
   useEffect(() => {
     const el = ref.current; if (!el) return
+    if (isTouchDevice()) return
     const ctx = gsap.context(() => {
       /* heading clip-reveal */
       gsap.from('[data-impact-label]', {
@@ -191,6 +196,7 @@ function StreamlineBanner() {
   const ref = useRef(null)
   useEffect(() => {
     const el = ref.current; if (!el) return
+    if (isTouchDevice()) return
     const ctx = gsap.context(() => {
       gsap.from('[data-stream-inner]', {
         opacity: 0, scale: 0.93, y: 40,
@@ -272,6 +278,7 @@ function TestimonialsSection() {
 
   useEffect(() => {
     const el = ref.current; if (!el) return
+    if (isTouchDevice()) return
     const ctx = gsap.context(() => {
       gsap.from('[data-test-label]', {
         opacity: 0, x: -20, duration: 1, ease: 'power3.out',
@@ -374,6 +381,7 @@ function BlogSection() {
 
   useEffect(() => {
     const el = ref.current; if (!el) return
+    if (isTouchDevice()) return
     const ctx = gsap.context(() => {
       gsap.from('[data-blog-label]', {
         opacity: 0, x: -20, duration: 1, ease: 'power3.out',

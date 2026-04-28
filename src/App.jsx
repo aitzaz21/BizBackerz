@@ -114,12 +114,13 @@ function AppContent({ onLoaded }) {
     }
   }, [])
 
-  /* ── Kill & refresh ScrollTrigger on route change ── */
+  /* ── Scroll-to-top & refresh ScrollTrigger on route change ── */
   useEffect(() => {
-    ScrollTrigger.getAll().forEach((st) => st.kill())
     window.scrollTo(0, 0)
     lenisRef.current?.scrollTo(0, { immediate: true })
-    const t = setTimeout(() => ScrollTrigger.refresh(), 120)
+    // Components handle their own ScrollTrigger cleanup via ctx.revert().
+    // Only refresh measurements so triggers recalculate positions after layout settles.
+    const t = setTimeout(() => ScrollTrigger.refresh(), 300)
     return () => clearTimeout(t)
   }, [location.pathname])
 
