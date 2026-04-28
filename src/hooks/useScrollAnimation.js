@@ -62,7 +62,6 @@ export function useStaggerReveal(options = {}) {
       y: options.y ?? 50,
       x: options.x ?? 0,
       rotateX: options.rotateX ?? 0,
-      filter: 'blur(8px)',
     })
 
     const tl = gsap.timeline({
@@ -79,8 +78,6 @@ export function useStaggerReveal(options = {}) {
       y: 0,
       x: 0,
       rotateX: 0,
-      filter: 'blur(0px)',
-      clearProps: 'filter',
       duration: options.duration || 1.2,
       stagger: options.stagger || 0.12,
       ease: options.ease || 'power2.out',

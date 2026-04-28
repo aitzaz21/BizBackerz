@@ -157,12 +157,12 @@ export default function AboutPage() {
           scrollTrigger: { trigger, start: 'top 82%', toggleActions: 'play reverse play reverse' },
         })
 
-      reveal('[data-ch]', '[data-story-section]', { x: 50, y: 20, scale: 0.96, filter: 'blur(6px)', stagger: 0.08, duration: 0.95, ease: 'power3.out' })
-      reveal('[data-manifesto-text]', '[data-manifesto-section]', { y: 70, scale: 0.97, filter: 'blur(8px)', duration: 1.15, ease: 'power3.out' })
-      reveal('[data-stat-item]', '[data-stats-section]', { y: 50, scale: 0.94, filter: 'blur(8px)', stagger: 0.1, duration: 0.9, ease: 'power3.out' })
+      reveal('[data-ch]', '[data-story-section]', { x: 50, y: 20, scale: 0.96, stagger: 0.08, duration: 0.95, ease: 'power3.out' })
+      reveal('[data-manifesto-text]', '[data-manifesto-section]', { y: 70, scale: 0.97, duration: 1.15, ease: 'power3.out' })
+      reveal('[data-stat-item]', '[data-stats-section]', { y: 50, scale: 0.94, stagger: 0.1, duration: 0.9, ease: 'power3.out' })
       reveal('[data-value-item]', '[data-values-section]', { y: 36, opacity: 0, stagger: 0.08, duration: 0.75, ease: 'power2.out' })
       reveal('[data-principle-item]', '[data-principles-section]', { x: 30, y: 20, opacity: 0, stagger: 0.12, duration: 0.8, ease: 'power3.out' })
-      reveal('[data-proof-item]', '[data-proof-section]', { y: 40, scale: 0.96, filter: 'blur(6px)', stagger: 0.1, duration: 0.85, ease: 'power3.out' })
+      reveal('[data-proof-item]', '[data-proof-section]', { y: 40, scale: 0.96, stagger: 0.1, duration: 0.85, ease: 'power3.out' })
     }, el)
     return () => ctx.revert()
   }, [])

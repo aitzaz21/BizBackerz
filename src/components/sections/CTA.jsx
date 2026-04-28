@@ -39,7 +39,7 @@ function ChallengeBanner() {
     const el = ref.current; if (!el) return
     const ctx = gsap.context(() => {
       gsap.from(el, {
-        opacity: 0, scale: 0.92, y: 60, filter: 'blur(12px)',
+        opacity: 0, scale: 0.92, y: 60,
         duration: 1.2, ease: 'power3.out',
         scrollTrigger: { trigger: el, start: 'top 84%', toggleActions: 'play reverse play reverse' },
       })
@@ -102,7 +102,7 @@ function ImpactNumbers() {
 
       /* huge numbers burst in */
       gsap.from('[data-impact-num]', {
-        scale: 0.5, opacity: 0, filter: 'blur(20px)',
+        scale: 0.5, opacity: 0,
         duration: 1.1, stagger: 0.14, ease: 'expo.out',
         scrollTrigger: { trigger: el, start: 'top 74%', toggleActions: 'play reverse play reverse' },
       })
@@ -193,7 +193,7 @@ function StreamlineBanner() {
     const el = ref.current; if (!el) return
     const ctx = gsap.context(() => {
       gsap.from('[data-stream-inner]', {
-        opacity: 0, scale: 0.93, y: 40, filter: 'blur(10px)',
+        opacity: 0, scale: 0.93, y: 40,
         duration: 1.1, ease: 'power3.out',
         scrollTrigger: { trigger: el, start: 'top 83%', toggleActions: 'play reverse play reverse' },
       })
@@ -282,7 +282,7 @@ function TestimonialsSection() {
         scrollTrigger: { trigger: el, start: 'top 80%', toggleActions: 'play reverse play reverse' },
       })
       gsap.from('[data-test-body]', {
-        opacity: 0, y: 36, scale: 0.97, filter: 'blur(8px)', duration: 1.1, ease: 'power3.out',
+        opacity: 0, y: 36, scale: 0.97, duration: 1.1, ease: 'power3.out',
         scrollTrigger: { trigger: el, start: 'top 74%', toggleActions: 'play reverse play reverse' },
       })
     }, el)
@@ -395,7 +395,6 @@ function BlogSection() {
           x: i === 0 ? -50 : i === 2 ? 50 : 0,
           y: i === 1 ? 60 : 38,
           rotateY: i === 0 ? -6 : i === 2 ? 6 : 0,
-          filter: 'blur(8px)',
           transformPerspective: 1000,
           duration: 1.4, ease: 'power3.out',
           scrollTrigger: { trigger: card, start: 'top 88%', toggleActions: 'play reverse play reverse' },

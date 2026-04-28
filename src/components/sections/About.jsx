@@ -39,26 +39,26 @@ export default function About() {
 
       /* ── Left visual: depth reveal ── */
       gsap.from('[data-ab-visual]', {
-        opacity: 0, x: -80, rotateY: -12, filter: 'blur(14px)', scale: 0.96,
+        opacity: 0, x: -80, rotateY: -12, scale: 0.96,
         duration: 1.4, ease: 'power3.out', transformPerspective: 1000,
         scrollTrigger: { trigger: el, start: 'top 76%', toggleActions: 'play reverse play reverse' },
       })
 
       /* ── Stat number pop on visual ── */
       gsap.from('[data-ab-stat]', {
-        scale: 0.7, opacity: 0, filter: 'blur(6px)',
+        scale: 0.7, opacity: 0,
         duration: 1, ease: 'back.out(1.7)', delay: 0.4,
         scrollTrigger: { trigger: el, start: 'top 70%', toggleActions: 'play reverse play reverse' },
       })
 
       /* ── Cards: slam in from sides ── */
       gsap.from('[data-ab-card-l]', {
-        opacity: 0, x: -70, rotateY: -8, filter: 'blur(8px)',
+        opacity: 0, x: -70, rotateY: -8,
         duration: 1.2, ease: 'power3.out', transformPerspective: 1000,
         scrollTrigger: { trigger: '[data-ab-cards]', start: 'top 82%', toggleActions: 'play reverse play reverse' },
       })
       gsap.from('[data-ab-card-r]', {
-        opacity: 0, x: 70, rotateY: 8, filter: 'blur(8px)',
+        opacity: 0, x: 70, rotateY: 8,
         duration: 1.2, delay: 0.12, ease: 'power3.out', transformPerspective: 1000,
         scrollTrigger: { trigger: '[data-ab-cards]', start: 'top 82%', toggleActions: 'play reverse play reverse' },
       })
