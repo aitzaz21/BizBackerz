@@ -23,11 +23,6 @@ export default function SceneWrapper() {
   useEffect(() => {
     if (typeof window === 'undefined') return undefined
 
-    /* Touch / mobile devices never get WebGL — context loss on mobile causes
-       React DOM reconciliation errors (removeChild on a detached node) */
-    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
-    if (isTouch) return undefined
-
     const media = window.matchMedia('(min-width: 1024px) and (prefers-reduced-motion: no-preference)')
     const syncEnabled = () => setEnabled(media.matches)
 
