@@ -1,0 +1,74 @@
+Options -MultiViews
+RewriteEngine On
+
+# ═════════════════════════════════════════════════════════════════
+# 1. STRIP TRAILING SLASHES (before any redirect matching)
+#    Normalises /about-us/ → /about-us so the rules below fire.
+#    Exception: document root "/" is left alone.
+# ═════════════════════════════════════════════════════════════════
+RewriteCond %{REQUEST_URI} ^/(.+)/$
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.+)/$ /$1 [R=301,L]
+
+# ═════════════════════════════════════════════════════════════════
+# 2. BLOCK / REDIRECT WORDPRESS SYSTEM PATHS
+#    Prevents 404 loops and scanner noise after migration.
+# ═════════════════════════════════════════════════════════════════
+RewriteRule ^wp-login\.php$          /admin    [R=301,L]
+RewriteRule ^wp-admin/?$             /admin    [R=301,L]
+RewriteRule ^wp-admin/(.*)$          /admin    [R=301,L]
+RewriteRule ^wp-content/(.*)$        -         [F,L]
+RewriteRule ^wp-includes/(.*)$       -         [F,L]
+RewriteRule ^xmlrpc\.php$            -         [F,L]
+RewriteRule ^feed/?$                 /blog     [R=301,L]
+RewriteRule ^feed/(.*)$              /blog     [R=301,L]
+RewriteRule ^comments/feed/?$        /blog     [R=301,L]
+
+# WordPress taxonomy & archive pages
+RewriteRule ^category/(.*)$          /blog     [R=301,L]
+RewriteRule ^tag/(.*)$               /blog     [R=301,L]
+RewriteRule ^author/(.*)$            /         [R=301,L]
+RewriteRule ^page/([0-9]+)/?$        /blog     [R=301,L]
+RewriteRule ^[0-9]{4}/[0-9]{2}/?$   /blog     [R=301,L]
+RewriteRule ^[0-9]{4}/[0-9]{2}/(.+)$ /blog/$1  [R=301,L]
+
+# WordPress REST API / oEmbed
+RewriteRule ^wp-json/(.*)$           -         [F,L]
+RewriteRule ^oembed/?$               -         [F,L]
+
+# ═════════════════════════════════════════════════════════════════
+# 3. PAGE REDIRECTS  (old slug → new slug)
+# ═════════════════════════════════════════════════════════════════
+RewriteRule ^about-us$               /about          [R=301,L]
+RewriteRule ^contact-us$             /contact        [R=301,L]
+RewriteRule ^privacy-policy$         /privacy        [R=301,L]
+RewriteRule ^terms-of-service$       /terms          [R=301,L]
+RewriteRule ^faqs$                   /faq            [R=301,L]
+
+# ═════════════════════════════════════════════════════════════════
+# 4. SERVICE PAGE REDIRECTS  (top-level WP slug → /services/slug)
+# ═════════════════════════════════════════════════════════════════
+RewriteRule ^administrative-support$   /services/administrative-support   [R=301,L]
+RewriteRule ^accounting-services$      /services/accounting-services      [R=301,L]
+RewriteRule ^social-media-management$  /services/social-media-management  [R=301,L]
+RewriteRule ^marketing-support$        /services/marketing-support        [R=301,L]
+RewriteRule ^content-creation$         /services/content-creation         [R=301,L]
+RewriteRule ^customer-support$         /services/customer-support         [R=301,L]
+RewriteRule ^lead-generation$          /services/lead-generation          [R=301,L]
+RewriteRule ^project-management$       /services/project-management       [R=301,L]
+RewriteRule ^e-commerce-services$      /services/e-commerce-services      [R=301,L]
+
+# ═════════════════════════════════════════════════════════════════
+# 5. BLOG POST REDIRECTS  (WP top-level slug → /blog/slug)
+# ═════════════════════════════════════════════════════════════════
+RewriteRule ^how-virtual-assistant-services-for-small-businesses-can-save-you-20-hours-a-week$ /blog/virtual-assistant-small-business-save-20-hours        [R=301,L]
+RewriteRule ^how-an-amazon-virtual-assistant$                                                  /blog/amazon-real-estate-virtual-assistant-services-2026    [R=301,L]
+RewriteRule ^10-tasks-you-should-outsource$                                                    /blog                                                        [R=301,L]
+
+# ═════════════════════════════════════════════════════════════════
+# 6. REACT SPA FALLBACK
+#    Any path that isn't a real file/directory → index.html
+# ═════════════════════════════════════════════════════════════════
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ /index.html [L]

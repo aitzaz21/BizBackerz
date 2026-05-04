@@ -1,14 +1,18 @@
 # Dependencies
 node_modules/
+client/node_modules/
+server/node_modules/
 
 # Build output
 dist/
 build/
+client/dist/
 
 # Environment variables
 .env
 .env.*
 !.env.example
+!server/.env.example
 
 # Logs
 logs
@@ -31,6 +35,21 @@ Thumbs.db
 # Cache
 .cache/
 .parcel-cache/
+.vite/
+client/.vite/
 
 # Misc
 *.local
+
+# SSL / certificates
+*.pem
+*.key
+*.crt
+
+# Uploaded / generated media (keep out of source control)
+*.docx
+WhatsApp*
+
+# Client env files (keep example, ignore actuals)
+client/.env.production
+client/.env.local
