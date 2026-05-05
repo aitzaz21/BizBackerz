@@ -95,22 +95,6 @@ export default function About() {
         scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: 2 },
       })
 
-      /* ── Counter animation ── */
-      const counterEl = el.querySelector('[data-ab-count]')
-      if (counterEl) {
-        let ran = false
-        ScrollTrigger.create({
-          trigger: counterEl, start: 'top 80%',
-          onEnter: () => {
-            if (ran) return; ran = true
-            const obj = { v: 0 }
-            gsap.to(obj, {
-              v: 50, duration: 1.9, ease: 'power2.out',
-              onUpdate: () => { counterEl.textContent = Math.round(obj.v) + '+' },
-            })
-          },
-        })
-      }
     }, el)
 
     return () => ctx.revert()

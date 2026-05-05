@@ -54,23 +54,7 @@ const HERO_ICONS = {
    Animated counter
 ══════════════════════════════════════════ */
 function Counter({ target, suffix = '' }) {
-  const ref = useRef(null)
-  const ran = useRef(false)
-  const [val, setVal] = useState('0')
-  useEffect(() => {
-    const el = ref.current; if (!el) return
-    const obs = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting && !ran.current) {
-        ran.current = true
-        if (typeof target !== 'number') { setVal(target + suffix); return }
-        const obj = { v: 0 }
-        gsap.to(obj, { v: target, duration: 2.2, ease: 'power2.out',
-          onUpdate() { setVal(Math.round(this.targets()[0].v) + suffix) } })
-      }
-    }, { threshold: 0.4 })
-    obs.observe(el); return () => obs.disconnect()
-  }, [target, suffix])
-  return <span ref={ref}>{val}</span>
+  return <span>{target}{suffix}</span>
 }
 
 /* ══════════════════════════════════════════

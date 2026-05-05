@@ -33,23 +33,8 @@ function ScrambleWord({ text }) {
 }
 
 /* ─── Count-up ─── */
-function CountUp({ end, duration = 2, suffix = '' }) {
-  const ref = useRef(null)
-  const ran = useRef(false)
-  useEffect(() => {
-    const el = ref.current
-    if (!el) return
-    const obs = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting && !ran.current) {
-        ran.current = true
-        const obj = { v: 0 }
-        gsap.to(obj, { v: end, duration, ease: 'power2.out', onUpdate: () => { el.textContent = Math.round(obj.v) + suffix } })
-      }
-    }, { threshold: 0.3 })
-    obs.observe(el)
-    return () => obs.disconnect()
-  }, [end, duration, suffix])
-  return <span ref={ref}>0{suffix}</span>
+function CountUp({ end, suffix = '' }) {
+  return <span>{end}{suffix}</span>
 }
 
 /* ─── Canvas neural-network particles ─── */

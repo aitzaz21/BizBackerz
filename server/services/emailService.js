@@ -2,11 +2,14 @@ import nodemailer from 'nodemailer'
 
 function createTransporter() {
   return nodemailer.createTransport({
-    service: 'gmail',
+    host: process.env.EMAIL_HOST,
+    port: Number(process.env.EMAIL_PORT) || 465,
+    secure: Number(process.env.EMAIL_PORT || 465) === 465,
     auth: {
-      user: process.env.EMAIL_FROM,
-      pass: process.env.EMAIL_APP_PASSWORD,
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
     },
+    tls: { rejectUnauthorized: false },
   })
 }
 
@@ -77,7 +80,7 @@ export async function sendAdminContactAlert({ name, email, phone, message }) {
   `)
 
   await createTransporter().sendMail({
-    from: `"BizBackerz Contact" <${process.env.EMAIL_FROM}>`,
+    from: `"BizBackerz Contact" <${process.env.EMAIL_USER}>`,
     to: process.env.ADMIN_EMAIL,
     subject: `📬 New Message from ${name} — bizbackerz.com`,
     html,
@@ -104,7 +107,7 @@ export async function sendContactFormEmail({ name, email, message }) {
   `)
 
   await createTransporter().sendMail({
-    from: `"BizBackerz" <${process.env.EMAIL_FROM}>`,
+    from: `"BizBackerz" <${process.env.EMAIL_USER}>`,
     to: email,
     subject: `We received your message — BizBackerz`,
     html,
@@ -129,7 +132,7 @@ export async function sendConfirmationEmail(booking) {
   `)
 
   await createTransporter().sendMail({
-    from: `"BizBackerz" <${process.env.EMAIL_FROM}>`,
+    from: `"BizBackerz" <${process.env.EMAIL_USER}>`,
     to: booking.email,
     subject: `Please confirm your appointment — ${booking.slotDisplayUser}`,
     html,
@@ -154,7 +157,7 @@ export async function sendAdminNewBooking(booking) {
   `)
 
   await createTransporter().sendMail({
-    from: `"BizBackerz Bookings" <${process.env.EMAIL_FROM}>`,
+    from: `"BizBackerz Bookings" <${process.env.EMAIL_USER}>`,
     to: process.env.ADMIN_EMAIL,
     subject: `🗓 New Booking (Pending): ${booking.name} — ${booking.slotDisplayPKT}`,
     html,
@@ -180,7 +183,7 @@ export async function sendBookingConfirmedToUser(booking) {
   `)
 
   await createTransporter().sendMail({
-    from: `"BizBackerz" <${process.env.EMAIL_FROM}>`,
+    from: `"BizBackerz" <${process.env.EMAIL_USER}>`,
     to: booking.email,
     subject: `✓ Confirmed: Your Zoom Call — ${booking.slotDisplayUser}`,
     html,
@@ -203,7 +206,7 @@ export async function sendAdminConfirmed(booking) {
   `)
 
   await createTransporter().sendMail({
-    from: `"BizBackerz Bookings" <${process.env.EMAIL_FROM}>`,
+    from: `"BizBackerz Bookings" <${process.env.EMAIL_USER}>`,
     to: process.env.ADMIN_EMAIL,
     subject: `✅ Confirmed: ${booking.name} — ${booking.slotDisplayPKT}`,
     html,

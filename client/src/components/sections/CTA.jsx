@@ -8,28 +8,8 @@ import KineticStrip from '../ui/KineticStrip'
 import { ArrowRight, Zap, Star, ChevronLeft, ChevronRight, FileText, TrendingUp } from 'lucide-react'
 
 /* ─── Slot-machine counter ─── */
-function SlotCounter({ target, suffix = '', duration = 2.4 }) {
-  const elRef  = useRef(null)
-  const ranRef = useRef(false)
-
-  useEffect(() => {
-    const el = elRef.current
-    if (!el) return
-    const obs = new IntersectionObserver(([e]) => {
-      if (!e.isIntersecting) return
-      if (ranRef.current) return
-      ranRef.current = true
-      const obj = { v: 0 }
-      gsap.to(obj, {
-        v: target, duration, ease: 'power3.out',
-        onUpdate: () => { el.textContent = Math.round(obj.v) + suffix },
-      })
-    }, { threshold: 0.5 })
-    obs.observe(el)
-    return () => obs.disconnect()
-  }, [target, suffix, duration])
-
-  return <span ref={elRef}>0{suffix}</span>
+function SlotCounter({ target, suffix = '' }) {
+  return <span>{target}{suffix}</span>
 }
 
 /* ─── shared mobile check ─── */
