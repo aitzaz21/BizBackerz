@@ -185,8 +185,8 @@ export default function About() {
             <div data-ab-badges className="grid grid-cols-2 gap-2.5 mt-5">
               {trustBadges.map((b) => (
                 <div key={b.label} data-ab-badge
-                  className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl border border-white/[0.07]"
-                  style={{ background: 'rgba(6,15,29,0.55)', backdropFilter: 'blur(12px)' }}
+                  className="panel-blur flex items-center gap-2.5 px-3 py-2.5 rounded-xl border border-white/[0.07]"
+                  style={{ background: 'rgba(6,15,29,0.55)' }}
                 >
                   <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
                     style={{ background: `${b.color}14`, border: `1px solid ${b.color}22` }}>
@@ -208,12 +208,12 @@ export default function About() {
             </div>
 
             <h2 className="font-display font-bold tracking-[-0.04em] mb-8">
-              <div style={{ overflow: 'hidden', lineHeight: 1.08, paddingBottom: '0.06em' }}>
+              <div className="gsap-line-clip" style={{ lineHeight: 1.08, paddingBottom: '0.06em' }}>
                 <span data-ab-line className="block text-3xl sm:text-4xl lg:text-5xl text-white">
                   Helping Business Owners
                 </span>
               </div>
-              <div style={{ overflow: 'hidden', lineHeight: 1.08, paddingBottom: '0.06em' }}>
+              <div className="gsap-line-clip" style={{ lineHeight: 1.08, paddingBottom: '0.06em' }}>
                 <span data-ab-line className="block text-3xl sm:text-4xl lg:text-5xl">
                   Focus on <span className="text-gradient">What Matters Most</span>
                 </span>
@@ -272,8 +272,8 @@ export default function About() {
             data-ab-card-l
             whileHover={{ y: -8, scale: 1.012 }}
             transition={{ type: 'spring', stiffness: 280, damping: 22 }}
-            className="group relative rounded-3xl p-8 lg:p-10 cursor-default overflow-hidden border border-white/[0.07] hover:border-white/[0.13] transition-colors duration-500"
-            style={{ background: 'rgba(6,15,29,0.55)', backdropFilter: 'blur(20px)' }}
+            className="panel-blur group relative rounded-3xl p-8 lg:p-10 cursor-default overflow-hidden border border-white/[0.07] hover:border-white/[0.13] transition-colors duration-500"
+            style={{ background: 'rgba(6,15,29,0.55)' }}
           >
             <div className="absolute top-0 left-0 right-0 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-500"
               style={{ background: 'linear-gradient(90deg,transparent,rgba(42,139,255,0.5),transparent)' }} />
@@ -294,8 +294,8 @@ export default function About() {
             data-ab-card-r
             whileHover={{ y: -8, scale: 1.012 }}
             transition={{ type: 'spring', stiffness: 280, damping: 22 }}
-            className="group relative rounded-3xl p-8 lg:p-10 cursor-default overflow-hidden border border-white/[0.07] hover:border-accent-500/[0.2] transition-colors duration-500"
-            style={{ background: 'rgba(6,15,29,0.55)', backdropFilter: 'blur(20px)' }}
+            className="panel-blur group relative rounded-3xl p-8 lg:p-10 cursor-default overflow-hidden border border-white/[0.07] hover:border-accent-500/[0.2] transition-colors duration-500"
+            style={{ background: 'rgba(6,15,29,0.55)' }}
           >
             <div className="absolute top-0 left-0 right-0 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-500"
               style={{ background: 'linear-gradient(90deg,transparent,rgba(56,217,169,0.5),transparent)' }} />

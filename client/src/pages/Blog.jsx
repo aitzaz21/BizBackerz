@@ -120,7 +120,7 @@ function BlogCard({ blog, index }) {
 
       {/* Content */}
       <div className="p-6">
-        <div className="flex items-center gap-3 text-white/25 text-xs mb-3">
+        <div className="flex items-center gap-3 text-white/40 text-xs mb-3">
           <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />{date}</span>
           <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{blog.readTime || 5} min read</span>
           {blog.views > 0 && <span className="flex items-center gap-1"><TrendingUp className="w-3 h-3" />{blog.views}</span>}
@@ -128,13 +128,13 @@ function BlogCard({ blog, index }) {
         <h3 className="text-base font-display font-bold text-white/80 mb-3 leading-snug group-hover:text-white transition-colors duration-300 line-clamp-2">
           {blog.title}
         </h3>
-        <p className="text-[13px] text-white/30 leading-[1.7] mb-4 line-clamp-2">{blog.excerpt}</p>
+        <p className="text-[13px] text-white/50 leading-[1.7] mb-4 line-clamp-2">{blog.excerpt}</p>
         <div className="flex items-center justify-between">
           <span className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-brand-400 group-hover:gap-2.5 transition-all duration-300">
             Read Article <ArrowRight className="w-3.5 h-3.5" />
           </span>
           {blog.author && blog.author !== 'BizBackerz Team' && (
-            <span className="text-[11px] text-white/25">{blog.author}</span>
+            <span className="text-[11px] text-white/40">{blog.author}</span>
           )}
         </div>
       </div>
@@ -240,7 +240,7 @@ export default function BlogPage() {
               <h1 data-blog-header className="text-3xl sm:text-4xl lg:text-5xl font-display font-extrabold leading-[1.08] mb-5">
                 Insights & <span className="text-gradient">Articles</span>
               </h1>
-              <p data-blog-header className="text-base text-white/40 leading-relaxed max-w-md">
+              <p data-blog-header className="text-base text-white/55 leading-relaxed max-w-md">
                 Expert insights on delegation, productivity, virtual support, and building a business that runs without you.
               </p>
             </div>
@@ -248,7 +248,7 @@ export default function BlogPage() {
         </section>
 
         {/* Search + filter bar */}
-        <section className="sticky top-0 z-40 border-b border-white/[0.06] py-4" style={{ background: 'rgba(3,9,18,0.88)', backdropFilter: 'blur(20px)' }}>
+        <section className="blog-sticky-bar sticky top-0 z-40 border-b border-white/[0.06] py-4" style={{ background: 'rgba(3,9,18,0.88)' }}>
           <Container>
             <div className="flex flex-col sm:flex-row gap-3 items-center">
               {/* Search */}
@@ -268,10 +268,10 @@ export default function BlogPage() {
               </div>
 
               {/* Tag filter chips */}
-              <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
                 {tags.map(t => (
                   <button key={t} onClick={() => { setActiveTag(t); setPage(1) }}
-                    className={`px-3 py-1.5 rounded-full text-[11px] font-semibold uppercase tracking-[0.12em] transition-all duration-200 ${
+                    className={`flex-shrink-0 px-3 py-1.5 rounded-full text-[11px] font-semibold uppercase tracking-[0.12em] transition-all duration-200 ${
                       activeTag === t
                         ? 'bg-brand-500/20 text-brand-400 border border-brand-500/30'
                         : 'bg-white/[0.04] text-white/40 border border-white/[0.07] hover:text-white/70 hover:bg-white/[0.07]'

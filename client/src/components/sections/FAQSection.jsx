@@ -119,10 +119,10 @@ export default function FAQSection() {
           <div className="lg:col-span-5 lg:sticky lg:top-32" data-faq-label>
             <span className="section-label mb-4 inline-block">FAQ</span>
             <h2 className="text-3xl sm:text-4xl font-display font-bold text-white leading-[1.06] mb-5">
-              <div style={{ overflow: 'hidden', paddingBottom: '0.05em' }}>
+              <div className="gsap-line-clip" style={{ paddingBottom: '0.05em' }}>
                 <span data-faq-line className="block">Answers to your</span>
               </div>
-              <div style={{ overflow: 'hidden', paddingBottom: '0.05em' }}>
+              <div className="gsap-line-clip" style={{ paddingBottom: '0.05em' }}>
                 <span data-faq-line className="block text-gradient">frequent questions.</span>
               </div>
             </h2>

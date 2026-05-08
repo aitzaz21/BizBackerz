@@ -75,10 +75,10 @@ export default function ProcessSection() {
         <div className="mb-10 text-center max-w-2xl mx-auto" data-process-label>
           <span className="section-label mb-4 inline-block">How It Works</span>
           <h2 className="text-3xl sm:text-4xl font-display font-bold text-white leading-[1.06] mb-4">
-            <div style={{ overflow: 'hidden', paddingBottom: '0.05em' }}>
+            <div className="gsap-line-clip" style={{ paddingBottom: '0.05em' }}>
               <span data-process-line className="block">Four steps from handshake</span>
             </div>
-            <div style={{ overflow: 'hidden', paddingBottom: '0.05em' }}>
+            <div className="gsap-line-clip" style={{ paddingBottom: '0.05em' }}>
               <span data-process-line className="block">to <span className="text-gradient">output.</span></span>
             </div>
           </h2>
@@ -91,8 +91,8 @@ export default function ProcessSection() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 relative">
           {processSteps.map((step, i) => (
             <div key={step.n} data-process-item
-              className="group relative rounded-2xl p-6 border border-white/[0.07] hover:border-white/[0.14] transition-all duration-500 overflow-hidden"
-              style={{ background: 'rgba(6,15,29,0.55)', backdropFilter: 'blur(20px)' }}
+              className="panel-blur group relative rounded-2xl p-6 border border-white/[0.07] hover:border-white/[0.14] transition-all duration-500 overflow-hidden"
+              style={{ background: 'rgba(6,15,29,0.55)' }}
             >
               {/* fill */}
               <div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"

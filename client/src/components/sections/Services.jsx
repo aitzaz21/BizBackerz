@@ -301,17 +301,17 @@ function DesktopServices() {
           </div>
 
           <h2 style={{ fontFamily: '"Clash Display",sans-serif', fontWeight: 700, letterSpacing: '-0.048em', lineHeight: 1.0, marginBottom: 8 }}>
-            <div style={{ overflow: 'hidden' }}>
+            <div className="gsap-line-clip">
               <span data-svc-line style={{ display: 'block', fontSize: 'clamp(1.5rem, 2.4vw, 2.2rem)', color: '#fff' }}>
                 Everything
               </span>
             </div>
-            <div style={{ overflow: 'hidden' }}>
+            <div className="gsap-line-clip">
               <span data-svc-line className="text-gradient" style={{ display: 'block', fontSize: 'clamp(1.5rem, 2.4vw, 2.2rem)' }}>
                 Your Business
               </span>
             </div>
-            <div style={{ overflow: 'hidden' }}>
+            <div className="gsap-line-clip">
               <span data-svc-line style={{ display: 'block', fontSize: 'clamp(1.5rem, 2.4vw, 2.2rem)', color: '#fff' }}>
                 Needs to Scale.
               </span>
@@ -424,8 +424,8 @@ function MobileServices() {
             return (
               <div
                 key={service.title}
-                className="relative overflow-hidden rounded-xl p-4 border border-white/[0.07]"
-                style={{ background: 'rgba(6,15,29,0.7)', backdropFilter: 'blur(20px)' }}
+                className="panel-blur relative overflow-hidden rounded-xl p-4 border border-white/[0.07]"
+                style={{ background: 'rgba(6,15,29,0.7)' }}
               >
                 <div
                   className="absolute inset-0 pointer-events-none"

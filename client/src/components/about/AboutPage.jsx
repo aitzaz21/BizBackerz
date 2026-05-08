@@ -386,7 +386,7 @@ export default function AboutPage() {
                     { text: 'of Combined',          cls: 'text-white/60' },
                     { text: 'Operational Taste.',   cls: 'text-gradient' },
                   ].map(({ text, cls }) => (
-                    <div key={text} style={{ overflow: 'hidden', lineHeight: 0.96, paddingBottom: '0.07em' }}>
+                    <div key={text} className="gsap-line-clip" style={{ lineHeight: 0.96, paddingBottom: '0.07em' }}>
                       <span data-ah-line className={`block text-[2.8rem] sm:text-5xl lg:text-[4.2rem] xl:text-[5.2rem] ${cls}`}>
                         {text}
                       </span>

@@ -234,8 +234,8 @@ function OrbitalVisual() {
         <motion.div
           animate={{ y: [0, -5, 0] }}
           transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-          className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-accent-500/25"
-          style={{ background: 'rgba(56,217,169,0.08)', backdropFilter: 'blur(8px)' }}
+          className="panel-blur flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-accent-500/25"
+          style={{ background: 'rgba(56,217,169,0.08)' }}
         >
           <span className="w-1.5 h-1.5 rounded-full bg-accent-400 animate-pulse flex-shrink-0" />
           <span className="text-[9px] font-body font-bold text-accent-400/80 uppercase tracking-[0.18em]">Live</span>
@@ -479,7 +479,7 @@ export default function Hero() {
           <div className="lg:col-span-7" data-hero-heading>
 
             {/* Label */}
-            <div data-hero-label className="flex items-center gap-4 mb-9">
+            <div data-hero-label className="flex items-center gap-2 sm:gap-4 mb-7 sm:mb-9">
               <span className="section-label">
                 <span className="w-2 h-2 rounded-full bg-accent-400 animate-pulse flex-shrink-0" />
                 Talk To An Expert
@@ -487,7 +487,7 @@ export default function Hero() {
               <div data-hero-draw className="h-px max-w-[80px] flex-1"
                 style={{ background: 'linear-gradient(90deg, rgba(42,139,255,0.55), transparent)' }} />
               <a href="tel:+19046686362"
-                className="text-white/20 text-[11px] font-body font-semibold tracking-[0.18em] hover:text-white/55 transition-colors duration-300">
+                className="hidden sm:block text-white/20 text-[11px] font-body font-semibold tracking-[0.18em] hover:text-white/55 transition-colors duration-300">
                 (904) 668-6362
               </a>
             </div>
@@ -495,18 +495,18 @@ export default function Hero() {
             {/* Giant heading */}
             <div className="mb-7">
               <h1 className="font-display font-bold tracking-[-0.045em]">
-                <div style={{ overflow: 'hidden', lineHeight: 1.0, paddingBottom: '0.05em' }}>
-                  <span data-hero-line className="block text-5xl sm:text-6xl lg:text-[5.5rem] xl:text-[7.5rem]" style={{ color: '#f1f5f9' }}>
+                <div className="gsap-line-clip" style={{ lineHeight: 1.0, paddingBottom: '0.05em' }}>
+                  <span data-hero-line className="block text-[2.5rem] sm:text-5xl lg:text-[5.5rem] xl:text-[7.5rem]" style={{ color: '#f1f5f9' }}>
                     <span data-word><ScrambleWord text="Dedicated" /></span>
                   </span>
                 </div>
-                <div style={{ overflow: 'hidden', lineHeight: 1.0, paddingBottom: '0.05em' }}>
-                  <span data-hero-line className="block text-5xl sm:text-6xl lg:text-[5.5rem] xl:text-[7.5rem]" style={{ color: 'rgba(241,245,249,0.68)' }}>
+                <div className="gsap-line-clip" style={{ lineHeight: 1.0, paddingBottom: '0.05em' }}>
+                  <span data-hero-line className="block text-[2.5rem] sm:text-5xl lg:text-[5.5rem] xl:text-[7.5rem]" style={{ color: 'rgba(241,245,249,0.68)' }}>
                     <span data-word><ScrambleWord text="Virtual" /></span>
                   </span>
                 </div>
-                <div style={{ overflow: 'hidden', lineHeight: 1.0, paddingBottom: '0.05em' }}>
-                  <span data-hero-line className="block text-5xl sm:text-6xl lg:text-[5.5rem] xl:text-[7.5rem] text-gradient">
+                <div className="gsap-line-clip" style={{ lineHeight: 1.0, paddingBottom: '0.05em' }}>
+                  <span data-hero-line className="block text-[2.5rem] sm:text-5xl lg:text-[5.5rem] xl:text-[7.5rem] text-gradient">
                     <span data-word><ScrambleWord text="Assistance." /></span>
                   </span>
                 </div>
@@ -602,8 +602,8 @@ export default function Hero() {
             {/* ─── Orbital 3D Animation ─── */}
             <div
               data-hero-orbital
-              className="relative rounded-3xl overflow-hidden mb-5 border border-white/[0.07]"
-              style={{ background: 'rgba(6,15,29,0.55)', backdropFilter: 'blur(20px)' }}
+              className="panel-blur relative rounded-3xl overflow-hidden mb-5 border border-white/[0.07]"
+              style={{ background: 'rgba(6,15,29,0.55)' }}
             >
               {/* Top accent line */}
               <div className="absolute top-0 left-0 right-0 h-px"

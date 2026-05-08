@@ -549,9 +549,48 @@ html.lenis, html.lenis body {
 }
 
 /* ═══════════════════════════════════
+   GSAP LINE CLIP
+   Heading wrappers need overflow:hidden on desktop so GSAP
+   can translate text up from yPercent:115 into view.
+   On mobile GSAP is skipped entirely, so overflow:hidden
+   would just clip wrapped multi-line headings unnecessarily.
+   ═══════════════════════════════════ */
+.gsap-line-clip { overflow: hidden; }
+
+/* ─── PANEL BLUR — generic backdrop-filter for non-glass panels ─── */
+.panel-blur {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* ─── BLOG STICKY SEARCH BAR ─── */
+.blog-sticky-bar {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* ─── HIDE SCROLLBAR (for horizontal scroll chips) ─── */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ═══════════════════════════════════
    MOBILE / TOUCH OVERRIDES
    ═══════════════════════════════════ */
 @media (max-width: 1023px) {
+  /* GSAP line-clip wrappers: show overflow so text wraps freely */
+  .gsap-line-clip { overflow: visible; }
+
+  /* Blog sticky search bar: disable blur on mobile */
+  .blog-sticky-bar {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* Generic panel blur: disable on mobile */
+  .panel-blur {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
   /* Remove backdrop-filter entirely on mobile — inconsistent GPU support on
      Android Chrome < 76 and low-end devices causes blank compositor frames */
   .glass {
@@ -636,29 +675,52 @@ html.lenis, html.lenis body {
 /* ═══════════════════════════════════
    RICH TEXT EDITOR CONTENT
    ═══════════════════════════════════ */
-.rich-content h1, .rich-content h2, .rich-content h3,
-.prose-blog h1,  .prose-blog h2,  .prose-blog h3 {
-  color: #f1f5f9;
+.rich-content, .prose-blog {
+  color: rgba(255,255,255,0.72);
+  font-size: 15px;
+  line-height: 1.9;
+}
+
+/* headings — !important overrides any inline color from execCommand / paste */
+.rich-content h1, .rich-content h2, .rich-content h3, .rich-content h4, .rich-content h5, .rich-content h6,
+.prose-blog h1,  .prose-blog h2,  .prose-blog h3,  .prose-blog h4,  .prose-blog h5,  .prose-blog h6 {
+  color: #f1f5f9 !important;
   font-family: 'Clash Display', sans-serif;
   margin: 1.4em 0 0.5em;
   line-height: 1.25;
 }
-.rich-content h2, .prose-blog h2 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.03em; }
-.rich-content h3, .prose-blog h3 { font-size: 1.2rem; font-weight: 600; }
+.rich-content h2, .prose-blog h2 { font-size: 1.5rem;  font-weight: 700; letter-spacing: -0.03em; }
+.rich-content h3, .prose-blog h3 { font-size: 1.2rem;  font-weight: 600; }
+.rich-content h4, .prose-blog h4 { font-size: 1.05rem; font-weight: 600; }
 
+/* paragraphs — !important beats inline color: rgb(0,0,0) injected by execCommand */
 .rich-content p, .prose-blog p {
   margin: 0.9em 0;
-  color: rgba(255,255,255,0.72);
+  color: rgba(255,255,255,0.72) !important;
   line-height: 1.9;
 }
+
+/* spans get inline color/font from execCommand and paste — force inherit */
+.rich-content span, .prose-blog span {
+  color: inherit !important;
+  background-color: transparent !important;
+  font-family: inherit !important;
+}
+
+/* divs the browser sometimes wraps content in */
+.prose-blog div { color: inherit; }
+
 .rich-content ul, .rich-content ol,
 .prose-blog ul,  .prose-blog ol {
   margin: 0.8em 0;
   padding-left: 1.4em;
-  color: rgba(255,255,255,0.68);
+  color: rgba(255,255,255,0.68) !important;
   line-height: 1.8;
 }
-.rich-content li, .prose-blog li { margin: 0.3em 0; }
+.rich-content li, .prose-blog li {
+  margin: 0.3em 0;
+  color: rgba(255,255,255,0.68) !important;
+}
 
 .rich-content blockquote, .prose-blog blockquote {
   border-left: 3px solid rgba(42,139,255,0.5);
@@ -666,7 +728,7 @@ html.lenis, html.lenis body {
   margin: 1em 0;
   background: rgba(42,139,255,0.05);
   border-radius: 0 8px 8px 0;
-  color: rgba(255,255,255,0.65);
+  color: rgba(255,255,255,0.65) !important;
   font-style: italic;
 }
 .rich-content pre, .prose-blog pre {
@@ -676,16 +738,16 @@ html.lenis, html.lenis body {
   padding: 1em 1.2em;
   overflow-x: auto;
   font-size: 13px;
-  color: rgba(42,139,255,0.9);
+  color: rgba(42,139,255,0.9) !important;
   font-family: 'JetBrains Mono', 'Fira Code', monospace;
   margin: 1em 0;
 }
 .rich-content a, .prose-blog a {
-  color: #2a8bff;
+  color: #2a8bff !important;
   text-decoration: underline;
   text-decoration-color: rgba(42,139,255,0.35);
 }
-.rich-content a:hover, .prose-blog a:hover { color: #52adff; }
+.rich-content a:hover, .prose-blog a:hover { color: #52adff !important; }
 
 .rich-content img, .prose-blog img {
   max-width: 100%;
@@ -697,5 +759,5 @@ html.lenis, html.lenis body {
   border-top: 1px solid rgba(255,255,255,0.08);
   margin: 1.5em 0;
 }
-.rich-content strong, .prose-blog strong { color: rgba(255,255,255,0.9); }
-.rich-content em, .prose-blog em { color: rgba(255,255,255,0.7); }
+.rich-content strong, .prose-blog strong { color: rgba(255,255,255,0.9) !important; }
+.rich-content em, .prose-blog em { color: rgba(255,255,255,0.7) !important; }

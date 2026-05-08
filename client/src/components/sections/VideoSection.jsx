@@ -98,12 +98,12 @@ export default function VideoSection() {
           </div>
 
           <h2 className="font-display font-bold tracking-[-0.04em] mb-5">
-            <div style={{ overflow: 'hidden', lineHeight: 1.08, paddingBottom: '0.06em' }}>
+            <div className="gsap-line-clip" style={{ lineHeight: 1.08, paddingBottom: '0.06em' }}>
               <span data-vid-line className="block text-3xl sm:text-4xl lg:text-5xl text-white">
                 Meet and approve
               </span>
             </div>
-            <div style={{ overflow: 'hidden', lineHeight: 1.08, paddingBottom: '0.06em' }}>
+            <div className="gsap-line-clip" style={{ lineHeight: 1.08, paddingBottom: '0.06em' }}>
               <span data-vid-line className="block text-3xl sm:text-4xl lg:text-5xl text-gradient">
                 your assistant
               </span>

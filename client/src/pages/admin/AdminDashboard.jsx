@@ -74,13 +74,24 @@ function ImageUploadButton({ onUploaded, label = 'Upload' }) {
 }
 
 /* ─── Rich Text Editor ────────────────────────────────────── */
+function stripInlineColors(html) {
+  return html.replace(/style="([^"]*)"/gi, (_, styles) => {
+    const cleaned = styles
+      .replace(/\bcolor\s*:\s*[^;]+;?\s*/gi, '')
+      .replace(/\bbackground(?:-color)?\s*:\s*[^;]+;?\s*/gi, '')
+      .replace(/\bfont-family\s*:\s*[^;]+;?\s*/gi, '')
+      .trim().replace(/;+$/, '')
+    return cleaned ? `style="${cleaned}"` : ''
+  })
+}
+
 function RichEditor({ value, onChange }) {
   const ref = useRef(null)
   const synced = useRef(false)
 
   useEffect(() => {
     if (ref.current && !synced.current) {
-      ref.current.innerHTML = value || ''
+      ref.current.innerHTML = stripInlineColors(value || '')
       synced.current = true
     }
   }, [value])
@@ -92,7 +103,7 @@ function RichEditor({ value, onChange }) {
   }
 
   function sync() {
-    onChange(ref.current?.innerHTML || '')
+    onChange(stripInlineColors(ref.current?.innerHTML || ''))
   }
 
   function insertHTML(html) {

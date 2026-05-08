@@ -130,10 +130,10 @@ function ImpactNumbers() {
           <span className="section-label">Our Impact</span>
         </div>
         <h2 className="font-display font-bold tracking-[-0.045em]">
-          <div style={{ overflow:'hidden', lineHeight:1.05, paddingBottom:'0.05em' }}>
+          <div className="gsap-line-clip" style={{ lineHeight:1.05, paddingBottom:'0.05em' }}>
             <span data-impact-line className="block text-4xl sm:text-5xl lg:text-6xl text-white">We Power Your</span>
           </div>
-          <div style={{ overflow:'hidden', lineHeight:1.05, paddingBottom:'0.05em' }}>
+          <div className="gsap-line-clip" style={{ lineHeight:1.05, paddingBottom:'0.05em' }}>
             <span data-impact-line className="block text-4xl sm:text-5xl lg:text-6xl">
               <span className="text-gradient">Productivity</span> & Success
             </span>
@@ -197,16 +197,16 @@ function StreamlineBanner() {
 
   return (
     <div ref={ref} className="mb-12 lg:mb-16">
-      <div data-stream-inner className="relative rounded-3xl p-10 lg:p-16 text-center overflow-hidden border border-white/[0.08]"
-        style={{ background:'rgba(6,15,29,0.6)', backdropFilter:'blur(24px)' }}>
+      <div data-stream-inner className="panel-blur relative rounded-3xl p-10 lg:p-16 text-center overflow-hidden border border-white/[0.08]"
+        style={{ background:'rgba(6,15,29,0.6)' }}>
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(42,139,255,0.07),transparent_65%)]" />
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-px bg-gradient-to-r from-transparent via-brand-500/25 to-transparent" />
         <div className="relative z-10">
           <h2 className="font-display font-bold tracking-[-0.04em] mb-5">
-            <div style={{ overflow:'hidden', lineHeight:1.06, paddingBottom:'0.05em' }}>
+            <div className="gsap-line-clip" style={{ lineHeight:1.06, paddingBottom:'0.05em' }}>
               <span data-stream-line className="block text-3xl sm:text-4xl lg:text-5xl text-white">Looking To Streamline</span>
             </div>
-            <div style={{ overflow:'hidden', lineHeight:1.06, paddingBottom:'0.05em' }}>
+            <div className="gsap-line-clip" style={{ lineHeight:1.06, paddingBottom:'0.05em' }}>
               <span data-stream-line className="block text-3xl sm:text-4xl lg:text-5xl text-gradient">Your Business Operations?</span>
             </div>
           </h2>
@@ -285,10 +285,10 @@ function TestimonialsSection() {
           <span className="section-label">Testimonials</span>
         </div>
         <h2 className="font-display font-bold tracking-[-0.04em]">
-          <div style={{ overflow:'hidden', lineHeight:1.06, paddingBottom:'0.05em' }}>
+          <div className="gsap-line-clip" style={{ lineHeight:1.06, paddingBottom:'0.05em' }}>
             <span data-test-line className="block text-3xl sm:text-4xl lg:text-5xl text-white">Transforming Your Business</span>
           </div>
-          <div style={{ overflow:'hidden', lineHeight:1.06, paddingBottom:'0.05em' }}>
+          <div className="gsap-line-clip" style={{ lineHeight:1.06, paddingBottom:'0.05em' }}>
             <span data-test-line className="block text-3xl sm:text-4xl lg:text-5xl">
               Into A <span className="text-gradient">Success Story</span>
             </span>
@@ -298,8 +298,8 @@ function TestimonialsSection() {
 
       <div data-test-body className="relative max-w-4xl mx-auto">
         <div
-          className="relative rounded-3xl px-10 py-14 lg:px-16 lg:py-16 text-center overflow-hidden border border-white/[0.08]"
-          style={{ background:'rgba(6,15,29,0.6)', backdropFilter:'blur(24px)' }}
+          className="panel-blur relative rounded-3xl px-10 py-14 lg:px-16 lg:py-16 text-center overflow-hidden border border-white/[0.08]"
+          style={{ background:'rgba(6,15,29,0.6)' }}
         >
           <div className="absolute top-6 left-1/2 -translate-x-1/2 font-display font-bold leading-none select-none pointer-events-none"
             style={{ fontSize:180, color:'rgba(42,139,255,0.04)', lineHeight:0.8 }}>"</div>
@@ -404,10 +404,10 @@ function BlogSection() {
           <span className="section-label">Our Blog</span>
         </div>
         <h2 className="font-display font-bold tracking-[-0.04em] mb-5">
-          <div style={{ overflow:'hidden', lineHeight:1.06, paddingBottom:'0.05em' }}>
+          <div className="gsap-line-clip" style={{ lineHeight:1.06, paddingBottom:'0.05em' }}>
             <span data-blog-line className="block text-3xl sm:text-4xl lg:text-5xl text-white">Latest Blog &</span>
           </div>
-          <div style={{ overflow:'hidden', lineHeight:1.06, paddingBottom:'0.05em' }}>
+          <div className="gsap-line-clip" style={{ lineHeight:1.06, paddingBottom:'0.05em' }}>
             <span data-blog-line className="block text-3xl sm:text-4xl lg:text-5xl text-gradient">Articles</span>
           </div>
         </h2>
@@ -421,8 +421,8 @@ function BlogSection() {
           <motion.div key={i} data-blog-card data-cursor-label="READ"
             whileHover={{ y: -8, scale: 1.022 }}
             transition={{ type:'spring', stiffness:280, damping:22 }}
-            className="group rounded-2xl overflow-hidden cursor-pointer border border-white/[0.07] hover:border-white/[0.14] transition-colors duration-400"
-            style={{ background:'rgba(6,15,29,0.55)', backdropFilter:'blur(20px)' }}
+            className="panel-blur group rounded-2xl overflow-hidden cursor-pointer border border-white/[0.07] hover:border-white/[0.14] transition-colors duration-400"
+            style={{ background:'rgba(6,15,29,0.55)' }}
           >
             <div className="aspect-video relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-brand-500/20 via-navy-800 to-accent-500/12" />

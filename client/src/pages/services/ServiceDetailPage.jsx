@@ -166,10 +166,10 @@ export default function ServiceDetailPage() {
               {/* Heading */}
               <div data-sd-hero className="mb-5">
                 <h1 className="font-display font-bold leading-[0.95] tracking-[-0.045em]">
-                  <div style={{ overflow:'hidden', paddingBottom:'0.04em' }}>
+                  <div className="gsap-line-clip" style={{ paddingBottom:'0.04em' }}>
                     <span className="block text-4xl sm:text-5xl lg:text-[3.8rem] xl:text-[4.6rem] text-white">{service.title}</span>
                   </div>
-                  <div style={{ overflow:'hidden', paddingBottom:'0.04em' }}>
+                  <div className="gsap-line-clip" style={{ paddingBottom:'0.04em' }}>
                     <span className="block text-2xl sm:text-3xl lg:text-[2.4rem] xl:text-[2.8rem] text-gradient leading-[1.2]">{service.tagline}</span>
                   </div>
                 </h1>
@@ -281,7 +281,7 @@ export default function ServiceDetailPage() {
       {/* ══════════════════════════════════════
           § 2  FEATURES — "What We Handle"
       ══════════════════════════════════════ */}
-      <section className="relative py-20 lg:py-28">
+      <section className="relative py-10 lg:py-20">
         <Container>
           {/* Header */}
           <div className="grid lg:grid-cols-[1fr_auto] gap-8 items-end mb-14">
@@ -358,7 +358,7 @@ export default function ServiceDetailPage() {
       {/* ══════════════════════════════════════
           § 3  BENEFITS — dark strip
       ══════════════════════════════════════ */}
-      <section className="relative py-20 lg:py-28 overflow-hidden"
+      <section className="relative py-10 lg:py-20 overflow-hidden"
         style={{ background:'linear-gradient(180deg,rgba(3,9,18,1) 0%,rgba(5,14,30,0.97) 50%,rgba(3,9,18,1) 100%)' }}>
         {/* Atmospheric glow */}
         <div style={{ position:'absolute', top:'20%', right:'-6%', width:600, height:600, borderRadius:'50%', background:`${Bh}0.06)`, filter:'blur(150px)', pointerEvents:'none' }} />
@@ -421,7 +421,7 @@ export default function ServiceDetailPage() {
       {/* ══════════════════════════════════════
           § 4  PROCESS — horizontal timeline
       ══════════════════════════════════════ */}
-      <section className="relative py-20 lg:py-28">
+      <section className="relative py-10 lg:py-20">
         <Container>
           <div className="text-center max-w-xl mx-auto mb-16">
             <motion.div initial={{ opacity:0 }} whileInView={{ opacity:1 }} viewport={{ once:false, amount:0.3 }} transition={{ duration:1.0, ease:'easeOut' }} className="mb-4 flex justify-center">
@@ -486,7 +486,7 @@ export default function ServiceDetailPage() {
         {/* Glow */}
         <div style={{ position:'absolute', top:'10%', left:'50%', transform:'translateX(-50%)', width:700, height:400, borderRadius:'50%', background:`radial-gradient(ellipse,${Bh}0.1),transparent 65%)`, filter:'blur(60px)', pointerEvents:'none' }} />
 
-        <Container className="relative z-10 py-20 lg:py-24">
+        <Container className="relative z-10 py-10 lg:py-16">
           <div className="text-center mb-14">
             <motion.div initial={{ opacity:0 }} whileInView={{ opacity:1 }} viewport={{ once:false, amount:0.3 }} transition={{ duration:1.0, ease:'easeOut' }} className="mb-4 flex justify-center">
               <span className="section-label">Results</span>
@@ -530,7 +530,7 @@ export default function ServiceDetailPage() {
       {/* ══════════════════════════════════════
           § 6  TESTIMONIAL
       ══════════════════════════════════════ */}
-      <section className="relative py-20 lg:py-28 overflow-hidden">
+      <section className="relative py-10 lg:py-20 overflow-hidden">
         <div style={{ position:'absolute', top:'30%', left:'-5%', width:500, height:500, borderRadius:'50%', background:`${Bh}0.06)`, filter:'blur(130px)', pointerEvents:'none' }} />
 
         <Container className="relative z-10">
@@ -589,7 +589,7 @@ export default function ServiceDetailPage() {
       {/* ══════════════════════════════════════
           § 7  FAQ — sticky 2-col
       ══════════════════════════════════════ */}
-      <section className="relative py-20 lg:py-28">
+      <section className="relative py-10 lg:py-20">
         <div style={{ position:'absolute', bottom:'15%', right:'-5%', width:500, height:500, borderRadius:'50%', background:`${Bh}0.05)`, filter:'blur(130px)', pointerEvents:'none' }} />
 
         <Container className="relative z-10">
@@ -625,14 +625,14 @@ export default function ServiceDetailPage() {
       {/* ══════════════════════════════════════
           § 8  CTA BANNER
       ══════════════════════════════════════ */}
-      <section className="relative py-20 lg:py-24 pb-28">
+      <section className="relative py-10 lg:py-16 pb-20">
         <Container>
           <motion.div
             initial={{ opacity:0, scale:0.94, y:24 }}
             whileInView={{ opacity:1, scale:1, y:0 }}
             viewport={{ once:false, amount:0.15 }}
             transition={{ duration:1.4, ease:'easeOut' }}
-            className="relative rounded-3xl overflow-hidden px-8 py-16 lg:px-16 lg:py-20 text-center"
+            className="relative rounded-3xl overflow-hidden px-5 py-10 sm:px-8 sm:py-14 lg:px-16 lg:py-20 text-center"
             style={{ background:'linear-gradient(135deg,rgba(5,25,65,0.97) 0%,rgba(3,9,18,0.98) 50%,rgba(4,16,42,0.96) 100%)' }}
           >
             {/* Borders */}

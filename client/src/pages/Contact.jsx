@@ -228,6 +228,9 @@ export default function ContactPage() {
       if (!res.ok) { setError(data.error || 'Something went wrong. Please try again.'); return }
       setSubmitted(true)
       setForm({ name: '', email: '', phone: '', message: '' })
+      if (typeof window.gtag === 'function') {
+        window.gtag('event', 'conversion', { send_to: 'AW-17270402441/9Dr9CL3t_6McEInblatA' })
+      }
       setTimeout(() => { setSubmitted(false); setRobotMood('idle') }, 7000)
     } catch {
       setError('Network error. Please check your connection and try again.')

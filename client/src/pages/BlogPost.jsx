@@ -272,7 +272,7 @@ export default function BlogPost() {
             </h1>
 
             {/* Excerpt */}
-            <p data-bp-header className="text-[16px] sm:text-[17px] text-white/58 leading-[1.85] font-body border-l-2 pl-5 mb-6"
+            <p data-bp-header className="text-[16px] sm:text-[17px] text-white/60 leading-[1.85] font-body border-l-2 pl-5 mb-6"
               style={{ borderColor: `${blog.color || '#2a8bff'}60` }}>
               {blog.excerpt}
             </p>
