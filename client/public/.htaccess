@@ -100,7 +100,7 @@ RewriteRule ^how-an-amazon-virtual-assistant$                                   
 RewriteRule ^10-tasks-you-should-outsource$                                                    /blog                                                        [R=301,L]
 
 # ═════════════════════════════════════════════════════════════════
-# 5. REACT SPA FALLBACK
+# 4. REACT SPA FALLBACK
 #    Any path that isn't a real file/directory → index.html
 # ═════════════════════════════════════════════════════════════════
 RewriteCond %{REQUEST_FILENAME} !-f
