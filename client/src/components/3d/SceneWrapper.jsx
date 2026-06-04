@@ -92,7 +92,7 @@ export default function SceneWrapper() {
         <Suspense fallback={null}>
           <Lights />
           <BackgroundScene />
-          <Particles count={600} />
+          <Particles count={200} />
         </Suspense>
       </Canvas>
     </div>

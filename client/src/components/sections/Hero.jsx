@@ -47,13 +47,20 @@ function NeuralCanvas() {
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
+
+    /* Skip on desktop — Three.js BackgroundScene already provides the visual depth there */
+    const isDesktop = window.innerWidth >= 1024 && !window.matchMedia('(pointer: coarse)').matches
+    if (isDesktop) return
+
     const ctx = canvas.getContext('2d')
     let particles = []
+    let lastTime = 0
 
     const init = () => {
       canvas.width  = canvas.offsetWidth
       canvas.height = canvas.offsetHeight
-      const n = Math.min(Math.floor((canvas.width * canvas.height) / 16000), 55)
+      /* Reduced from 55 max to 18 max for mobile */
+      const n = Math.min(Math.floor((canvas.width * canvas.height) / 45000), 18)
       particles = Array.from({ length: n }, () => ({
         x:  Math.random() * canvas.width,
         y:  Math.random() * canvas.height,
@@ -83,11 +90,17 @@ function NeuralCanvas() {
     canvas.parentElement?.addEventListener('touchmove', onTouch, { passive: true })
     canvas.parentElement?.addEventListener('touchend', onLeave, { passive: true })
 
-    const LINK_DIST  = 110
-    const REPEL_DIST = 80
+    /* Reduced link distance — fewer pairs qualify, O(n²) is cheaper */
+    const LINK_DIST  = 75
+    const REPEL_DIST = 70
 
-    const draw = () => {
+    const draw = (timestamp) => {
+      animRef.current = requestAnimationFrame(draw)
+      /* Cap to ~30 fps — halves CPU load vs uncapped rAF */
+      if (timestamp - lastTime < 32) return
+      lastTime = timestamp
       frameRef.current++
+
       ctx.clearRect(0, 0, canvas.width, canvas.height)
       const mx = mouseRef.current.x
       const my = mouseRef.current.y
@@ -113,7 +126,8 @@ function NeuralCanvas() {
         ctx.fill()
       }
 
-      if (frameRef.current % 2 === 0) {
+      /* Draw links only every 8th frame — drastically cuts O(n²) work */
+      if (frameRef.current % 8 === 0) {
         for (let i = 0; i < particles.length; i++) {
           for (let j = i + 1; j < particles.length; j++) {
             const p = particles[i], q = particles[j]
@@ -129,10 +143,8 @@ function NeuralCanvas() {
           }
         }
       }
-
-      animRef.current = requestAnimationFrame(draw)
     }
-    draw()
+    animRef.current = requestAnimationFrame(draw)
 
     return () => {
       cancelAnimationFrame(animRef.current)
@@ -156,7 +168,7 @@ function NeuralCanvas() {
 /* ─── 3D Orbital Animation (moved from About page cinematic section) ─── */
 function OrbitalVisual() {
   return (
-    <div className="relative w-full flex items-center justify-center" style={{ minHeight: 320 }}>
+    <div className="relative w-full flex items-center justify-center" style={{ minHeight: 280 }}>
       {/* Deep background glow */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <div style={{
@@ -172,7 +184,7 @@ function OrbitalVisual() {
         transition={{ duration: 32, repeat: Infinity, ease: 'linear' }}
         style={{
           position: 'absolute',
-          width: 280, height: 280,
+          width: 240, height: 240,
           borderRadius: '50%',
           border: '1px dashed rgba(42,139,255,0.14)',
         }}
@@ -184,7 +196,7 @@ function OrbitalVisual() {
         transition={{ duration: 18, repeat: Infinity, ease: 'linear' }}
         style={{
           position: 'absolute',
-          width: 210, height: 210,
+          width: 180, height: 180,
           borderRadius: '50%',
           border: '1px solid rgba(56,217,169,0.12)',
         }}
@@ -203,7 +215,7 @@ function OrbitalVisual() {
         transition={{ duration: 11, repeat: Infinity, ease: 'linear' }}
         style={{
           position: 'absolute',
-          width: 145, height: 145,
+          width: 124, height: 124,
           borderRadius: '50%',
           border: '1px solid rgba(42,139,255,0.10)',
         }}
@@ -219,8 +231,8 @@ function OrbitalVisual() {
       {/* Central content */}
       <div className="relative z-10 text-center">
         <div
-          className="font-display font-black text-gradient"
-          style={{ fontSize: 'clamp(4rem, 10vw, 6.5rem)', lineHeight: 0.88, letterSpacing: '-0.06em' }}
+          className="font-display font-bold text-gradient"
+          style={{ fontSize: 'clamp(4rem, 10vw, 6.5rem)', lineHeight: 0.88, letterSpacing: '0.02em' }}
         >
           3+
         </div>
@@ -275,7 +287,7 @@ export default function Hero() {
     const el = sectionRef.current
     if (!el) return
 
-    const isMobile = window.matchMedia('(pointer: coarse)').matches
+    const isMobile = window.innerWidth < 1024 || window.matchMedia('(pointer: coarse)').matches
 
     const spot = el.querySelector('[data-spotlight]')
     const onMove = (e) => {
@@ -381,6 +393,7 @@ export default function Hero() {
       ref={sectionRef}
       id="hero"
       className="relative min-h-screen flex items-start overflow-hidden"
+      style={{ minHeight: '100svh' }}
     >
       {/* Neural canvas */}
       <NeuralCanvas />
@@ -396,12 +409,12 @@ export default function Hero() {
         }}
       />
 
-      {/* Pulsing rings */}
+      {/* Pulsing rings — hidden on mobile to prevent GPU compositing artifacts */}
       {[600, 900, 1220].map((sz, i) => (
         <div
           key={sz}
           data-hero-ring
-          className="absolute pointer-events-none"
+          className="absolute pointer-events-none hidden lg:block"
           style={{
             width: sz, height: sz,
             borderRadius: '50%',
@@ -472,11 +485,11 @@ export default function Hero() {
       </div>
 
       {/* ─── MAIN CONTENT ─── */}
-      <Container className="relative z-10 pt-8 pb-12 lg:pt-10 lg:pb-14 w-full">
-        <div className="grid lg:grid-cols-12 gap-14 lg:gap-10 items-start">
+      <Container className="relative z-10 pt-10 pb-12 lg:pt-10 lg:pb-14 w-full">
+        <div className="grid lg:grid-cols-12 gap-10 lg:gap-10 items-start">
 
           {/* LEFT */}
-          <div className="lg:col-span-7" data-hero-heading>
+          <div className="lg:col-span-7 min-w-0" data-hero-heading>
 
             {/* Label */}
             <div data-hero-label className="flex items-center gap-2 sm:gap-4 mb-7 sm:mb-9">
@@ -494,19 +507,19 @@ export default function Hero() {
 
             {/* Giant heading */}
             <div className="mb-7">
-              <h1 className="font-display font-bold tracking-[-0.045em]">
+              <h1 className="font-display font-bold tracking-[0.02em]" style={{ overflowWrap: 'break-word' }}>
                 <div className="gsap-line-clip" style={{ lineHeight: 1.0, paddingBottom: '0.05em' }}>
-                  <span data-hero-line className="block text-[2.5rem] sm:text-5xl lg:text-[5.5rem] xl:text-[7.5rem]" style={{ color: '#f1f5f9' }}>
+                  <span data-hero-line className="block" style={{ color: '#f1f5f9', fontSize: 'clamp(1.625rem, 8.5vw, 7.5rem)' }}>
                     <span data-word><ScrambleWord text="Dedicated" /></span>
                   </span>
                 </div>
                 <div className="gsap-line-clip" style={{ lineHeight: 1.0, paddingBottom: '0.05em' }}>
-                  <span data-hero-line className="block text-[2.5rem] sm:text-5xl lg:text-[5.5rem] xl:text-[7.5rem]" style={{ color: 'rgba(241,245,249,0.68)' }}>
+                  <span data-hero-line className="block" style={{ color: 'rgba(241,245,249,0.68)', fontSize: 'clamp(1.625rem, 8.5vw, 7.5rem)' }}>
                     <span data-word><ScrambleWord text="Virtual" /></span>
                   </span>
                 </div>
                 <div className="gsap-line-clip" style={{ lineHeight: 1.0, paddingBottom: '0.05em' }}>
-                  <span data-hero-line className="block text-[2.5rem] sm:text-5xl lg:text-[5.5rem] xl:text-[7.5rem] text-gradient">
+                  <span data-hero-line className="block text-gradient" style={{ fontSize: 'clamp(1.625rem, 8.5vw, 7.5rem)' }}>
                     <span data-word><ScrambleWord text="Assistance." /></span>
                   </span>
                 </div>
@@ -592,7 +605,7 @@ export default function Hero() {
           </div>
 
           {/* RIGHT — 3D Orbital Animation + Feature Cards */}
-          <div className="lg:col-span-5" data-hero-right>
+          <div className="lg:col-span-5 min-w-0" data-hero-right>
 
             <div data-hero-card className="flex items-center justify-between mb-5">
               <p className="section-label">Expert Team</p>

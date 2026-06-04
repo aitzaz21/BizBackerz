@@ -1,5 +1,6 @@
 import express from 'express'
-import { sendContactFormEmail, sendAdminContactAlert } from '../services/emailService.js'
+import { sendAdminContactAlert } from '../services/emailService.js'
+import Contact from '../models/Contact.js'
 
 const router = express.Router()
 
@@ -23,10 +24,10 @@ router.post('/contact', async (req, res) => {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
       return res.status(400).json({ success: false, error: 'Please enter a valid email address.' })
 
+    await Contact.create({ name, email, phone, message })
+
     sendAdminContactAlert({ name, email, phone, message })
       .catch(e => console.error('admin contact email error:', e.message))
-    sendContactFormEmail({ name, email, phone, message })
-      .catch(e => console.error('user contact email error:', e.message))
 
     return res.json({ success: true, message: 'Thank you! We will get back to you within 24 hours.' })
   } catch (err) {

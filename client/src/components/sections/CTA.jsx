@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { motion, AnimatePresence } from 'framer-motion'
 import Container from '../ui/Container'
 import Button from '../ui/Button'
 import KineticStrip from '../ui/KineticStrip'
-import { ArrowRight, Zap, Star, ChevronLeft, ChevronRight, FileText, TrendingUp } from 'lucide-react'
+import { ArrowRight, Zap, Star, ChevronLeft, ChevronRight } from 'lucide-react'
 
 /* ─── Slot-machine counter ─── */
 function SlotCounter({ target, suffix = '' }) {
@@ -25,7 +24,8 @@ function ChallengeBanner() {
       gsap.from(el, {
         opacity: 0, scale: 0.92, y: 60,
         duration: 1.2, ease: 'power3.out',
-        scrollTrigger: { trigger: el, start: 'top 84%', toggleActions: 'play reverse play reverse' },
+        immediateRender: false,
+        scrollTrigger: { trigger: el, start: 'top 70%', toggleActions: 'play reverse play reverse' },
       })
     }, el)
     return () => ctx.revert()
@@ -46,7 +46,7 @@ function ChallengeBanner() {
               <Zap className="w-8 h-8 text-accent-400" />
             </div>
             <div>
-              <h3 className="text-2xl lg:text-3xl font-display font-bold text-white tracking-[-0.03em] mb-2">
+              <h3 className="text-2xl lg:text-3xl font-display font-bold text-white tracking-[0.02em] mb-2">
                 We Are Ready To Take On Challenges!
               </h3>
               <p className="text-white/62 font-body text-[15px]">
@@ -78,28 +78,32 @@ function ImpactNumbers() {
       /* heading clip-reveal */
       gsap.from('[data-impact-label]', {
         opacity: 0, y: 20, duration: 0.9, ease: 'power3.out',
-        scrollTrigger: { trigger: el, start: 'top 82%', toggleActions: 'play reverse play reverse' },
+        immediateRender: false,
+        scrollTrigger: { trigger: el, start: 'top 68%', toggleActions: 'play reverse play reverse' },
       })
       gsap.from('[data-impact-line]', {
         yPercent: 115, duration: 1.4, stagger: 0.1, ease: 'power4.out',
-        scrollTrigger: { trigger: el, start: 'top 80%', toggleActions: 'play reverse play reverse' },
+        immediateRender: false,
+        scrollTrigger: { trigger: el, start: 'top 66%', toggleActions: 'play reverse play reverse' },
       })
 
       /* huge numbers burst in */
       gsap.from('[data-impact-num]', {
         scale: 0.5, opacity: 0,
         duration: 1.1, stagger: 0.14, ease: 'expo.out',
-        scrollTrigger: { trigger: el, start: 'top 74%', toggleActions: 'play reverse play reverse' },
+        immediateRender: false,
+        scrollTrigger: { trigger: el, start: 'top 60%', toggleActions: 'play reverse play reverse' },
       })
       gsap.from('[data-impact-sub]', {
         opacity: 0, y: 18, duration: 0.9, stagger: 0.12, ease: 'power2.out',
-        scrollTrigger: { trigger: el, start: 'top 70%', toggleActions: 'play reverse play reverse' },
+        immediateRender: false,
+        scrollTrigger: { trigger: el, start: 'top 58%', toggleActions: 'play reverse play reverse' },
       })
 
       /* bars */
       gsap.fromTo('[data-impact-bar]', { scaleX: 0, transformOrigin: 'left center' }, {
         scaleX: 1, duration: 1.8, stagger: 0.15, ease: 'power3.out',
-        scrollTrigger: { trigger: el, start: 'top 68%', toggleActions: 'play reverse play reverse' },
+        scrollTrigger: { trigger: el, start: 'top 56%', toggleActions: 'play reverse play reverse' },
       })
 
       /* subtle parallax on side panels */
@@ -129,7 +133,7 @@ function ImpactNumbers() {
         <div data-impact-label className="flex justify-center mb-5">
           <span className="section-label">Our Impact</span>
         </div>
-        <h2 className="font-display font-bold tracking-[-0.045em]">
+        <h2 className="font-display font-bold tracking-[0.02em]">
           <div className="gsap-line-clip" style={{ lineHeight:1.05, paddingBottom:'0.05em' }}>
             <span data-impact-line className="block text-4xl sm:text-5xl lg:text-6xl text-white">We Power Your</span>
           </div>
@@ -147,17 +151,17 @@ function ImpactNumbers() {
           <div
             key={s.label}
             ref={i === 0 ? leftRef : i === 3 ? rightRef : null}
-            className="bg-navy-950 p-8 lg:p-10 flex flex-col group hover:bg-[#060f1d] transition-colors duration-400"
+            className="bg-navy-950 p-5 sm:p-8 lg:p-10 flex flex-col items-center text-center group hover:bg-[#060f1d] transition-colors duration-300"
           >
             <div
               data-impact-num
               className="font-display font-bold leading-none mb-2"
-              style={{ fontSize:'clamp(3.5rem,6vw,6rem)', color: s.color }}
+              style={{ fontSize:'clamp(2.5rem,5vw,6rem)', color: s.color }}
             >
               <SlotCounter target={s.num} suffix={s.suffix} />
             </div>
-            <p data-impact-sub className="text-[12px] text-white/45 font-body font-bold uppercase tracking-[0.18em] mb-4">{s.label}</p>
-            <div className="mt-auto h-px bg-white/[0.06] overflow-hidden">
+            <p data-impact-sub className="text-[11px] sm:text-[12px] text-white/45 font-body font-bold uppercase tracking-[0.1em] sm:tracking-[0.15em] mb-4">{s.label}</p>
+            <div className="mt-auto h-px bg-white/[0.06] overflow-hidden w-full">
               <div
                 data-impact-bar
                 className="h-full origin-left"
@@ -181,15 +185,18 @@ function StreamlineBanner() {
       gsap.from('[data-stream-inner]', {
         opacity: 0, scale: 0.93, y: 40,
         duration: 1.1, ease: 'power3.out',
-        scrollTrigger: { trigger: el, start: 'top 83%', toggleActions: 'play reverse play reverse' },
+        immediateRender: false,
+        scrollTrigger: { trigger: el, start: 'top 69%', toggleActions: 'play reverse play reverse' },
       })
       gsap.from('[data-stream-line]', {
         yPercent: 110, stagger: 0.1, duration: 1.3, ease: 'power4.out',
-        scrollTrigger: { trigger: el, start: 'top 80%', toggleActions: 'play reverse play reverse' },
+        immediateRender: false,
+        scrollTrigger: { trigger: el, start: 'top 66%', toggleActions: 'play reverse play reverse' },
       })
       gsap.from('[data-stream-body]', {
         opacity: 0, y: 22, duration: 1, ease: 'power2.out',
-        scrollTrigger: { trigger: el, start: 'top 76%', toggleActions: 'play reverse play reverse' },
+        immediateRender: false,
+        scrollTrigger: { trigger: el, start: 'top 62%', toggleActions: 'play reverse play reverse' },
       })
     }, el)
     return () => ctx.revert()
@@ -202,7 +209,7 @@ function StreamlineBanner() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(42,139,255,0.07),transparent_65%)]" />
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-px bg-gradient-to-r from-transparent via-brand-500/25 to-transparent" />
         <div className="relative z-10">
-          <h2 className="font-display font-bold tracking-[-0.04em] mb-5">
+          <h2 className="font-display font-bold tracking-[0.02em] mb-5">
             <div className="gsap-line-clip" style={{ lineHeight:1.06, paddingBottom:'0.05em' }}>
               <span data-stream-line className="block text-3xl sm:text-4xl lg:text-5xl text-white">Looking To Streamline</span>
             </div>
@@ -254,7 +261,7 @@ function TestimonialsSection() {
   const next = () => go((cur + 1) % testimonials.length)
   const prev = () => go((cur - 1 + testimonials.length) % testimonials.length)
 
-  useEffect(() => { const t = setInterval(next, 9000); return () => clearInterval(t) }, [cur])
+  useEffect(() => { const t = setInterval(() => go((cur + 1) % testimonials.length), 9000); return () => clearInterval(t) }, [cur])
 
   useEffect(() => {
     const el = ref.current; if (!el) return
@@ -262,15 +269,18 @@ function TestimonialsSection() {
     const ctx = gsap.context(() => {
       gsap.from('[data-test-label]', {
         opacity: 0, x: -20, duration: 1, ease: 'power3.out',
-        scrollTrigger: { trigger: el, start: 'top 82%', toggleActions: 'play reverse play reverse' },
+        immediateRender: false,
+        scrollTrigger: { trigger: el, start: 'top 68%', toggleActions: 'play reverse play reverse' },
       })
       gsap.from('[data-test-line]', {
         yPercent: 115, duration: 1.4, stagger: 0.1, ease: 'power4.out',
-        scrollTrigger: { trigger: el, start: 'top 80%', toggleActions: 'play reverse play reverse' },
+        immediateRender: false,
+        scrollTrigger: { trigger: el, start: 'top 66%', toggleActions: 'play reverse play reverse' },
       })
       gsap.from('[data-test-body]', {
         opacity: 0, y: 36, scale: 0.97, duration: 1.1, ease: 'power3.out',
-        scrollTrigger: { trigger: el, start: 'top 74%', toggleActions: 'play reverse play reverse' },
+        immediateRender: false,
+        scrollTrigger: { trigger: el, start: 'top 60%', toggleActions: 'play reverse play reverse' },
       })
     }, el)
     return () => ctx.revert()
@@ -284,7 +294,7 @@ function TestimonialsSection() {
         <div data-test-label className="flex justify-center mb-5">
           <span className="section-label">Testimonials</span>
         </div>
-        <h2 className="font-display font-bold tracking-[-0.04em]">
+        <h2 className="font-display font-bold tracking-[0.02em]">
           <div className="gsap-line-clip" style={{ lineHeight:1.06, paddingBottom:'0.05em' }}>
             <span data-test-line className="block text-3xl sm:text-4xl lg:text-5xl text-white">Transforming Your Business</span>
           </div>
@@ -350,110 +360,6 @@ function TestimonialsSection() {
   )
 }
 
-/* ─── Blog ─── */
-function BlogSection() {
-  const ref = useRef(null)
-  const blogs = [
-    { title: 'How Virtual Assistant Services for Small Businesses Can Save you 20+ hours a Week (And Actually Scale your Business)', date: 'March 31, 2026', num: '01' },
-    { title: 'Boost Your Business in 2026 with Amazon and Real Estate Virtual Assistant Services',                                   date: 'March 26, 2026', num: '02' },
-    { title: 'Mojo Dialer: The Sales Tool That Turns Calls Into Closed Deals',                                                       date: 'October 22, 2025', num: '03' },
-  ]
-
-  useEffect(() => {
-    const el = ref.current; if (!el) return
-    if (isTouchDevice()) return
-    const ctx = gsap.context(() => {
-      gsap.from('[data-blog-label]', {
-        opacity: 0, x: -20, duration: 1, ease: 'power3.out',
-        scrollTrigger: { trigger: el, start: 'top 82%', toggleActions: 'play reverse play reverse' },
-      })
-      gsap.from('[data-blog-line]', {
-        yPercent: 115, duration: 1.4, stagger: 0.1, ease: 'power4.out',
-        scrollTrigger: { trigger: el, start: 'top 80%', toggleActions: 'play reverse play reverse' },
-      })
-      gsap.from('[data-blog-desc]', {
-        opacity: 0, y: 20, duration: 1, ease: 'power2.out',
-        scrollTrigger: { trigger: el, start: 'top 78%', toggleActions: 'play reverse play reverse' },
-      })
-
-      const cards = el.querySelectorAll('[data-blog-card]')
-      cards.forEach((card, i) => {
-        gsap.from(card, {
-          opacity: 0,
-          x: i === 0 ? -50 : i === 2 ? 50 : 0,
-          y: i === 1 ? 60 : 38,
-          rotateY: i === 0 ? -6 : i === 2 ? 6 : 0,
-          transformPerspective: 1000,
-          duration: 1.4, ease: 'power3.out',
-          scrollTrigger: { trigger: card, start: 'top 88%', toggleActions: 'play reverse play reverse' },
-        })
-        /* per-card parallax */
-        gsap.to(card, {
-          y: i === 1 ? -24 : -14, ease: 'none',
-          scrollTrigger: { trigger: card, start: 'top bottom', end: 'bottom top', scrub: 2.2 + i * 0.3 },
-        })
-      })
-    }, el)
-    return () => ctx.revert()
-  }, [])
-
-  return (
-    <div ref={ref} id="blog">
-      <div className="text-center max-w-2xl mx-auto mb-12">
-        <div data-blog-label className="flex justify-center mb-5">
-          <span className="section-label">Our Blog</span>
-        </div>
-        <h2 className="font-display font-bold tracking-[-0.04em] mb-5">
-          <div className="gsap-line-clip" style={{ lineHeight:1.06, paddingBottom:'0.05em' }}>
-            <span data-blog-line className="block text-3xl sm:text-4xl lg:text-5xl text-white">Latest Blog &</span>
-          </div>
-          <div className="gsap-line-clip" style={{ lineHeight:1.06, paddingBottom:'0.05em' }}>
-            <span data-blog-line className="block text-3xl sm:text-4xl lg:text-5xl text-gradient">Articles</span>
-          </div>
-        </h2>
-        <p data-blog-desc className="text-white/62 leading-[1.88] font-body text-[15px]">
-          Stay informed with the latest insights, tips, and updates to help your business grow.
-        </p>
-      </div>
-
-      <div className="grid md:grid-cols-3 gap-5">
-        {blogs.map((blog, i) => (
-          <motion.div key={i} data-blog-card data-cursor-label="READ"
-            whileHover={{ y: -8, scale: 1.022 }}
-            transition={{ type:'spring', stiffness:280, damping:22 }}
-            className="panel-blur group rounded-2xl overflow-hidden cursor-pointer border border-white/[0.07] hover:border-white/[0.14] transition-colors duration-400"
-            style={{ background:'rgba(6,15,29,0.55)' }}
-          >
-            <div className="aspect-video relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-brand-500/20 via-navy-800 to-accent-500/12" />
-              <div className="absolute inset-0 group-hover:bg-brand-500/6 transition-colors duration-700" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-12 h-12 rounded-2xl bg-white/8 flex items-center justify-center border border-white/8 group-hover:scale-110 group-hover:bg-white/14 transition-all duration-500">
-                  <FileText className="w-5 h-5 text-brand-400" />
-                </div>
-              </div>
-              <div className="absolute top-3 left-4 font-display font-bold text-[3.5rem] leading-none text-white/[0.04] select-none">{blog.num}</div>
-              {/* hover shimmer */}
-              <div className="absolute bottom-0 left-0 right-0 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                style={{ background:'linear-gradient(90deg,transparent,rgba(42,139,255,0.5),transparent)' }} />
-            </div>
-            <div className="p-6">
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-1 h-1 rounded-full bg-brand-500/60 flex-shrink-0" />
-                <span className="text-[11px] text-brand-400/70 font-body font-bold tracking-[0.14em] uppercase">{blog.date}</span>
-              </div>
-              <h3 className="text-[14px] font-display font-semibold text-white/88 leading-snug line-clamp-3 group-hover:text-white transition-colors duration-300 mb-4">{blog.title}</h3>
-              <span className="inline-flex items-center gap-1.5 text-[12px] font-display font-semibold text-white/30 group-hover:text-brand-400 transition-colors duration-300">
-                Read More <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform duration-300" />
-              </span>
-            </div>
-          </motion.div>
-        ))}
-      </div>
-    </div>
-  )
-}
-
 /* ─── Export ─── */
 export default function CTA() {
   return (
@@ -475,7 +381,6 @@ export default function CTA() {
         <ImpactNumbers />
         <StreamlineBanner />
         <TestimonialsSection />
-        <BlogSection />
       </Container>
     </section>
   )

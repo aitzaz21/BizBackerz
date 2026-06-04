@@ -13,10 +13,16 @@ const BlogSchema = new mongoose.Schema({
   authorBio:      { type: String, default: '' },
   authorAvatar:   { type: String, default: '' },
   readTime:       { type: Number, default: 5 },           // minutes
-  seoTitle:       { type: String, default: '' },
-  seoDescription: { type: String, default: '' },
-  seoKeywords:    { type: String, default: '' },
-  ogImage:        { type: String, default: '' },
+  seoTitle:           { type: String, default: '' },
+  seoDescription:     { type: String, default: '' },
+  seoKeywords:        { type: String, default: '' },
+  focusKeyword:       { type: String, default: '' },   // primary target search term
+  noindex:            { type: Boolean, default: false }, // true = noindex,nofollow
+  ogImage:            { type: String, default: '' },
+  ogImageAlt:         { type: String, default: '' },   // OG image alt text (1200×630)
+  coverImageAlt:      { type: String, default: '' },   // featured image alt text
+  twitterTitle:       { type: String, default: '' },   // twitter:title override
+  twitterDescription: { type: String, default: '' },   // twitter:description override
   qna:            [{ question: { type: String, default: '' }, answer: { type: String, default: '' } }],
   published:      { type: Boolean, default: false },
   featured:       { type: Boolean, default: false },

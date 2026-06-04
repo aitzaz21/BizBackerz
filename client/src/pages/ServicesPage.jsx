@@ -1,18 +1,20 @@
-import React, { useEffect, useRef, useState, Suspense, memo } from 'react'
+import React, { useEffect, useRef, useState, useMemo, Suspense, memo } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import * as THREE from 'three'
+import PageSEO from '../components/ui/PageSEO'
 import { useLocation, Link } from 'react-router-dom'
 import Container from '../components/ui/Container'
 import Button from '../components/ui/Button'
 import {
   ClipboardList, Headphones, Share2, PenTool, UserPlus,
   FolderKanban, Calculator, Megaphone, ShoppingCart,
-  ArrowRight, Zap,
+  ArrowRight, Zap, BarChart2,
 } from 'lucide-react'
 
 const services = [
+  { icon: BarChart2, slug: 'digital-advertising', title: 'Digital Advertising', text: 'We manage Google Local Service Ads, AI Max, and Performance Max campaigns that drive qualified leads at lower cost — with full reporting clarity and weekly performance dashboards.', color: '#f97316' },
   { icon: ClipboardList, slug: 'administrative-support', title: 'Administrative Support', text: 'We handle your routine tasks with ease, from managing schedules to organizing emails, so your day runs smoothly. Focus on what matters most while we take care of the rest.', color: '#3b82f6' },
   { icon: Headphones, slug: 'customer-support', title: 'Customer Support', text: 'Keep your customers happy with our friendly and reliable customer support team. We handle every interaction with care and efficiency, so you can focus on growing your business.', color: '#8b5cf6' },
   { icon: Share2, slug: 'social-media-management', title: 'Social Media Management', text: 'Grow your brand with the help of our social media experts. We craft content that connects with your audience and keeps them engaged. Let us help you build a thriving online community.', color: '#ec4899' },
@@ -26,16 +28,23 @@ const services = [
 
 /* ─── Subtle floating dots ─── */
 const FloatingDots = memo(function FloatingDots() {
-  const ref = useRef()
+  const ref    = useRef()
+  const lastT  = useRef(0)
+  const COUNT  = 80
   const positions = React.useMemo(() => {
-    const a = new Float32Array(300 * 3)
-    for (let i = 0; i < 300; i++) { a[i*3]=(Math.random()-0.5)*25; a[i*3+1]=(Math.random()-0.5)*18; a[i*3+2]=(Math.random()-0.5)*12 }
+    const a = new Float32Array(COUNT * 3)
+    for (let i = 0; i < COUNT; i++) { a[i*3]=(Math.random()-0.5)*25; a[i*3+1]=(Math.random()-0.5)*18; a[i*3+2]=(Math.random()-0.5)*12 }
     return a
   }, [])
-  useFrame((s) => { if (ref.current) ref.current.rotation.y = s.clock.elapsedTime * 0.004 })
+  useFrame((s) => {
+    const t = s.clock.elapsedTime
+    if (t - lastT.current < 0.05) return  /* cap to ~20fps */
+    lastT.current = t
+    if (ref.current) ref.current.rotation.y = t * 0.004
+  })
   return (
     <points ref={ref}>
-      <bufferGeometry><bufferAttribute attach="attributes-position" count={300} array={positions} itemSize={3} /></bufferGeometry>
+      <bufferGeometry><bufferAttribute attach="attributes-position" count={COUNT} array={positions} itemSize={3} /></bufferGeometry>
       <pointsMaterial size={0.01} color="#2a8bff" transparent opacity={0.35} sizeAttenuation blending={THREE.AdditiveBlending} depthWrite={false} />
     </points>
   )
@@ -84,10 +93,12 @@ export default function ServicesPage() {
       gsap.from('[data-svc-hero]', { opacity: 0, y: 20, filter: 'blur(3px)', duration: 1.4, stagger: 0.12, delay: 0.3, ease: 'power2.out' })
       gsap.utils.toArray('[data-svc-item]').forEach((item, i) => {
         gsap.from(item, { opacity: 0, y: 30, scale: 0.97, duration: 1.3, ease: 'power2.out', delay: i * 0.06,
-          scrollTrigger: { trigger: item, start: 'top 88%', toggleActions: 'play reverse play reverse' } })
+          immediateRender: false,
+          scrollTrigger: { trigger: item, start: 'top 74%', toggleActions: 'play reverse play reverse' } })
       })
       gsap.from('[data-svc-banner]', { opacity: 0, scale: 0.95, y: 25, duration: 1.3, ease: 'power2.out',
-        scrollTrigger: { trigger: '[data-svc-banner]', start: 'top 85%', toggleActions: 'play reverse play reverse' } })
+        immediateRender: false,
+        scrollTrigger: { trigger: '[data-svc-banner]', start: 'top 71%', toggleActions: 'play reverse play reverse' } })
     }, el)
     return () => ctx.revert()
   }, [])
@@ -102,10 +113,38 @@ export default function ServicesPage() {
     return () => clearTimeout(timer)
   }, [location.hash])
 
+  const servicesListSchema = useMemo(() => ({
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'BizBackerz Virtual Assistant Services',
+    description: '10 premium virtual assistant services for US and UK businesses',
+    url: 'https://bizbackerz.com/services',
+    numberOfItems: services.length,
+    itemListElement: services.map((s, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: s.title,
+      url: `https://bizbackerz.com/services/${s.slug}`,
+      item: {
+        '@type': 'Service',
+        name: s.title,
+        description: s.text,
+        url: `https://bizbackerz.com/services/${s.slug}`,
+        provider: { '@type': 'Organization', name: 'BizBackerz', url: 'https://bizbackerz.com' },
+      },
+    })),
+  }), []) // services array is module-level constant, no deps needed
+
   return (
     <div ref={pageRef}>
+      <PageSEO
+        title="Virtual Assistant Services – 10 Premium Services | BizBackerz"
+        description="Explore BizBackerz's 10 premium virtual assistant services: digital advertising, admin support, social media management, lead generation, customer support, and more. Start delegating today."
+        canonical="https://bizbackerz.com/services"
+        schema={servicesListSchema}
+      />
       <div style={{ position:'fixed',top:0,left:0,width:'100vw',height:'100vh',zIndex:0,pointerEvents:'none' }}>
-        <Canvas camera={{ position:[0,0,8], fov:50 }} dpr={[1,1.5]} gl={{ antialias:false, alpha:true, powerPreference:'high-performance', stencil:false }}>
+        <Canvas camera={{ position:[0,0,8], fov:50 }} dpr={[0.6, 1]} performance={{ min: 0.5 }} gl={{ antialias:false, alpha:true, powerPreference:'low-power', stencil:false, depth:false }}>
           <Suspense fallback={null}><ambientLight intensity={0.1} /><FloatingDots /></Suspense>
         </Canvas>
       </div>
@@ -117,7 +156,7 @@ export default function ServicesPage() {
           <Container className="relative z-10">
             <div className="max-w-2xl">
               <span data-svc-hero className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-light text-brand-400 text-xs font-semibold uppercase tracking-[0.15em] mb-5">Our Services</span>
-              <h1 data-svc-hero className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-display font-extrabold leading-[1.08] mb-5">
+              <h1 data-svc-hero className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-display font-bold tracking-[0.02em] leading-[1.08] mb-5">
                 What Services <span className="text-gradient">We Offer</span>
               </h1>
               <p data-svc-hero className="text-base sm:text-lg text-white/40 leading-relaxed max-w-lg">
@@ -159,19 +198,19 @@ export default function ServicesPage() {
         <section className="relative py-14 sm:py-20 pb-24">
           <Container>
             <div className="text-center max-w-xl mx-auto mb-10">
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-display font-extrabold leading-[1.08] mb-4">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-display font-bold tracking-[0.02em] leading-[1.08] mb-4">
                 We Power Your <span className="text-gradient">Productivity</span>
               </h2>
               <p className="text-sm text-white/35">We provide expert virtual support designed to streamline your daily operations and save valuable time.</p>
             </div>
             <div className="grid sm:grid-cols-2 gap-5">
               <div className="glass rounded-2xl p-7 text-center">
-                <div className="text-4xl font-display font-extrabold text-gradient mb-2"><Counter target={95} suffix="%" /></div>
+                <div className="text-4xl font-display font-bold text-gradient mb-2"><Counter target={95} suffix="%" /></div>
                 <h3 className="text-sm font-display font-bold text-white/70 mb-2">We Help Optimize Your Daily Workflow</h3>
                 <p className="text-xs text-white/30">We streamline your tasks and processes, saving time and making your daily operations smoother.</p>
               </div>
               <div className="glass rounded-2xl p-7 text-center">
-                <div className="text-4xl font-display font-extrabold mb-2"><span className="bg-clip-text text-transparent bg-gradient-to-r from-accent-400 to-accent-500"><Counter target={90} suffix="%" /></span></div>
+                <div className="text-4xl font-display font-bold mb-2"><span className="bg-clip-text text-transparent bg-gradient-to-r from-accent-400 to-accent-500"><Counter target={90} suffix="%" /></span></div>
                 <h3 className="text-sm font-display font-bold text-white/70 mb-2">We Help Businesses Reach New Heights</h3>
                 <p className="text-xs text-white/30">We provide expert support and strategies that empower your business to grow and succeed.</p>
               </div>

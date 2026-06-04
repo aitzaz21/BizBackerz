@@ -25,19 +25,22 @@ export default function ProcessSection() {
       // Label fade
       gsap.from('[data-process-label] .section-label', {
         opacity: 0, x: -20, duration: 1, ease: 'power3.out',
-        scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play reverse play reverse' },
+        immediateRender: false,
+        scrollTrigger: { trigger: el, start: 'top 71%', toggleActions: 'play reverse play reverse' },
       })
-      
+
       // Masked text reveal for heading
       gsap.from('[data-process-line]', {
         yPercent: 110, duration: 1.2, stagger: 0.1, ease: 'power4.out',
-        scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play reverse play reverse' },
+        immediateRender: false,
+        scrollTrigger: { trigger: el, start: 'top 71%', toggleActions: 'play reverse play reverse' },
       })
 
       // Paragraph fade
       gsap.from('[data-process-desc]', {
         opacity: 0, y: 20, duration: 1, delay: 0.3, ease: 'power2.out',
-        scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play reverse play reverse' },
+        immediateRender: false,
+        scrollTrigger: { trigger: el, start: 'top 71%', toggleActions: 'play reverse play reverse' },
       })
 
       // 3D Staggered Cards
@@ -51,7 +54,7 @@ export default function ProcessSection() {
         ease: 'power3.out',
         transformPerspective: 1000,
         immediateRender: false,
-        scrollTrigger: { trigger: el, start: 'top 75%', toggleActions: 'play reverse play reverse' },
+        scrollTrigger: { trigger: el, start: 'top 61%', toggleActions: 'play reverse play reverse' },
       })
 
       // Line drawing for connectors
@@ -62,7 +65,7 @@ export default function ProcessSection() {
         stagger: 0.15,
         ease: 'power3.inOut',
         immediateRender: false,
-        scrollTrigger: { trigger: el, start: 'top 65%', toggleActions: 'play reverse play reverse' },
+        scrollTrigger: { trigger: el, start: 'top 53%', toggleActions: 'play reverse play reverse' },
       })
     }, el)
 

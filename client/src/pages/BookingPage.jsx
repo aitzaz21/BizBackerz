@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
-import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
   Calendar, Clock, User, CheckCircle, Mail, ChevronLeft, ChevronRight,
   ArrowLeft, ArrowRight, AlertCircle, Globe, Phone as PhoneIcon, MapPin,
   Sparkles
 } from 'lucide-react'
 import Container from '../components/ui/Container'
+import PageSEO from '../components/ui/PageSEO'
 import Button from '../components/ui/Button'
 import RobotCursorTracker from '../components/ui/RobotCursorTracker'
 
@@ -117,52 +118,14 @@ function todayStr() {
   return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`
 }
 
-// ─── 3D Tilt & Spotlight Component ───────────────────────────
+// ─── Static Card (no JS cursor tracking) ─────────────────────
 function TiltCard({ children, className = '' }) {
-  const cardRef  = useRef(null)
-  const spotRef  = useRef(null)
-  const x = useMotionValue(0)
-  const y = useMotionValue(0)
-  const mouseXSpring = useSpring(x, { stiffness: 400, damping: 30 })
-  const mouseYSpring = useSpring(y, { stiffness: 400, damping: 30 })
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["3deg", "-3deg"])
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-3deg", "3deg"])
-
-  const handleMouseMove = (e) => {
-    const rect = e.currentTarget.getBoundingClientRect()
-    const mx = e.clientX - rect.left
-    const my = e.clientY - rect.top
-    x.set(mx / rect.width - 0.5)
-    y.set(my / rect.height - 0.5)
-    if (spotRef.current) {
-      spotRef.current.style.opacity = '1'
-      spotRef.current.style.background = `radial-gradient(350px circle at ${mx}px ${my}px, rgba(42,139,255,0.13), transparent 40%)`
-    }
-  }
-
-  const handleMouseLeave = () => {
-    x.set(0)
-    y.set(0)
-    if (spotRef.current) spotRef.current.style.opacity = '0'
-  }
-
   return (
-    <motion.div
-      ref={cardRef}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-      className={`relative ${className} group`}
-    >
-      <div style={{ transform: "translateZ(30px)" }} className="h-full relative">
-        <div
-          ref={spotRef}
-          className="pointer-events-none absolute -inset-px z-0 mix-blend-screen"
-          style={{ opacity: 0, transition: 'opacity 0.3s', borderRadius: 'inherit' }}
-        />
+    <div className={`relative ${className} group`}>
+      <div className="h-full relative">
         {children}
       </div>
-    </motion.div>
+    </div>
   )
 }
 
@@ -323,7 +286,6 @@ function Starfield() {
 function PageBackground() {
   return (
     <>
-      <Starfield />
       <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 0 }}>
         <div style={{ position: 'absolute', top: '-10%', right: '-5%', width: '60vw', height: '60vw', borderRadius: '50%', background: 'radial-gradient(circle, rgba(42,139,255,0.07) 0%, transparent 65%)' }} />
         <div style={{ position: 'absolute', bottom: '-10%', left: '-10%', width: '55vw', height: '55vw', borderRadius: '50%', background: 'radial-gradient(circle, rgba(56,217,169,0.05) 0%, transparent 65%)' }} />
@@ -454,10 +416,11 @@ function CalendarGrid({ selected, onSelect }) {
       </div>
 
       {/* Day grid */}
-      <motion.div 
+      <motion.div
         key={`${view.year}-${view.month}`}
-        variants={{ hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.015 } } }}
-        initial="hidden" animate="show"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.2 }}
         className="grid grid-cols-7 gap-y-1 gap-x-1 relative z-10"
       >
         {Array(firstDow).fill(null).map((_, i) => <div key={`e${i}`} />)}
@@ -472,7 +435,7 @@ function CalendarGrid({ selected, onSelect }) {
           const now  = ds === today
 
           return (
-            <motion.div variants={{hidden: {opacity: 0, scale: 0.8}, show: {opacity: 1, scale: 1}}} key={day} className="flex items-center justify-center h-10">
+            <div key={day} className="flex items-center justify-center h-10">
               <button
                 onClick={() => !off && onSelect(ds)}
                 disabled={off}
@@ -488,7 +451,7 @@ function CalendarGrid({ selected, onSelect }) {
                   <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-brand-400" />
                 )}
               </button>
-            </motion.div>
+            </div>
           )
         })}
       </motion.div>
@@ -511,7 +474,7 @@ function SlotPicker({ dateStr, tz, selected, booked, onSelect, loading }) {
   }, [dateStr, tz, booked])
 
   if (!dateStr) return (
-    <div className="flex flex-col items-center justify-center h-full min-h-[280px] text-white/30 relative z-10">
+    <div className="flex flex-col items-center justify-center h-full min-h-[200px] text-white/30 relative z-10">
       <motion.div animate={{ y: [0, -10, 0] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}>
         <Calendar className="w-12 h-12 mb-4 opacity-40 text-brand-400" />
       </motion.div>
@@ -538,20 +501,20 @@ function SlotPicker({ dateStr, tz, selected, booked, onSelect, loading }) {
   return (
     <div className="h-full flex flex-col relative z-10">
       {showSparks && <Sparks onComplete={() => setShowSparks(false)} />}
-      <div className="mb-5 flex-shrink-0">
-        <p className="font-display font-bold text-white text-[16px] leading-snug">
+      <div className="mb-3 flex-shrink-0">
+        <p className="font-display font-bold text-white text-[15px] leading-snug">
           {fmtDate(new Date(`${dateStr}T15:00:00Z`), tz)}
         </p>
-        <p className="text-[12px] text-brand-400/80 font-body mt-1 font-semibold">
+        <p className="text-[12px] text-brand-400/80 font-body mt-0.5 font-semibold">
           {available > 0 ? `${available} slots available` : 'No slots available for this date'}
         </p>
       </div>
 
-      <motion.div 
+      <motion.div
         key={dateStr}
         variants={{ hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.03 } } }}
         initial="hidden" animate="show"
-        className="grid grid-cols-2 gap-2.5 overflow-y-auto flex-1 pr-1 pb-2 custom-scrollbar" style={{ maxHeight: 340 }}
+        className="grid grid-cols-2 gap-2.5 overflow-y-auto flex-1 min-h-0 pr-1 pb-2 custom-scrollbar"
       >
         {slots.map(slot => {
           const sel = selected?.key === slot.key
@@ -576,13 +539,6 @@ function SlotPicker({ dateStr, tz, selected, booked, onSelect, loading }) {
         })}
       </motion.div>
 
-      {/* Custom scrollbar styling using a style tag since global css might not have it */}
-      <style dangerouslySetInnerHTML={{__html: `
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.02); border-radius: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
-      `}} />
     </div>
   )
 }
@@ -599,18 +555,18 @@ function DateTimeStep({ tz, setTz, date, setDate, slot, setSlot, booked, loading
       {/* Calendar + Slots */}
       <div className="grid lg:grid-cols-[1fr_1fr] gap-6 mb-8 perspective-1000 relative z-10">
         {/* Calendar */}
-        <TiltCard className="rounded-2xl border border-white/10 p-6 sm:p-8 bg-[#081226]/70 shadow-[0_15px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.1)]">
+        <TiltCard className="rounded-2xl border border-white/10 p-5 sm:p-7 bg-[#081226]/70 shadow-[0_15px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.1)]">
           <div className="absolute inset-0 bg-gradient-to-br from-brand-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none rounded-2xl" />
-          <p className="text-[12px] font-body font-bold text-white/40 uppercase tracking-widest mb-6 flex items-center gap-2 relative z-10">
+          <p className="text-[12px] font-body font-bold text-white/40 uppercase tracking-widest mb-4 flex items-center gap-2 relative z-10">
             <Calendar className="w-4 h-4 text-brand-400" /> Select a Date
           </p>
           <CalendarGrid selected={date} onSelect={d => { setDate(d); setSlot(null) }} />
         </TiltCard>
 
         {/* Slots */}
-        <TiltCard className="rounded-2xl border border-white/10 p-6 sm:p-8 bg-[#081226]/70 shadow-[0_15px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.1)]">
+        <TiltCard className="rounded-2xl border border-white/10 p-5 sm:p-7 bg-[#081226]/70 shadow-[0_15px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.1)]">
           <div className="absolute inset-0 bg-gradient-to-br from-brand-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none rounded-2xl" />
-          <p className="text-[12px] font-body font-bold text-white/40 uppercase tracking-widest mb-6 flex items-center gap-2 relative z-10">
+          <p className="text-[12px] font-body font-bold text-white/40 uppercase tracking-widest mb-4 flex items-center gap-2 relative z-10">
             <Clock className="w-4 h-4 text-brand-400" /> Select a Time
           </p>
           <SlotPicker dateStr={date} tz={tz} selected={slot} booked={booked} onSelect={setSlot} loading={loadingSlots} />
@@ -751,7 +707,7 @@ function PendingStep({ email }) {
         />
       </div>
 
-      <h2 className="font-display font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-white/60 text-3xl sm:text-4xl mb-3 tracking-tight">Check Your Inbox</h2>
+      <h2 className="font-display font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-white/60 text-3xl sm:text-4xl mb-3 tracking-[0.02em]">Check Your Inbox</h2>
       <p className="text-white/60 font-body text-[15px] mb-2">We sent a secure confirmation link to</p>
       <div className="inline-block bg-white/5 border border-white/10 px-5 py-2.5 rounded-xl mb-10 shadow-[inset_0_2px_10px_rgba(0,0,0,0.2)] backdrop-blur-sm relative overflow-hidden group">
         <div className="absolute inset-0 bg-gradient-to-r from-brand-500/0 via-brand-500/10 to-brand-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
@@ -794,6 +750,12 @@ function PendingStep({ email }) {
 
 // ─── Status views (post-email-confirmation) ──────────────────
 function StatusView({ status, name, slot }) {
+  useEffect(() => {
+    if (status === 'confirmed' && typeof window.gtag === 'function') {
+      window.gtag('event', 'conversion', { send_to: 'AW-17270402441/9Dr9CL3t_6McEInblatA' })
+    }
+  }, [status])
+
   if (status === 'confirmed') return (
     <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.6, ease: 'easeOut', type: "spring", bounce: 0.4 }}
       className="py-12 text-center relative">
@@ -817,7 +779,7 @@ function StatusView({ status, name, slot }) {
         />
       </div>
 
-      <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="font-display font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-accent-300 via-white to-accent-300 text-4xl sm:text-5xl mb-4 tracking-tight drop-shadow-[0_0_15px_rgba(56,217,169,0.3)]">
+      <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="font-display font-bold text-transparent bg-clip-text bg-gradient-to-r from-accent-400 via-white to-accent-400 text-4xl sm:text-5xl mb-4 tracking-[0.02em]">
         You're All Set!
       </motion.h1>
       <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="text-white/70 font-body text-[16px] mb-8 max-w-md mx-auto leading-relaxed">
@@ -848,7 +810,7 @@ function StatusView({ status, name, slot }) {
       <div className="w-20 h-20 rounded-2xl bg-accent-500/15 border border-accent-500/30 flex items-center justify-center mx-auto mb-6 shadow-[0_0_40px_rgba(56,217,169,0.3)] backdrop-blur-md">
         <CheckCircle className="w-9 h-9 text-accent-400" />
       </div>
-      <h2 className="font-display font-extrabold text-white text-3xl mb-4">Already Confirmed</h2>
+      <h2 className="font-display font-bold text-white text-3xl mb-4">Already Confirmed</h2>
       <p className="text-white/60 font-body text-[15px] mb-8 max-w-sm mx-auto leading-relaxed">
         {name ? `Hi ${name}, your` : 'Your'} appointment was already confirmed previously. No further action is needed!
       </p>
@@ -861,7 +823,7 @@ function StatusView({ status, name, slot }) {
       <div className="w-20 h-20 rounded-2xl bg-yellow-500/15 border border-yellow-500/30 flex items-center justify-center mx-auto mb-6 shadow-[0_0_40px_rgba(234,179,8,0.3)] backdrop-blur-md">
         <AlertCircle className="w-9 h-9 text-yellow-400" />
       </div>
-      <h2 className="font-display font-extrabold text-white text-3xl mb-4">Link Expired</h2>
+      <h2 className="font-display font-bold text-white text-3xl mb-4">Link Expired</h2>
       <p className="text-white/60 font-body text-[15px] mb-8 max-w-sm mx-auto leading-relaxed">
         For security, confirmation links expire after 24 hours. Please select a new time slot to book your appointment.
       </p>
@@ -875,7 +837,7 @@ function StatusView({ status, name, slot }) {
       <div className="w-20 h-20 rounded-2xl bg-red-500/15 border border-red-500/30 flex items-center justify-center mx-auto mb-6 shadow-[0_0_40px_rgba(239,68,68,0.3)] backdrop-blur-md">
         <AlertCircle className="w-9 h-9 text-red-400" />
       </div>
-      <h2 className="font-display font-extrabold text-white text-3xl mb-4">Invalid Link</h2>
+      <h2 className="font-display font-bold text-white text-3xl mb-4">Invalid Link</h2>
       <p className="text-white/60 font-body text-[15px] mb-8 max-w-sm mx-auto leading-relaxed">
         This confirmation link is invalid or has already been used. Please try booking again.
       </p>
@@ -929,6 +891,7 @@ function BookingWizard({ onStepChange }) {
       })
       const data = await res.json()
       if (!res.ok) { setError(data.error || 'Something went wrong. Please try again.'); return }
+      /* GA4 conversion fires only on email confirmation (/booking?status=confirmed), not here */
       setStep(3)
     } catch {
       setError('Network error. Please check your connection and try again.')
@@ -994,6 +957,11 @@ export default function BookingPage() {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#02050a] selection:bg-brand-500/30 selection:text-brand-200">
+      <PageSEO
+        title="Book a Free Consultation | BizBackerz Virtual Assistants"
+        description="Schedule a free 30-minute discovery call with BizBackerz. Choose your time slot and start delegating your business tasks to expert virtual assistants within 48 hours."
+        canonical="https://bizbackerz.com/booking"
+      />
       <PageBackground />
 
       {/* Floating Abstract Shapes */}
@@ -1015,7 +983,7 @@ export default function BookingPage() {
               
               <div className="relative">
                 <div className="absolute -inset-4 opacity-20 bg-gradient-to-r from-brand-600 via-accent-500 to-brand-600 z-0 rounded-[3rem]" style={{ filter: 'blur(48px)' }} />
-                <h1 className="relative z-10 text-4xl sm:text-5xl lg:text-7xl font-display font-extrabold leading-[1.05] mb-6 tracking-tight perspective-1000">
+                <h1 className="relative z-10 text-4xl sm:text-5xl lg:text-7xl font-display font-bold leading-[1.05] mb-6 tracking-[0.02em] perspective-1000">
                   {isStatusView
                     ? 'Appointment Status'
                     : <>
@@ -1035,7 +1003,7 @@ export default function BookingPage() {
                           initial={{ opacity: 0, scale: 0.92 }}
                           animate={{ opacity: 1, scale: 1 }}
                           transition={{ delay: 0.7, duration: 0.8, ease: "easeOut" }}
-                          className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-brand-400 via-white to-accent-300 drop-shadow-[0_0_30px_rgba(42,139,255,0.4)]"
+                          className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-brand-400 via-white to-accent-400"
                         >
                           Book a Consultation
                         </motion.span>

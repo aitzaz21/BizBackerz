@@ -73,7 +73,7 @@ export default function Button({
   const isExternal = href?.startsWith('http')
   const isInternal = href && !isExternal
 
-  const cls = `inline-flex items-center justify-center gap-2 font-display font-semibold tracking-[-0.01em] rounded-xl transition-all duration-300 cursor-pointer select-none btn-shimmer ${variants[variant]} ${sizes[size]} ${className} ${disabled ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`
+  const cls = `inline-flex items-center justify-center gap-2 font-display font-semibold tracking-[0.01em] rounded-xl transition-all duration-300 cursor-pointer select-none btn-shimmer ${variants[variant]} ${sizes[size]} ${className} ${disabled ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`
 
   const spring = {
     whileHover: disabled ? {} : { scale: 1.035, y: -2 },

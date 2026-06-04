@@ -29,4 +29,15 @@ const bookingSchema = new mongoose.Schema({
 
 bookingSchema.index({ appointmentUTC: 1, status: 1 })
 
+/* Prevent two active bookings for the same slot at the database level.
+   Only enforced for pending/confirmed — cancelled slots can be re-booked. */
+bookingSchema.index(
+  { appointmentUTC: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { status: { $in: ['pending', 'confirmed'] } },
+    name: 'unique_active_slot',
+  }
+)
+
 export default mongoose.model('Booking', bookingSchema)

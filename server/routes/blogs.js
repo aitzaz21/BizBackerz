@@ -3,6 +3,28 @@ import Blog from '../models/Blog.js'
 
 const router = express.Router()
 
+/* ── GET /api/sitemap-blog.xml ──────────────────────────────── */
+router.get('/sitemap-blog.xml', async (req, res) => {
+  try {
+    const blogs = await Blog.find({ published: true }, { slug: 1, updatedAt: 1, createdAt: 1 })
+      .sort({ createdAt: -1 })
+      .lean()
+
+    const urls = blogs.map(b => {
+      const lastmod = (b.updatedAt || b.createdAt).toISOString().split('T')[0]
+      return `  <url>\n    <loc>https://bizbackerz.com/blog/${b.slug}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.7</priority>\n  </url>`
+    }).join('\n')
+
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>`
+
+    res.setHeader('Content-Type', 'application/xml; charset=utf-8')
+    res.setHeader('Cache-Control', 'public, max-age=3600')
+    return res.send(xml)
+  } catch (err) {
+    return res.status(500).send('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>')
+  }
+})
+
 /* ── GET /api/blogs ─────────────────────────────────────────── */
 router.get('/', async (req, res) => {
   try {

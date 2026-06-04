@@ -136,7 +136,7 @@ function ServiceCard({ service, index }) {
           {/* Title */}
           <h3 style={{
             fontFamily: '"Clash Display",sans-serif',
-            fontWeight: 700, fontSize: 13.5, letterSpacing: '-0.03em', lineHeight: 1.18,
+            fontWeight: 700, fontSize: 13.5, letterSpacing: '0.02em', lineHeight: 1.18,
             color: hovered ? '#fff' : '#dce8f8',
             marginBottom: 8, transition: 'color 0.3s',
           }}>
@@ -300,7 +300,7 @@ function DesktopServices() {
             </p>
           </div>
 
-          <h2 style={{ fontFamily: '"Clash Display",sans-serif', fontWeight: 700, letterSpacing: '-0.048em', lineHeight: 1.0, marginBottom: 8 }}>
+          <h2 style={{ fontFamily: '"Clash Display",sans-serif', fontWeight: 700, letterSpacing: '0.02em', lineHeight: 1.0, marginBottom: 8 }}>
             <div className="gsap-line-clip">
               <span data-svc-line style={{ display: 'block', fontSize: 'clamp(1.5rem, 2.4vw, 2.2rem)', color: '#fff' }}>
                 Everything
@@ -398,7 +398,7 @@ function MobileServices() {
       <Container>
         <div className="mb-8 max-w-xl">
           <span className="section-label mb-5 block">Our Services</span>
-          <h2 className="mt-5 mb-3 text-3xl font-display font-bold tracking-[-0.04em] sm:text-4xl">
+          <h2 className="mt-5 mb-3 text-3xl font-display font-bold tracking-[0.02em] sm:text-4xl">
             Everything Your Business <span className="text-gradient">Needs to Scale</span>
           </h2>
           <p className="max-w-md text-[14px] leading-relaxed text-white/35 font-body">

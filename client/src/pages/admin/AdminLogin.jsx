@@ -12,9 +12,12 @@ export default function AdminLogin() {
   const [loading, setLoading]   = useState(false)
   const navigate = useNavigate()
 
-  // redirect if already logged in
+  // redirect if already logged in (check cookie via verify endpoint)
   useEffect(() => {
-    if (localStorage.getItem('biz_admin_token')) navigate('/admin/dashboard', { replace: true })
+    fetch(`${API}/api/admin/verify`, { credentials: 'include' })
+      .then(r => r.json())
+      .then(d => { if (d.success) navigate('/admin/dashboard', { replace: true }) })
+      .catch(() => {})
   }, [navigate])
 
   async function handleSubmit(e) {
@@ -24,12 +27,15 @@ export default function AdminLogin() {
     try {
       const res  = await fetch(`${API}/api/admin/login`, {
         method: 'POST',
+        credentials: 'include',          // accept httpOnly cookie from server
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       })
       const data = await res.json()
       if (!data.success) { setError(data.error || 'Login failed.'); return }
-      localStorage.setItem('biz_admin_token', data.token)
+      /* Store token in localStorage as fallback for environments where
+         cookies don't work (different ports in dev, etc.) */
+      if (data.token) localStorage.setItem('biz_admin_token', data.token)
       navigate('/admin/dashboard', { replace: true })
     } catch {
       setError('Cannot reach the server. Is the backend running?')

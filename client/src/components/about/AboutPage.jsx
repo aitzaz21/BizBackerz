@@ -1,8 +1,9 @@
-import React, { Suspense, useEffect, useRef, useState } from 'react'
+import React, { Suspense, useEffect, useRef, useState, useMemo } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { motion, useInView } from 'framer-motion'
 import { Canvas } from '@react-three/fiber'
+import PageSEO from '../ui/PageSEO'
 import { Link } from 'react-router-dom'
 import Container from '../ui/Container'
 import Button from '../ui/Button'
@@ -27,8 +28,6 @@ import {
   UserCog,
   Users,
 } from 'lucide-react'
-
-gsap.registerPlugin(ScrollTrigger)
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:3001'
 
@@ -166,24 +165,28 @@ export default function AboutPage() {
       q('[data-sec-h2]').forEach((h2) => {
         gsap.from(h2, {
           opacity: 0, y: 30, duration: 0.9, ease: 'power3.out',
-          scrollTrigger: { trigger: h2, start: 'top 87%', toggleActions: 'play reverse play reverse' },
+          immediateRender: false,
+          scrollTrigger: { trigger: h2, start: 'top 73%', toggleActions: 'play reverse play reverse' },
         })
       })
       q('[data-sec-desc]').forEach((p) => {
         gsap.from(p, {
           opacity: 0, y: 22, duration: 0.85, ease: 'power2.out',
-          scrollTrigger: { trigger: p, start: 'top 88%', toggleActions: 'play reverse play reverse' },
+          immediateRender: false,
+          scrollTrigger: { trigger: p, start: 'top 74%', toggleActions: 'play reverse play reverse' },
         })
       })
 
       /* ── MANIFESTO — glyph drop + text reveal + scrub ─────────── */
       gsap.from('[data-manifesto-glyph]', {
         opacity: 0, y: 45, scale: 0.7, duration: 1.4, ease: 'power3.out',
-        scrollTrigger: { trigger: '[data-manifesto-section]', start: 'top 80%', toggleActions: 'play reverse play reverse' },
+        immediateRender: false,
+        scrollTrigger: { trigger: '[data-manifesto-section]', start: 'top 66%', toggleActions: 'play reverse play reverse' },
       })
       gsap.from('[data-manifesto-text]', {
         opacity: 0, y: 65, scale: 0.97, duration: 1.15, ease: 'power3.out',
-        scrollTrigger: { trigger: '[data-manifesto-section]', start: 'top 80%', toggleActions: 'play reverse play reverse' },
+        immediateRender: false,
+        scrollTrigger: { trigger: '[data-manifesto-section]', start: 'top 66%', toggleActions: 'play reverse play reverse' },
       })
       /* Subtle scrub parallax — drifts up as section passes */
       gsap.to('[data-manifesto-inner]', {
@@ -196,7 +199,8 @@ export default function AboutPage() {
         gsap.from(ch, {
           opacity: 0, x: i % 2 === 0 ? -55 : 55, y: 20, scale: 0.965,
           duration: 0.95, ease: 'power3.out',
-          scrollTrigger: { trigger: ch, start: 'top 86%', toggleActions: 'play reverse play reverse' },
+          immediateRender: false,
+          scrollTrigger: { trigger: ch, start: 'top 72%', toggleActions: 'play reverse play reverse' },
         })
       })
 
@@ -204,30 +208,34 @@ export default function AboutPage() {
       gsap.from('[data-process-item]', {
         opacity: 0, y: 55, scale: 0.93, stagger: 0.09, duration: 0.92, ease: 'power3.out',
         immediateRender: false,
-        scrollTrigger: { trigger: '[data-process-section]', start: 'top 82%', toggleActions: 'play reverse play reverse' },
+        scrollTrigger: { trigger: '[data-process-section]', start: 'top 68%', toggleActions: 'play reverse play reverse' },
       })
 
       /* ── STATS — back.out bounce ─────────────────────────────── */
       gsap.from('[data-stat-item]', {
         opacity: 0, y: 60, scale: 0.87, stagger: 0.12, duration: 1.0, ease: 'back.out(1.5)',
-        scrollTrigger: { trigger: '[data-stats-section]', start: 'top 82%', toggleActions: 'play reverse play reverse' },
+        immediateRender: false,
+        scrollTrigger: { trigger: '[data-stats-section]', start: 'top 68%', toggleActions: 'play reverse play reverse' },
       })
 
       /* ── VALUES — staggered fan up ───────────────────────────── */
       gsap.from('[data-value-item]', {
         opacity: 0, y: 40, scale: 0.93, stagger: 0.09, duration: 0.82, ease: 'power3.out',
-        scrollTrigger: { trigger: '[data-values-section]', start: 'top 82%', toggleActions: 'play reverse play reverse' },
+        immediateRender: false,
+        scrollTrigger: { trigger: '[data-values-section]', start: 'top 68%', toggleActions: 'play reverse play reverse' },
       })
 
       /* ── PRINCIPLES — left col slides from left, items from right ─ */
       gsap.from('[data-principles-left]', {
         opacity: 0, x: -48, duration: 1.0, ease: 'power3.out',
-        scrollTrigger: { trigger: '[data-principles-section]', start: 'top 82%', toggleActions: 'play reverse play reverse' },
+        immediateRender: false,
+        scrollTrigger: { trigger: '[data-principles-section]', start: 'top 68%', toggleActions: 'play reverse play reverse' },
       })
       q('[data-principle-item]').forEach((item, i) => {
         gsap.from(item, {
           opacity: 0, x: 42, y: 14, duration: 0.85, ease: 'power3.out', delay: i * 0.12,
-          scrollTrigger: { trigger: '[data-principles-section]', start: 'top 80%', toggleActions: 'play reverse play reverse' },
+          immediateRender: false,
+          scrollTrigger: { trigger: '[data-principles-section]', start: 'top 66%', toggleActions: 'play reverse play reverse' },
         })
       })
 
@@ -236,22 +244,26 @@ export default function AboutPage() {
         gsap.from(item, {
           opacity: 0, y: 36, scale: 0.94, rotateY: i % 2 === 0 ? -9 : 9,
           duration: 0.85, ease: 'power3.out', delay: i * 0.09,
-          scrollTrigger: { trigger: '[data-team-section]', start: 'top 82%', toggleActions: 'play reverse play reverse' },
+          immediateRender: false,
+          scrollTrigger: { trigger: '[data-team-section]', start: 'top 68%', toggleActions: 'play reverse play reverse' },
         })
       })
 
       /* ── CINEMATIC ORBITAL SECTION ───────────────────────────── */
       gsap.from('[data-cinematic-core]', {
         opacity: 0, scale: 0.5, duration: 1.5, ease: 'power3.out',
-        scrollTrigger: { trigger: '[data-cinematic-section]', start: 'top 75%', toggleActions: 'play reverse play reverse' },
+        immediateRender: false,
+        scrollTrigger: { trigger: '[data-cinematic-section]', start: 'top 61%', toggleActions: 'play reverse play reverse' },
       })
       gsap.from('[data-cinematic-stat]', {
         opacity: 0, y: 28, scale: 0.88, stagger: 0.09, duration: 0.82, ease: 'power3.out',
-        scrollTrigger: { trigger: '[data-cinematic-section]', start: 'top 65%', toggleActions: 'play reverse play reverse' },
+        immediateRender: false,
+        scrollTrigger: { trigger: '[data-cinematic-section]', start: 'top 53%', toggleActions: 'play reverse play reverse' },
       })
       gsap.from('[data-cinematic-badges]', {
         opacity: 0, y: 24, duration: 0.88, ease: 'power2.out',
-        scrollTrigger: { trigger: '[data-cinematic-section]', start: 'top 55%', toggleActions: 'play reverse play reverse' },
+        immediateRender: false,
+        scrollTrigger: { trigger: '[data-cinematic-section]', start: 'top 45%', toggleActions: 'play reverse play reverse' },
       })
       /* Scrub: core drifts upward as you scroll past */
       gsap.to('[data-cinematic-core]', {
@@ -262,18 +274,20 @@ export default function AboutPage() {
       /* ── CLIENT PROOF ────────────────────────────────────────── */
       gsap.from('[data-proof-item]', {
         opacity: 0, y: 44, scale: 0.94, stagger: 0.1, duration: 0.92, ease: 'power3.out',
-        scrollTrigger: { trigger: '[data-proof-section]', start: 'top 82%', toggleActions: 'play reverse play reverse' },
+        immediateRender: false,
+        scrollTrigger: { trigger: '[data-proof-section]', start: 'top 68%', toggleActions: 'play reverse play reverse' },
       })
 
       /* ── TESTIMONIALS ────────────────────────────────────────── */
       gsap.from('[data-testimonial-item]', {
         opacity: 0, y: 40, scale: 0.93, stagger: 0.1, duration: 0.88, ease: 'power3.out',
-        scrollTrigger: { trigger: '[data-testimonials-section]', start: 'top 82%', toggleActions: 'play reverse play reverse' },
+        immediateRender: false,
+        scrollTrigger: { trigger: '[data-testimonials-section]', start: 'top 68%', toggleActions: 'play reverse play reverse' },
       })
 
       /* ── OUTRO ────────────────────────────────────────────────── */
       const outroTl = gsap.timeline({
-        scrollTrigger: { trigger: '[data-outro-section]', start: 'top 78%', toggleActions: 'play reverse play reverse' },
+        scrollTrigger: { trigger: '[data-outro-section]', start: 'top 64%', toggleActions: 'play reverse play reverse' },
       })
       outroTl
         .from('[data-outro-pin]',   { y: -32, opacity: 0, scale: 0.55, duration: 0.9, ease: 'back.out(1.8)' })
@@ -325,8 +339,36 @@ export default function AboutPage() {
     { icon: Target,      title: 'Precision in every detail.',             body: 'From email management to data entry, we execute with absolute accuracy so you never have to double-check our work.', color: '#f59e0b' },
   ]
 
+  const aboutSchema = useMemo(() => ([
+    {
+      '@context': 'https://schema.org',
+      '@type': 'AboutPage',
+      '@id': 'https://bizbackerz.com/about#webpage',
+      url: 'https://bizbackerz.com/about',
+      name: 'About BizBackerz',
+      description: 'BizBackerz is a virtual assistance agency founded in 2024, headquartered in London, UK, helping 50+ businesses delegate routine tasks to expert virtual assistants.',
+      isPartOf: { '@id': 'https://bizbackerz.com/#website' },
+      about: { '@id': 'https://bizbackerz.com/#organization' },
+      mainEntity: { '@id': 'https://bizbackerz.com/#organization' },
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://bizbackerz.com/' },
+        { '@type': 'ListItem', position: 2, name: 'About BizBackerz', item: 'https://bizbackerz.com/about' },
+      ],
+    },
+  ]), [])
+
   return (
     <div ref={pageRef} className="about-page-shell relative overflow-hidden bg-navy-950">
+      <PageSEO
+        title="About BizBackerz – Your Virtual Assistance Partner"
+        description="BizBackerz is a UK-based virtual assistance agency founded in 2024, helping 50+ businesses in the US and UK save 10+ hours a week. Expert virtual assistants for admin, marketing, customer support, and more. 48-hour setup."
+        canonical="https://bizbackerz.com/about"
+        schema={aboutSchema}
+      />
       <ScrollProgress />
 
       {/* ── Global BG ── */}
@@ -380,7 +422,7 @@ export default function AboutPage() {
 
               {/* heading — 3 lines, fits above fold */}
               <div className="mb-8 sm:mb-10">
-                <h1 className="font-display font-bold tracking-[-0.045em] text-white">
+                <h1 className="font-display font-bold tracking-[0.02em] text-white">
                   {[
                     { text: '3+ Years',             cls: '' },
                     { text: 'of Combined',          cls: 'text-white/60' },
@@ -483,14 +525,14 @@ export default function AboutPage() {
                   text="We don't just manage tasks."
                   as="p"
                   delay={0}
-                  className="font-display font-bold tracking-[-0.045em] text-white"
+                  className="font-display font-bold tracking-[0.02em] text-white"
                   style={{ fontSize: 'clamp(2.1rem,5vw,4.2rem)', lineHeight: 1.04 }}
                 />
                 <SplitWords
                   text="We protect your momentum."
                   as="p"
                   delay={0.3}
-                  className="font-display font-bold tracking-[-0.045em] text-gradient mt-1"
+                  className="font-display font-bold tracking-[0.02em] text-gradient mt-1"
                   style={{ fontSize: 'clamp(2.1rem,5vw,4.2rem)', lineHeight: 1.04 }}
                 />
               </div>
@@ -921,7 +963,7 @@ export default function AboutPage() {
                 {/* THE NUMBER */}
                 <div className="relative z-10 text-center">
                   <div
-                    className="font-display font-black text-gradient"
+                    className="font-display font-bold text-gradient"
                     style={{ fontSize: 'clamp(6.5rem,18vw,13rem)', lineHeight: 0.88, letterSpacing: '-0.06em' }}
                   >
                     3+
@@ -957,7 +999,7 @@ export default function AboutPage() {
                       style={{ background: `radial-gradient(ellipse at top left, ${s.color}14, transparent 60%)` }} />
                     <div className="absolute top-0 left-0 right-0 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-400"
                       style={{ background: `linear-gradient(90deg,transparent,${s.color}50,transparent)` }} />
-                    <div className="font-display font-black leading-none mb-2" style={{ fontSize: '2.6rem', color: s.color }}>{s.n}</div>
+                    <div className="font-display font-bold leading-none mb-2" style={{ fontSize: '2.6rem', color: s.color }}>{s.n}</div>
                     <p className="text-[9.5px] font-body font-bold uppercase tracking-[0.2em] text-white/38">{s.label}</p>
                     <div className="w-full h-[1.5px] bg-white/6 rounded-full overflow-hidden mt-3">
                       <div className="h-full rounded-full transition-all duration-1000" style={{ width: `${s.pct}%`, background: `linear-gradient(90deg, ${s.color}, ${s.color}88)` }} />
@@ -1236,14 +1278,14 @@ export default function AboutPage() {
                 <SplitWords
                   text="Remote. Global."
                   as="h2"
-                  className="font-display font-black text-white tracking-[-0.055em]"
+                  className="font-display font-bold text-white tracking-[0.02em]"
                   style={{ fontSize: 'clamp(2.6rem, 7.5vw, 6.5rem)', lineHeight: 0.92 }}
                 />
                 <SplitWords
                   text="Always On."
                   as="h2"
                   delay={0.18}
-                  className="font-display font-black text-gradient tracking-[-0.055em]"
+                  className="font-display font-bold text-gradient tracking-[0.02em]"
                   style={{ fontSize: 'clamp(2.6rem, 7.5vw, 6.5rem)', lineHeight: 0.92 }}
                 />
               </div>

@@ -1,10 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState, useMemo } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Container from '../../components/ui/Container'
 import Button from '../../components/ui/Button'
+import PageSEO from '../../components/ui/PageSEO'
 import { getServiceBySlug } from '../../data/servicesData'
 import {
   Calendar, CalendarDays, Mail, Database, FileText, Phone, RefreshCw,
@@ -120,8 +121,86 @@ export default function ServiceDetailPage() {
 
   if (!service) return null
 
+  /* ── All schemas — memoised by slug so PageSEO doesn't re-fire on every render ── */
+  const pageSchema = useMemo(() => {
+  const serviceSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    '@id': `https://bizbackerz.com/services/${service.slug}#service`,
+    name: service.title,
+    description: service.seo?.description || service.heroDescription,
+    provider: {
+      '@type': 'Organization',
+      '@id': 'https://bizbackerz.com/#organization',
+      name: 'BizBackerz',
+      url: 'https://bizbackerz.com',
+    },
+    serviceType: service.title,
+    category: service.category,
+    areaServed: [
+      { '@type': 'Country', name: 'United States' },
+      { '@type': 'Country', name: 'United Kingdom' },
+    ],
+    url: `https://bizbackerz.com/services/${service.slug}`,
+    ...(service.heroStats?.[0] && {
+      offers: {
+        '@type': 'Offer',
+        description: `${service.title} — ${service.heroStats.map(s => `${s.value} ${s.label}`).join(', ')}`,
+        seller: { '@type': 'Organization', name: 'BizBackerz' },
+      },
+    }),
+  }
+
+  /* ── FAQPage schema from service.faqs ── */
+  const faqSchema = service.faqs?.length ? {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: service.faqs.map(f => ({
+      '@type': 'Question',
+      name: f.question,
+      acceptedAnswer: { '@type': 'Answer', text: f.answer },
+    })),
+  } : null
+
+  /* ── HowTo schema from service.process ── */
+  const howToSchema = service.process?.length ? {
+    '@context': 'https://schema.org',
+    '@type': 'HowTo',
+    name: `How ${service.title} Works at BizBackerz`,
+    description: `Step-by-step process for getting started with BizBackerz ${service.title} service.`,
+    totalTime: 'PT48H',
+    estimatedCost: { '@type': 'MonetaryAmount', currency: 'USD', value: '0', description: 'Free discovery call — no commitment required' },
+    step: service.process.map((p, i) => ({
+      '@type': 'HowToStep',
+      position: i + 1,
+      name: p.title,
+      text: p.description,
+    })),
+  } : null
+
+  /* ── BreadcrumbList ── */
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home',     item: 'https://bizbackerz.com/' },
+      { '@type': 'ListItem', position: 2, name: 'Services', item: 'https://bizbackerz.com/services' },
+      { '@type': 'ListItem', position: 3, name: service.title, item: `https://bizbackerz.com/services/${service.slug}` },
+    ],
+  }
+
+  /* Combine all schemas into an array */
+  return [serviceSchema, breadcrumbSchema, faqSchema, howToSchema].filter(Boolean)
+  }, [service.slug]) // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
     <div ref={pageRef} style={{ background: 'rgba(3,9,18,1)', minHeight: '100vh' }}>
+      <PageSEO
+        title={service.seo?.title || `${service.title} Services | BizBackerz`}
+        description={service.seo?.description || service.heroDescription}
+        canonical={`https://bizbackerz.com/services/${service.slug}`}
+        schema={pageSchema}
+      />
 
       {/* ══════════════════════════════════════
           § 1  HERO
@@ -165,7 +244,7 @@ export default function ServiceDetailPage() {
 
               {/* Heading */}
               <div data-sd-hero className="mb-5">
-                <h1 className="font-display font-bold leading-[0.95] tracking-[-0.045em]">
+                <h1 className="font-display font-bold leading-[0.95] tracking-[0.02em]">
                   <div className="gsap-line-clip" style={{ paddingBottom:'0.04em' }}>
                     <span className="block text-4xl sm:text-5xl lg:text-[3.8rem] xl:text-[4.6rem] text-white">{service.title}</span>
                   </div>
@@ -290,7 +369,7 @@ export default function ServiceDetailPage() {
                 <span className="section-label">What We Do</span>
               </motion.div>
               <motion.h2 initial={{ opacity:0,y:22 }} whileInView={{ opacity:1,y:0 }} viewport={{ once:false, amount:0.3 }} transition={{ duration:1.1,delay:0.12, ease:'easeOut' }}
-                className="font-display font-bold tracking-[-0.04em] text-3xl sm:text-4xl lg:text-[2.9rem] leading-[1.06] text-white">
+                className="font-display font-bold tracking-[0.02em] text-3xl sm:text-4xl lg:text-[2.9rem] leading-[1.06] text-white">
                 What We Handle <span className="text-gradient">For You</span>
               </motion.h2>
             </div>
@@ -374,7 +453,7 @@ export default function ServiceDetailPage() {
               <span className="section-label">Why BizBackerz</span>
             </motion.div>
             <motion.h2 initial={{ opacity:0,y:22 }} whileInView={{ opacity:1,y:0 }} viewport={{ once:false, amount:0.3 }} transition={{ duration:1.1,delay:0.12, ease:'easeOut' }}
-              className="font-display font-bold tracking-[-0.04em] text-3xl sm:text-4xl lg:text-[2.9rem] leading-[1.06] text-white">
+              className="font-display font-bold tracking-[0.02em] text-3xl sm:text-4xl lg:text-[2.9rem] leading-[1.06] text-white">
               Built for Results, <span className="text-gradient">Not Just Tasks</span>
             </motion.h2>
           </div>
@@ -428,7 +507,7 @@ export default function ServiceDetailPage() {
               <span className="section-label">Process</span>
             </motion.div>
             <motion.h2 initial={{ opacity:0,y:22 }} whileInView={{ opacity:1,y:0 }} viewport={{ once:false, amount:0.3 }} transition={{ duration:1.1,delay:0.12, ease:'easeOut' }}
-              className="font-display font-bold tracking-[-0.04em] text-3xl sm:text-4xl lg:text-[2.9rem] leading-[1.06] text-white mb-4">
+              className="font-display font-bold tracking-[0.02em] text-3xl sm:text-4xl lg:text-[2.9rem] leading-[1.06] text-white mb-4">
               How It <span className="text-gradient">Works</span>
             </motion.h2>
             <motion.p initial={{ opacity:0 }} whileInView={{ opacity:1 }} viewport={{ once:false, amount:0.3 }} transition={{ duration:1.0,delay:0.24, ease:'easeOut' }}
@@ -492,7 +571,7 @@ export default function ServiceDetailPage() {
               <span className="section-label">Results</span>
             </motion.div>
             <motion.h2 initial={{ opacity:0,y:22 }} whileInView={{ opacity:1,y:0 }} viewport={{ once:false, amount:0.3 }} transition={{ duration:1.1,delay:0.12, ease:'easeOut' }}
-              className="font-display font-bold tracking-[-0.04em] text-3xl sm:text-4xl lg:text-[2.9rem] leading-[1.06] text-white">
+              className="font-display font-bold tracking-[0.02em] text-3xl sm:text-4xl lg:text-[2.9rem] leading-[1.06] text-white">
               The Numbers <span className="text-gradient">Speak For Themselves</span>
             </motion.h2>
           </div>
@@ -600,7 +679,7 @@ export default function ServiceDetailPage() {
                 <span className="section-label">FAQ</span>
               </motion.div>
               <motion.h2 initial={{ opacity:0,y:22 }} whileInView={{ opacity:1,y:0 }} viewport={{ once:false, amount:0.3 }} transition={{ duration:1.1,delay:0.12, ease:'easeOut' }}
-                className="font-display font-bold tracking-[-0.04em] text-3xl lg:text-[2.4rem] leading-[1.1] text-white mb-5">
+                className="font-display font-bold tracking-[0.02em] text-3xl lg:text-[2.4rem] leading-[1.1] text-white mb-5">
                 Frequently <br /><span className="text-gradient">Asked Questions</span>
               </motion.h2>
               <motion.p initial={{ opacity:0 }} whileInView={{ opacity:1 }} viewport={{ once:false, amount:0.3 }} transition={{ duration:1.0,delay:0.24, ease:'easeOut' }}
@@ -654,7 +733,7 @@ export default function ServiceDetailPage() {
                 <span className="section-label">Get Started</span>
               </div>
 
-              <h2 className="font-display font-bold tracking-[-0.04em] text-3xl sm:text-4xl lg:text-[3.2rem] leading-[1.05] text-white mb-5">
+              <h2 className="font-display font-bold tracking-[0.02em] text-3xl sm:text-4xl lg:text-[3.2rem] leading-[1.05] text-white mb-5">
                 Ready to <span className="text-gradient">Delegate</span> and Dominate?
               </h2>
               <p className="text-white/42 text-[15.5px] leading-relaxed font-body mb-9 max-w-xl mx-auto">

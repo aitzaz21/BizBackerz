@@ -5,11 +5,9 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Lenis from 'lenis'
 import Navbar from './components/layout/Navbar'
 import Footer from './components/layout/Footer'
-import CustomCursor from './components/ui/CustomCursor'
 import SiteLoader from './components/ui/SiteLoader'
 import FloatingCTA from './components/ui/FloatingCTA'
-
-gsap.registerPlugin(ScrollTrigger)
+import CookieConsent from './components/ui/CookieConsent'
 
 /* ── CSS gradient shown when WebGL fails or is unavailable ── */
 const SceneCSSFallback = () => (
@@ -71,7 +69,7 @@ function TrailingSlashHandler() {
         { replace: true }
       )
     }
-  }, [location.pathname])
+  }, [location.pathname, location.search, location.hash, navigate])
   return null
 }
 
@@ -93,6 +91,7 @@ const FAQPage           = lazy(() => import('./pages/FAQPage'))
 const SceneWrapper      = lazy(() => import('./components/3d/SceneWrapper'))
 const AdminLogin        = lazy(() => import('./pages/admin/AdminLogin'))
 const AdminDashboard    = lazy(() => import('./pages/admin/AdminDashboard'))
+const SeoCheckPage      = import.meta.env.DEV ? lazy(() => import('./pages/SeoCheckPage')) : null
 
 function NotFoundPage() {
   return (
@@ -181,8 +180,8 @@ function AppContent({ onLoaded }) {
   return (
     <div className="relative min-h-screen">
       <TrailingSlashHandler />
-      <CustomCursor />
       <FloatingCTA />
+      <CookieConsent />
 
       {isHome && (
         <SceneErrorBoundary>
@@ -245,6 +244,11 @@ function AppContent({ onLoaded }) {
               <Route path="/tag/*"               element={<Navigate to="/blog"    replace />} />
               <Route path="/author/*"            element={<Navigate to="/"        replace />} />
               <Route path="/page/:n"             element={<Navigate to="/blog"    replace />} />
+
+              {/* Dev-only SEO check dashboard */}
+              {import.meta.env.DEV && SeoCheckPage && (
+                <Route path="/seo-check" element={<SeoCheckPage />} />
+              )}
 
               <Route path="*"                    element={<NotFoundPage />} />
             </Routes>

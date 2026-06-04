@@ -3,20 +3,189 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="BizBackerz – Dedicated Virtual Assistance. Delegate to Dominate." />
-    <title>BizBackerz – Delegate to Dominate</title>
-    <link rel="preconnect" href="https://api.fontshare.com" />
-    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@200,300,400,500,600,700&f[]=cabinet-grotesk@100,200,300,400,500,600,700,800,900&display=swap" rel="stylesheet" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+    <!-- ══════════════════════════════════════════
+         PRIMARY META — Lighthouse SEO audit
+         ══════════════════════════════════════════ -->
+    <title>BizBackerz – Delegate to Dominate | Virtual Assistance</title>
+    <meta name="title"       content="BizBackerz – Delegate to Dominate | Virtual Assistance" />
+    <meta name="description" content="BizBackerz offers dedicated virtual assistance — admin support, social media management, lead generation, customer support, and more. Delegate to dominate your business." />
+    <meta name="keywords"    content="virtual assistant, virtual assistance, business support, administrative support, social media management, lead generation, customer support, BizBackerz" />
+    <meta name="author"      content="BizBackerz" />
+    <meta name="robots"      content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <meta name="theme-color" content="#030912" />
+    <meta name="color-scheme" content="dark" />
+
+    <!-- ══════════════════════════════════════════
+         AI / GEO ENTITY SIGNALS
+         Helps LLMs (ChatGPT, Perplexity, Gemini,
+         Claude) identify and cite this business.
+         ══════════════════════════════════════════ -->
+    <meta name="subject"           content="Virtual Assistance Services" />
+    <meta name="classification"    content="Business Services, Virtual Assistance, Digital Marketing" />
+    <meta name="category"          content="Virtual Assistant Agency" />
+    <meta name="coverage"          content="US, UK, Global Remote" />
+    <meta name="target"            content="Business owners, founders, entrepreneurs" />
+    <meta name="HandheldFriendly"  content="True" />
+    <meta name="MobileOptimized"   content="320" />
+    <meta name="rating"            content="general" />
+    <meta name="revisit-after"     content="7 days" />
+    <!-- AI summary — some AI systems read this as a quick entity brief -->
+    <meta name="abstract"          content="BizBackerz is a UK-based virtual assistance agency founded in 2024, serving 50+ businesses in the US and UK. Services: digital advertising, admin support, social media, lead generation, customer support, content creation, project management, accounting, marketing, e-commerce. Tagline: Delegate to Dominate. Rating: 5.0/5.0 Google." />
+    <meta name="topic"             content="Virtual Assistant Services for Business Owners" />
+    <meta name="language"          content="English" />
+    <meta name="geo.region"        content="GB" />
+    <meta name="geo.placename"     content="London, United Kingdom" />
+    <meta name="geo.position"      content="51.5074;-0.1278" />
+    <meta name="ICBM"              content="51.5074, -0.1278" />
+
+    <!-- Canonical — prevents duplicate-content penalties -->
+    <link rel="canonical" href="https://bizbackerz.com/" />
+
+    <!-- Sitemap discovery for crawlers that read HTML -->
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
+
+    <!-- ══════════════════════════════════════════
+         OPEN GRAPH — social sharing preview
+         ══════════════════════════════════════════ -->
+    <meta property="og:type"        content="website" />
+    <meta property="og:url"         content="https://bizbackerz.com/" />
+    <meta property="og:title"       content="BizBackerz – Delegate to Dominate | Virtual Assistance" />
+    <meta property="og:description" content="BizBackerz offers dedicated virtual assistance — admin support, social media management, lead generation, and customer support. Delegate to dominate." />
+    <meta property="og:image"       content="https://bizbackerz.com/og-image.jpg" />
+    <meta property="og:image:alt"   content="BizBackerz – Dedicated Virtual Assistance" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name"   content="BizBackerz" />
+    <meta property="og:locale"      content="en_US" />
+
+    <!-- ══════════════════════════════════════════
+         TWITTER CARD
+         ══════════════════════════════════════════ -->
+    <meta name="twitter:card"        content="summary_large_image" />
+    <meta name="twitter:site"        content="@bizbackerz" />
+    <meta name="twitter:creator"     content="@bizbackerz" />
+    <meta name="twitter:url"         content="https://bizbackerz.com/" />
+    <meta name="twitter:title"       content="BizBackerz – Delegate to Dominate | Virtual Assistance" />
+    <meta name="twitter:description" content="BizBackerz offers dedicated virtual assistance — admin, social media, lead generation, and customer support. Delegate to dominate." />
+    <meta name="twitter:image"       content="https://bizbackerz.com/og-image.jpg" />
+    <meta name="twitter:image:alt"   content="BizBackerz – Dedicated Virtual Assistance" />
+
+    <!-- ══════════════════════════════════════════
+         ICONS / PWA
+         ══════════════════════════════════════════ -->
+    <link rel="icon"             type="image/png" href="/logo/navbar.png" />
+    <link rel="apple-touch-icon"                  href="/logo/navbar.png" />
+    <link rel="manifest"                          href="/site.webmanifest" />
+
+    <!-- ══════════════════════════════════════════
+         PERFORMANCE — Resource hints
+         preconnect beats dns-prefetch; list both so
+         older browsers still benefit from dns-prefetch
+         ══════════════════════════════════════════ -->
+    <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-    <link rel="icon" type="image/png" href="/logo/navbar.png" />
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17270402441"></script>
+    <link rel="dns-prefetch" href="//www.googletagmanager.com" />
+    <link rel="dns-prefetch" href="//www.google-analytics.com" />
+
+    <!-- ══════════════════════════════════════════
+         FONTS — non-render-blocking async load
+         Prevents external CSS from stalling FCP/LCP.
+         noscript fallbacks ensure fonts load without JS.
+         ══════════════════════════════════════════ -->
+    <link rel="preload" as="style"
+      href="https://api.fontshare.com/v2/css?f[]=clash-display@400,600,700&f[]=cabinet-grotesk@400,600,700,800&display=swap"
+      onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript>
+      <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@400,600,700&f[]=cabinet-grotesk@400,600,700,800&display=swap" />
+    </noscript>
+    <link rel="preload" as="style"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;700;800&display=swap"
+      onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;700;800&display=swap" />
+    </noscript>
+
+    <!-- ══════════════════════════════════════════
+         STRUCTURED DATA — JSON-LD
+         Lighthouse SEO audit + Google rich results
+         ══════════════════════════════════════════ -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "BizBackerz",
+      "alternateName": "BizBackerz Virtual Assistance",
+      "url": "https://bizbackerz.com",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://bizbackerz.com/logo/navbar.png"
+      },
+      "description": "Dedicated virtual assistance services — administrative support, social media management, lead generation, customer support, content creation, and more.",
+      "telephone": "+1-904-668-6362",
+      "email": "bizbackerz@gmail.com",
+      "address": [
+        {
+          "@type": "PostalAddress",
+          "addressLocality": "London",
+          "addressCountry": "GB"
+        },
+        {
+          "@type": "PostalAddress",
+          "addressRegion": "Florida",
+          "addressCountry": "US"
+        }
+      ],
+      "sameAs": [
+        "https://www.facebook.com/BizBackerz",
+        "https://www.instagram.com/bizbackerzltd/",
+        "https://www.linkedin.com/company/105424987/"
+      ],
+      "openingHoursSpecification": {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"],
+        "opens": "11:00",
+        "closes": "20:00"
+      },
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Virtual Assistance Services",
+        "itemListElement": [
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Administrative Support" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Social Media Management" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Lead Generation" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Customer Support" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Content Creation" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Accounting Services" } }
+        ]
+      }
+    }
+    </script>
+
+    <!-- ══════════════════════════════════════════
+         GOOGLE CONSENT MODE v2
+         Must fire BEFORE gtag.js loads.
+         Only one gtag() declaration is needed —
+         the function is re-used by both blocks.
+         ══════════════════════════════════════════ -->
     <script>
       window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
+      function gtag(){ dataLayer.push(arguments); }
+      gtag('consent', 'default', {
+        analytics_storage:   'denied',
+        ad_storage:          'denied',
+        ad_user_data:        'denied',
+        ad_personalization:  'denied',
+        wait_for_update:     500,
+      });
+    </script>
+
+    <!-- Google tag (gtag.js) — loaded async so it never blocks rendering -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RHJ9SR8KPK"></script>
+    <script>
       gtag('js', new Date());
+      gtag('config', 'G-RHJ9SR8KPK');
       gtag('config', 'AW-17270402441');
     </script>
   </head>

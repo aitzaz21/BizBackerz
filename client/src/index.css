@@ -36,10 +36,10 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 1.05;
 }
 
-h1 { letter-spacing: -0.02em;  font-weight: 700; }
-h2 { letter-spacing: -0.018em; font-weight: 700; }
-h3 { letter-spacing: -0.01em;  font-weight: 600; }
-h4 { letter-spacing: -0.004em; font-weight: 500; }
+h1 { letter-spacing: 0.02em;  font-weight: 700; }
+h2 { letter-spacing: 0.02em;  font-weight: 700; }
+h3 { letter-spacing: 0.01em;  font-weight: 600; }
+h4 { letter-spacing: 0.005em; font-weight: 500; }
 
 /* Standalone paragraphs — much more readable on dark bg */
 p { color: #a8b8cc; line-height: 1.8; }
@@ -90,6 +90,11 @@ p { color: #a8b8cc; line-height: 1.8; }
 @keyframes marquee {
   0%   { transform: translateX(0); }
   100% { transform: translateX(-50%); }
+}
+
+@keyframes marquee-reverse {
+  0%   { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
 }
 
 @keyframes float {
@@ -185,48 +190,11 @@ p { color: #a8b8cc; line-height: 1.8; }
   100% { stroke-dashoffset: 0;    opacity: 0; }
 }
 
-@keyframes orbit {
-  0%   { transform: rotate(0deg)   translateX(22px) rotate(0deg);   }
-  100% { transform: rotate(360deg) translateX(22px) rotate(-360deg); }
-}
-
-@keyframes line-draw-x {
-  0%   { transform: scaleX(0); transform-origin: left center; }
-  100% { transform: scaleX(1); transform-origin: left center; }
-}
-
-@keyframes line-draw-y {
-  0%   { transform: scaleY(0); transform-origin: top center; }
-  100% { transform: scaleY(1); transform-origin: top center; }
-}
-
 @keyframes text-shimmer-reveal {
   0%   { background-position: -200% center; }
   100% { background-position: 200%  center; }
 }
 
-@keyframes count-ring-fill {
-  0%   { stroke-dashoffset: 283; }
-  100% { stroke-dashoffset: 0;   }
-}
-
-@keyframes morph-blob {
-  0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
-  25%       { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
-  50%       { border-radius: 50% 60% 30% 60% / 30% 40% 70% 50%; }
-  75%       { border-radius: 40% 60% 60% 40% / 60% 30% 60% 40%; }
-}
-
-@keyframes hero-glow-pulse {
-  0%, 100% { text-shadow: 0 0 80px rgba(42,139,255,0.0); }
-  50%       { text-shadow: 0 0 80px rgba(42,139,255,0.18), 0 0 160px rgba(42,139,255,0.06); }
-}
-
-@keyframes spotlight-drift {
-  0%, 100% { transform: translate(-5%,  -5%); }
-  33%       { transform: translate( 8%,  12%); }
-  66%       { transform: translate(-10%,  5%); }
-}
 
 /* ═══════════════════════════════════
    UTILITIES
@@ -492,13 +460,6 @@ html.lenis, html.lenis body {
   transform: scale(1.15);
 }
 
-/* ═══════════════════════════════════
-   NEW ANIMATION UTILITIES
-   ═══════════════════════════════════ */
-.animate-orbit       { animation: orbit 6s linear infinite; }
-.animate-morph       { animation: morph-blob 10s ease-in-out infinite; }
-.animate-hero-glow   { animation: hero-glow-pulse 4s ease-in-out infinite; }
-
 .text-shimmer {
   background: linear-gradient(90deg,
     rgba(255,255,255,0.55) 0%,
@@ -522,26 +483,6 @@ html.lenis, html.lenis body {
     inset 0 1px 0 rgba(255,255,255,0.07),
     inset 0 -1px 0 rgba(0,0,0,0.16);
 }
-
-.gradient-border-card {
-  position: relative;
-}
-.gradient-border-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1px;
-  background: linear-gradient(135deg, rgba(42,139,255,0.45), transparent 50%, rgba(56,217,169,0.35));
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  opacity: 0;
-  transition: opacity 0.5s ease;
-  pointer-events: none;
-}
-.gradient-border-card:hover::before { opacity: 1; }
 
 /* ── Hero glow orb float (desktop only — animated blur = GPU crash on Android) ── */
 .hero-glow-orb-float {
@@ -573,12 +514,28 @@ html.lenis, html.lenis body {
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
+/* ─── CUSTOM SCROLLBAR (for booking slot picker) ─── */
+.custom-scrollbar::-webkit-scrollbar { width: 4px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); border-radius: 4px; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+
 /* ═══════════════════════════════════
    MOBILE / TOUCH OVERRIDES
    ═══════════════════════════════════ */
 @media (max-width: 1023px) {
   /* GSAP line-clip wrappers: show overflow so text wraps freely */
   .gsap-line-clip { overflow: visible; }
+
+  /* Hero section: ensure content is never clipped vertically on mobile.
+     The section uses overflow:hidden to clip decorative bg rings — but on
+     mobile the rings are hidden (via Tailwind hidden lg:block), so we
+     only need horizontal clipping. overflow-x:clip avoids creating a new
+     BFC while still clipping any stray horizontal overflow. */
+  #hero {
+    overflow-x: clip;
+    overflow-y: visible;
+  }
 
   /* Blog sticky search bar: disable blur on mobile */
   .blog-sticky-bar {

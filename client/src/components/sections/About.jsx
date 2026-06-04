@@ -36,57 +36,65 @@ export default function About() {
       /* ── Label slide from left ── */
       gsap.from('[data-ab-label]', {
         opacity: 0, x: -32, duration: 1.2, ease: 'power3.out',
-        scrollTrigger: { trigger: el, start: 'top 78%', toggleActions: 'play reverse play reverse' },
+        immediateRender: false,
+        scrollTrigger: { trigger: el, start: 'top 64%', toggleActions: 'play reverse play reverse' },
       })
 
       /* ── Heading lines: clip-reveal upward ── */
       gsap.from('[data-ab-line]', {
         yPercent: 110, duration: 1.5, stagger: 0.12, ease: 'power4.out',
-        scrollTrigger: { trigger: el, start: 'top 75%', toggleActions: 'play reverse play reverse' },
+        immediateRender: false,
+        scrollTrigger: { trigger: el, start: 'top 61%', toggleActions: 'play reverse play reverse' },
       })
 
       /* ── Body text + checklist: stagger fade up ── */
       gsap.from('[data-ab-body]', {
         opacity: 0, y: 32, duration: 1.1, stagger: 0.12, ease: 'power3.out',
-        scrollTrigger: { trigger: el, start: 'top 68%', toggleActions: 'play reverse play reverse' },
+        immediateRender: false,
+        scrollTrigger: { trigger: el, start: 'top 56%', toggleActions: 'play reverse play reverse' },
       })
 
       /* ── Left visual: depth reveal with perspective ── */
       gsap.from('[data-ab-visual]', {
         opacity: 0, x: -90, rotateY: -14, scale: 0.94,
         duration: 1.5, ease: 'power3.out', transformPerspective: 1000,
-        scrollTrigger: { trigger: el, start: 'top 76%', toggleActions: 'play reverse play reverse' },
+        immediateRender: false,
+        scrollTrigger: { trigger: el, start: 'top 62%', toggleActions: 'play reverse play reverse' },
       })
 
       /* ── Central stat pop ── */
       gsap.from('[data-ab-stat]', {
         scale: 0.6, opacity: 0,
         duration: 1.1, ease: 'back.out(1.9)', delay: 0.45,
-        scrollTrigger: { trigger: el, start: 'top 70%', toggleActions: 'play reverse play reverse' },
+        immediateRender: false,
+        scrollTrigger: { trigger: el, start: 'top 58%', toggleActions: 'play reverse play reverse' },
       })
 
       /* ── Cards: slam in from opposite sides ── */
       gsap.from('[data-ab-card-l]', {
         opacity: 0, x: -80, rotateY: -10, scale: 0.97,
         duration: 1.3, ease: 'power3.out', transformPerspective: 1000,
-        scrollTrigger: { trigger: '[data-ab-cards]', start: 'top 82%', toggleActions: 'play reverse play reverse' },
+        immediateRender: false,
+        scrollTrigger: { trigger: '[data-ab-cards]', start: 'top 68%', toggleActions: 'play reverse play reverse' },
       })
       gsap.from('[data-ab-card-r]', {
         opacity: 0, x: 80, rotateY: 10, scale: 0.97,
         duration: 1.3, delay: 0.14, ease: 'power3.out', transformPerspective: 1000,
-        scrollTrigger: { trigger: '[data-ab-cards]', start: 'top 82%', toggleActions: 'play reverse play reverse' },
+        immediateRender: false,
+        scrollTrigger: { trigger: '[data-ab-cards]', start: 'top 68%', toggleActions: 'play reverse play reverse' },
       })
 
       /* ── Trust badges: stagger cascade ── */
       gsap.from('[data-ab-badge]', {
         opacity: 0, y: 20, scale: 0.88, duration: 0.75, stagger: 0.1, ease: 'back.out(1.5)',
-        scrollTrigger: { trigger: '[data-ab-badges]', start: 'top 86%', toggleActions: 'play reverse play reverse' },
+        immediateRender: false,
+        scrollTrigger: { trigger: '[data-ab-badges]', start: 'top 72%', toggleActions: 'play reverse play reverse' },
       })
 
       /* ── Scroll-driven horizontal rule ── */
       gsap.fromTo('[data-ab-rule]', { scaleX: 0, transformOrigin: 'left center' }, {
         scaleX: 1, ease: 'none',
-        scrollTrigger: { trigger: el, start: 'top 80%', end: 'center 40%', scrub: 1.5 },
+        scrollTrigger: { trigger: el, start: 'top 66%', end: 'center 40%', scrub: 1.5 },
       })
 
       /* ── Subtle parallax on visual card ── */
@@ -207,7 +215,7 @@ export default function About() {
               <span className="section-label">About Us</span>
             </div>
 
-            <h2 className="font-display font-bold tracking-[-0.04em] mb-8">
+            <h2 className="font-display font-bold tracking-[0.02em] mb-8">
               <div className="gsap-line-clip" style={{ lineHeight: 1.08, paddingBottom: '0.06em' }}>
                 <span data-ab-line className="block text-3xl sm:text-4xl lg:text-5xl text-white">
                   Helping Business Owners

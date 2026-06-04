@@ -24,20 +24,20 @@ export default function VideoSection() {
         gsap.from('[data-vid-label]', {
           opacity: 0, x: -20,
           duration: 1, ease: 'power3.out',
-          scrollTrigger: { trigger: section, start: 'top 75%', toggleActions: 'play reverse play reverse' },
+          scrollTrigger: { trigger: section, start: 'top 61%', toggleActions: 'play reverse play reverse' },
         })
 
         /* ── Heading clip-path reveal ── */
         gsap.from('[data-vid-line]', {
           yPercent: 112,
           duration: 1.3, stagger: 0.1, ease: 'power4.out',
-          scrollTrigger: { trigger: section, start: 'top 72%', toggleActions: 'play reverse play reverse' },
+          scrollTrigger: { trigger: section, start: 'top 60%', toggleActions: 'play reverse play reverse' },
         })
 
         gsap.from('[data-vid-desc]', {
           opacity: 0, y: 18,
           duration: 1, ease: 'power2.out',
-          scrollTrigger: { trigger: section, start: 'top 68%', toggleActions: 'play reverse play reverse' },
+          scrollTrigger: { trigger: section, start: 'top 56%', toggleActions: 'play reverse play reverse' },
         })
 
         /* ── Video zoom-in on scroll — tighter window for a crisper pop ── */
@@ -47,7 +47,7 @@ export default function VideoSection() {
             scale: 1, opacity: 1, filter: 'blur(0px)', borderRadius: '1.5rem',
             ease: 'power1.out',
             scrollTrigger: {
-              trigger: container, start: 'top 85%', end: 'top 18%', scrub: 1.4,
+              trigger: container, start: 'top 71%', end: 'top 18%', scrub: 1.4,
             },
           }
         )
@@ -97,7 +97,7 @@ export default function VideoSection() {
             <span className="section-label">See Us In Action</span>
           </div>
 
-          <h2 className="font-display font-bold tracking-[-0.04em] mb-5">
+          <h2 className="font-display font-bold tracking-[0.02em] mb-5">
             <div className="gsap-line-clip" style={{ lineHeight: 1.08, paddingBottom: '0.06em' }}>
               <span data-vid-line className="block text-3xl sm:text-4xl lg:text-5xl text-white">
                 Meet and approve
@@ -160,7 +160,7 @@ export default function VideoSection() {
             <div className="absolute bottom-0 left-0 right-0 z-20 p-6 lg:p-8">
               <div className="glass-light rounded-2xl px-6 py-4 flex items-center justify-between max-w-md">
                 <div>
-                  <p className="font-display font-semibold text-white text-sm tracking-[-0.01em]">
+                  <p className="font-display font-semibold text-white text-sm tracking-[0.02em]">
                     BizBackerz Team
                   </p>
                   <p className="text-white/45 text-xs font-body mt-0.5">

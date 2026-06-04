@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import PageSEO from '../components/ui/PageSEO'
 import Container from '../components/ui/Container'
 import { ArrowLeft, Shield } from 'lucide-react'
 
@@ -95,6 +96,12 @@ We take all privacy inquiries seriously and aim to respond within 5 business day
 export default function PrivacyPage() {
   return (
     <div className="relative min-h-screen bg-navy-950 overflow-hidden">
+      <PageSEO
+        title="Privacy Policy | BizBackerz Virtual Assistance"
+        description="BizBackerz privacy policy — how we collect, use, and protect your personal data when you use our virtual assistant services."
+        canonical="https://bizbackerz.com/privacy"
+        noindex={false}
+      />
       {/* Background */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -left-24 top-0 h-[30rem] w-[30rem] rounded-full blur-[150px]"
@@ -123,7 +130,7 @@ export default function PrivacyPage() {
               <span className="section-label">Legal</span>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-white tracking-tight mb-4">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-white tracking-[0.02em] mb-4">
               Privacy Policy
             </h1>
             <p className="text-[15px] text-white/55 font-body leading-[1.85] max-w-2xl mb-3">

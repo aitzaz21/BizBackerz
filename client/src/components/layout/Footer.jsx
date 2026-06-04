@@ -108,17 +108,36 @@ export default function Footer() {
                 </span>
                 (904) 668-6362
               </a>
-              <a
-                href="https://share.google/yconWqaIeNBaoj4r5"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 text-[13px] font-body text-white/55 hover:text-brand-400 transition-colors duration-300 group"
-              >
-                <span className="w-8 h-8 rounded-lg bg-brand-500/10 border border-brand-500/15 flex items-center justify-center flex-shrink-0 group-hover:bg-brand-500/18 transition-colors duration-300">
-                  <MapPin className="w-3.5 h-3.5 text-brand-400" />
-                </span>
-                London, UK — View on Map
-              </a>
+              <div className="space-y-2.5">
+                <a
+                  href="https://share.google/yconWqaIeNBaoj4r5"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 text-[13px] font-body text-white/55 hover:text-brand-400 transition-colors duration-300 group"
+                >
+                  <span className="w-8 h-8 rounded-lg bg-brand-500/10 border border-brand-500/15 flex items-center justify-center flex-shrink-0 group-hover:bg-brand-500/18 transition-colors duration-300">
+                    <MapPin className="w-3.5 h-3.5 text-brand-400" />
+                  </span>
+                  <span>
+                    <span className="block text-[10px] font-semibold uppercase tracking-[0.18em] text-white/28 mb-0.5">UK Office</span>
+                    London, UK — View on Map
+                  </span>
+                </a>
+                <a
+                  href="https://maps.google.com/?q=Florida,+USA"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 text-[13px] font-body text-white/55 hover:text-brand-400 transition-colors duration-300 group"
+                >
+                  <span className="w-8 h-8 rounded-lg bg-brand-500/10 border border-brand-500/15 flex items-center justify-center flex-shrink-0 group-hover:bg-brand-500/18 transition-colors duration-300">
+                    <MapPin className="w-3.5 h-3.5 text-brand-400" />
+                  </span>
+                  <span>
+                    <span className="block text-[10px] font-semibold uppercase tracking-[0.18em] text-white/28 mb-0.5">US Office</span>
+                    Florida, USA — View on Map
+                  </span>
+                </a>
+              </div>
               <Link
                 to="/booking"
                 className="flex items-center gap-3 text-[13px] font-body text-white/55 hover:text-brand-400 transition-colors duration-300 group"
@@ -179,7 +198,7 @@ export default function Footer() {
         {/* ── Bottom bar ── */}
         <div className="border-t border-white/[0.06] py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-white/38 text-[12px] font-body">
-            © 2026 BizBackerz. All rights reserved.
+            © {new Date().getFullYear()} BizBackerz. All rights reserved.
           </p>
           <p className="text-white/25 text-[12px] font-body">
             Virtual Assistance · Delegate to Dominate

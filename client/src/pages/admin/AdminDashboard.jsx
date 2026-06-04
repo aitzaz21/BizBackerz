@@ -1,12 +1,17 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useEditor, EditorContent } from '@tiptap/react'
+import StarterKit from '@tiptap/starter-kit'
+import TiptapLink from '@tiptap/extension-link'
+import TiptapImage from '@tiptap/extension-image'
+import TiptapUnderline from '@tiptap/extension-underline'
 import {
   Plus, Pencil, Trash2, Eye, EyeOff, LogOut, Search, Filter, RefreshCw,
   ChevronDown, ChevronUp, BarChart2, FileText, Globe, Check, X,
-  Bold, Italic, Underline, List, ListOrdered, Quote, Code, Link2,
-  Image, Minus, Type, AlignLeft, Save, Send, AlertCircle, Star,
+  Bold, Italic, Underline as UnderlineIcon, List, ListOrdered, Quote, Code, Link2,
+  Image as ImageIcon, Minus, Type, AlignLeft, Save, Send, AlertCircle, Star,
   BookOpen, Tag, Clock, Calendar, User, Users, Palette, Settings,
-  MessageSquare, Upload, HelpCircle,
+  MessageSquare, Upload, HelpCircle, Mail, Phone, MapPin, Ban, CheckCircle, Inbox,
 } from 'lucide-react'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:3001'
@@ -18,9 +23,28 @@ function token() { return localStorage.getItem('biz_admin_token') || '' }
 async function api(path, opts = {}) {
   const r = await fetch(`${API}${path}`, {
     ...opts,
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token()}`, ...(opts.headers || {}) },
+    credentials: 'include',   // send httpOnly cookie automatically
+    headers: {
+      'Content-Type': 'application/json',
+      /* Also send Bearer token as fallback for dev environments where
+         cross-port cookies are blocked */
+      ...(token() ? { Authorization: `Bearer ${token()}` } : {}),
+      ...(opts.headers || {}),
+    },
   })
+  /* Expired/invalid token — clear localStorage and redirect to login */
+  if (r.status === 401) {
+    localStorage.removeItem('biz_admin_token')
+    window.location.href = '/admin'
+    return { success: false, error: 'Session expired. Please log in again.' }
+  }
   return r.json()
+}
+
+async function logout() {
+  await fetch(`${API}/api/admin/logout`, { method: 'POST', credentials: 'include' }).catch(() => {})
+  localStorage.removeItem('biz_admin_token')
+  window.location.href = '/admin'
 }
 
 /* ─── Cloudinary Upload ───────────────────────────────────── */
@@ -86,38 +110,53 @@ function stripInlineColors(html) {
 }
 
 function RichEditor({ value, onChange }) {
-  const ref = useRef(null)
-  const synced = useRef(false)
+  const editor = useEditor({
+    immediatelyRender: true,
+    extensions: [
+      /* StarterKit bundles Link/Underline in v3 — disable them so our
+         explicitly-configured versions don't collide (duplicate-extension warning) */
+      StarterKit.configure({ link: false, underline: false }),
+      TiptapUnderline,
+      TiptapLink.configure({
+        openOnClick: false,
+        autolink: true,
+        HTMLAttributes: { rel: 'noopener noreferrer nofollow', target: '_blank' },
+      }),
+      TiptapImage.configure({
+        HTMLAttributes: { style: 'max-width:100%;border-radius:8px;margin:12px 0;' },
+      }),
+    ],
+    content: stripInlineColors(value || ''),
+    editorProps: {
+      attributes: {
+        class: 'rich-content min-h-[320px] max-h-[600px] overflow-y-auto p-5 text-[14px] text-white/75 leading-[1.9] outline-none',
+        style: 'word-break:break-word;',
+      },
+    },
+    onUpdate: ({ editor }) => onChange(stripInlineColors(editor.getHTML())),
+  })
 
+  /* Sync external value into the editor only when it genuinely differs and
+     the user isn't actively typing (prevents cursor jumps / feedback loop) */
   useEffect(() => {
-    if (ref.current && !synced.current) {
-      ref.current.innerHTML = stripInlineColors(value || '')
-      synced.current = true
+    if (!editor) return
+    const incoming = stripInlineColors(value || '')
+    if (!editor.isFocused && incoming !== editor.getHTML()) {
+      editor.commands.setContent(incoming, false)
     }
-  }, [value])
-
-  function exec(cmd, val = null) {
-    ref.current?.focus()
-    document.execCommand(cmd, false, val)
-    sync()
-  }
-
-  function sync() {
-    onChange(stripInlineColors(ref.current?.innerHTML || ''))
-  }
-
-  function insertHTML(html) {
-    ref.current?.focus()
-    document.execCommand('insertHTML', false, html)
-    sync()
-  }
+  }, [value, editor])
 
   function handleLink() {
-    const url = window.prompt('Enter URL:', 'https://')
-    if (url) exec('createLink', url)
+    if (!editor) return
+    const prev = editor.getAttributes('link').href || 'https://'
+    const url = window.prompt('Enter URL:', prev)
+    if (url === null) return
+    if (url === '') { editor.chain().focus().extendMarkRange('link').unsetLink().run(); return }
+    editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run()
   }
 
   async function handleImage() {
+    if (!editor) return
     const choice = window.confirm('Click OK to upload an image file, or Cancel to enter a URL.')
     if (choice) {
       const input = document.createElement('input')
@@ -128,7 +167,7 @@ function RichEditor({ value, onChange }) {
         if (!file) return
         try {
           const url = await uploadImage(file)
-          insertHTML(`<img src="${url}" alt="Blog image" style="max-width:100%;border-radius:8px;margin:12px 0;" />`)
+          editor.chain().focus().setImage({ src: url, alt: 'Blog image' }).run()
         } catch (err) {
           alert('Upload error: ' + err.message)
         }
@@ -136,53 +175,57 @@ function RichEditor({ value, onChange }) {
       input.click()
     } else {
       const url = window.prompt('Enter image URL:')
-      if (url) insertHTML(`<img src="${url}" alt="Blog image" style="max-width:100%;border-radius:8px;margin:12px 0;" />`)
+      if (url) editor.chain().focus().setImage({ src: url, alt: 'Blog image' }).run()
     }
   }
 
-  const ToolBtn = ({ icon: Icon, cmd, val, label, onPress }) => (
+  const ToolBtn = ({ icon: Icon, label, onPress, active }) => (
     <button
       type="button"
       title={label}
-      onMouseDown={e => { e.preventDefault(); onPress ? onPress() : exec(cmd, val) }}
-      className="w-7 h-7 rounded flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-all duration-150"
+      onMouseDown={e => { e.preventDefault(); onPress?.() }}
+      className={`w-7 h-7 rounded flex items-center justify-center transition-all duration-150 ${
+        active ? 'text-brand-400 bg-brand-500/15' : 'text-white/50 hover:text-white hover:bg-white/10'
+      }`}
     >
       <Icon className="w-3.5 h-3.5" />
     </button>
   )
 
+  if (!editor) {
+    return (
+      <div className="rounded-xl border border-white/[0.08] min-h-[360px] flex items-center justify-center text-white/30 text-[13px]" style={{ background: 'rgba(6,15,29,0.6)' }}>
+        Loading editor…
+      </div>
+    )
+  }
+
+  const c = () => editor.chain().focus()
+
   return (
     <div className="rounded-xl border border-white/[0.08] overflow-hidden" style={{ background: 'rgba(6,15,29,0.6)' }}>
       <div className="flex flex-wrap items-center gap-0.5 px-3 py-2 border-b border-white/[0.07]" style={{ background: 'rgba(0,0,0,0.3)' }}>
-        <ToolBtn icon={Bold}         cmd="bold"        label="Bold (Ctrl+B)" />
-        <ToolBtn icon={Italic}       cmd="italic"      label="Italic (Ctrl+I)" />
-        <ToolBtn icon={Underline}    cmd="underline"   label="Underline (Ctrl+U)" />
+        <ToolBtn icon={Bold}          label="Bold (Ctrl+B)"      active={editor.isActive('bold')}              onPress={() => c().toggleBold().run()} />
+        <ToolBtn icon={Italic}        label="Italic (Ctrl+I)"    active={editor.isActive('italic')}            onPress={() => c().toggleItalic().run()} />
+        <ToolBtn icon={UnderlineIcon} label="Underline (Ctrl+U)" active={editor.isActive('underline')}         onPress={() => c().toggleUnderline().run()} />
         <div className="w-px h-5 bg-white/10 mx-1" />
-        <ToolBtn icon={Type}         cmd="formatBlock" val="h2"        label="Heading 2" />
-        <ToolBtn icon={Type}         cmd="formatBlock" val="h3"        label="Heading 3" />
-        <ToolBtn icon={AlignLeft}    cmd="formatBlock" val="p"         label="Paragraph" />
+        <ToolBtn icon={Type}          label="Heading 2"          active={editor.isActive('heading', { level: 2 })} onPress={() => c().toggleHeading({ level: 2 }).run()} />
+        <ToolBtn icon={Type}          label="Heading 3"          active={editor.isActive('heading', { level: 3 })} onPress={() => c().toggleHeading({ level: 3 }).run()} />
+        <ToolBtn icon={AlignLeft}     label="Paragraph"          active={editor.isActive('paragraph')}         onPress={() => c().setParagraph().run()} />
         <div className="w-px h-5 bg-white/10 mx-1" />
-        <ToolBtn icon={List}         cmd="insertUnorderedList"   label="Bullet List" />
-        <ToolBtn icon={ListOrdered}  cmd="insertOrderedList"    label="Numbered List" />
-        <ToolBtn icon={Quote}        cmd="formatBlock" val="blockquote" label="Blockquote" />
-        <ToolBtn icon={Code}         cmd="formatBlock" val="pre"       label="Code Block" />
+        <ToolBtn icon={List}          label="Bullet List"        active={editor.isActive('bulletList')}        onPress={() => c().toggleBulletList().run()} />
+        <ToolBtn icon={ListOrdered}   label="Numbered List"      active={editor.isActive('orderedList')}       onPress={() => c().toggleOrderedList().run()} />
+        <ToolBtn icon={Quote}         label="Blockquote"         active={editor.isActive('blockquote')}        onPress={() => c().toggleBlockquote().run()} />
+        <ToolBtn icon={Code}          label="Code Block"         active={editor.isActive('codeBlock')}         onPress={() => c().toggleCodeBlock().run()} />
         <div className="w-px h-5 bg-white/10 mx-1" />
-        <ToolBtn icon={Link2}        cmd=""   label="Insert Link"   onPress={handleLink} />
-        <ToolBtn icon={Image}        cmd=""   label="Insert Image"  onPress={handleImage} />
-        <ToolBtn icon={Minus}        cmd="insertHorizontalRule" label="Divider" />
+        <ToolBtn icon={Link2}         label="Insert Link"        active={editor.isActive('link')}              onPress={handleLink} />
+        <ToolBtn icon={ImageIcon}     label="Insert Image"       onPress={handleImage} />
+        <ToolBtn icon={Minus}         label="Divider"            onPress={() => c().setHorizontalRule().run()} />
         <div className="w-px h-5 bg-white/10 mx-1" />
-        <ToolBtn icon={RefreshCw}    cmd="removeFormat" label="Clear Formatting" />
+        <ToolBtn icon={RefreshCw}     label="Clear Formatting"   onPress={() => c().unsetAllMarks().clearNodes().run()} />
       </div>
 
-      <div
-        ref={ref}
-        contentEditable
-        suppressContentEditableWarning
-        onInput={sync}
-        onBlur={sync}
-        className="rich-content min-h-[320px] max-h-[600px] overflow-y-auto p-5 text-[14px] text-white/75 leading-[1.9] outline-none"
-        style={{ wordBreak: 'break-word' }}
-      />
+      <EditorContent editor={editor} />
     </div>
   )
 }
@@ -190,8 +233,9 @@ function RichEditor({ value, onChange }) {
 /* ─── Blog Form ───────────────────────────────────────────── */
 const EMPTY = {
   title: '', slug: '', excerpt: '', content: '', tag: 'General', category: 'General',
-  color: '#2a8bff', coverImage: '', author: 'BizBackerz Team', authorBio: '',
-  readTime: 5, seoTitle: '', seoDescription: '', seoKeywords: '', ogImage: '',
+  color: '#2a8bff', coverImage: '', coverImageAlt: '', author: 'BizBackerz Team', authorBio: '',
+  readTime: 5, seoTitle: '', seoDescription: '', seoKeywords: '', focusKeyword: '',
+  noindex: false, ogImage: '', ogImageAlt: '', twitterTitle: '', twitterDescription: '',
   published: false, featured: false, qna: [],
 }
 
@@ -365,37 +409,69 @@ function BlogForm({ initial, onSave, onCancel, saving }) {
           </div>
 
           <div className="grid grid-cols-1 gap-5">
+
+            {/* Focus keyword */}
             <div className="space-y-1.5">
-              <label className="field-label">SEO Title <span className="text-white/25">(50-60 chars ideal)</span></label>
+              <label className="field-label">
+                Focus Keyword <span className="text-red-400">*</span>
+                <span className="text-white/25 font-normal"> — exact search term you're targeting</span>
+              </label>
+              <input value={form.focusKeyword} onChange={e => set('focusKeyword', e.target.value)}
+                placeholder="e.g. virtual assistant services"
+                className={`field-input w-full ${!form.focusKeyword ? 'border-red-500/30' : ''}`} />
+              {!form.focusKeyword && <p className="text-[11px] text-red-400/70">⚠ Missing — required for SEO targeting</p>}
+            </div>
+
+            {/* SEO Title */}
+            <div className="space-y-1.5">
+              <label className="field-label">SEO Title <span className="text-white/25">(50–60 chars ideal)</span></label>
               <input value={form.seoTitle} onChange={e => set('seoTitle', e.target.value)}
                 placeholder={form.title || 'Blog post title for search engines…'}
                 className="field-input w-full" />
               <div className="flex justify-between text-[11px] text-white/25">
-                <span>Google shows ~60 chars</span>
-                <span className={form.seoTitle.length > 60 ? 'text-red-400' : ''}>{form.seoTitle.length}/60</span>
+                <span>Contains focus keyword? {form.focusKeyword && (form.seoTitle || form.title).toLowerCase().includes(form.focusKeyword.toLowerCase()) ? '✅' : '❌'}</span>
+                <span className={form.seoTitle.length > 60 ? 'text-red-400' : form.seoTitle.length >= 50 ? 'text-green-400' : ''}>{form.seoTitle.length}/60</span>
               </div>
             </div>
 
+            {/* Meta description */}
             <div className="space-y-1.5">
-              <label className="field-label">Meta Description <span className="text-white/25">(150-160 chars ideal)</span></label>
+              <label className="field-label">Meta Description <span className="text-white/25">(140–160 chars ideal)</span></label>
               <textarea value={form.seoDescription} onChange={e => set('seoDescription', e.target.value)} rows={3}
                 placeholder={form.excerpt || 'Description shown in Google search results…'}
                 className="field-input w-full resize-none" />
               <div className="flex justify-between text-[11px] text-white/25">
                 <span>Google shows ~160 chars</span>
-                <span className={form.seoDescription.length > 160 ? 'text-red-400' : ''}>{form.seoDescription.length}/160</span>
+                <span className={form.seoDescription.length > 160 ? 'text-red-400' : form.seoDescription.length >= 140 ? 'text-green-400' : ''}>{form.seoDescription.length}/160</span>
               </div>
             </div>
 
+            {/* Keywords */}
             <div className="space-y-1.5">
-              <label className="field-label">Keywords <span className="text-white/25">(comma separated)</span></label>
+              <label className="field-label">Secondary Keywords <span className="text-white/25">(comma separated)</span></label>
               <input value={form.seoKeywords} onChange={e => set('seoKeywords', e.target.value)}
                 placeholder="virtual assistant, business support, delegation, productivity"
                 className="field-input w-full" />
             </div>
 
+            {/* Cover image alt text */}
             <div className="space-y-1.5">
-              <label className="field-label">OG Image <span className="text-white/25">(1200×630 recommended)</span></label>
+              <label className="field-label">
+                Featured Image Alt Text <span className="text-red-400">*</span>
+                <span className="text-white/25 font-normal"> — max 125 chars, no "image of" or "photo of"</span>
+              </label>
+              <input value={form.coverImageAlt} onChange={e => set('coverImageAlt', e.target.value)}
+                placeholder="e.g. Business owner delegating tasks to a virtual assistant"
+                className={`field-input w-full ${!form.coverImageAlt && form.coverImage ? 'border-red-500/30' : ''}`} />
+              <div className="flex justify-between text-[11px] text-white/25">
+                <span>Describe the image literally, include focus keyword naturally</span>
+                <span className={form.coverImageAlt.length > 125 ? 'text-red-400' : ''}>{form.coverImageAlt.length}/125</span>
+              </div>
+            </div>
+
+            {/* OG Image */}
+            <div className="space-y-1.5">
+              <label className="field-label">OG Image <span className="text-white/25">(1200×630 for social sharing)</span></label>
               <div className="flex gap-3 items-center">
                 <input value={form.ogImage} onChange={e => set('ogImage', e.target.value)}
                   placeholder={form.coverImage || 'https://…'}
@@ -407,9 +483,46 @@ function BlogForm({ initial, onSave, onCancel, saving }) {
               </div>
             </div>
 
+            {/* OG Image alt */}
+            <div className="space-y-1.5">
+              <label className="field-label">OG Image Alt <span className="text-white/25">(shown in social share previews)</span></label>
+              <input value={form.ogImageAlt} onChange={e => set('ogImageAlt', e.target.value)}
+                placeholder="e.g. BizBackerz virtual assistant services"
+                className="field-input w-full" />
+            </div>
+
+            {/* Twitter overrides */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <label className="field-label">Twitter/X Title <span className="text-white/25">(optional override)</span></label>
+                <input value={form.twitterTitle} onChange={e => set('twitterTitle', e.target.value)}
+                  placeholder={form.seoTitle || form.title || 'Twitter title…'}
+                  className="field-input w-full" />
+              </div>
+              <div className="space-y-1.5">
+                <label className="field-label">Twitter/X Description <span className="text-white/25">(optional override)</span></label>
+                <input value={form.twitterDescription} onChange={e => set('twitterDescription', e.target.value)}
+                  placeholder={form.seoDescription || form.excerpt || 'Twitter description…'}
+                  className="field-input w-full" />
+              </div>
+            </div>
+
+            {/* noindex toggle */}
+            <div className="flex items-center gap-3 p-3 rounded-xl border border-white/[0.07]" style={{ background: 'rgba(255,255,255,0.02)' }}>
+              <button type="button" onClick={() => set('noindex', !form.noindex)}
+                className={`w-10 h-5 rounded-full transition-colors duration-200 ${form.noindex ? 'bg-red-500' : 'bg-white/15'} relative flex-shrink-0`}>
+                <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform duration-200 ${form.noindex ? 'translate-x-5' : 'translate-x-0.5'}`} />
+              </button>
+              <div>
+                <p className="text-[13px] text-white/70 font-medium">Mark as noindex</p>
+                <p className="text-[11px] text-white/30">Tells Google not to index this post. Use for drafts or thin content.</p>
+              </div>
+            </div>
+
+            {/* Google Preview */}
             {(form.seoTitle || form.title) && (
               <div className="p-4 rounded-xl border border-white/[0.07] space-y-1" style={{ background: 'rgba(255,255,255,0.02)' }}>
-                <p className="text-[10px] text-white/30 uppercase tracking-widest mb-2">Google Preview</p>
+                <p className="text-[10px] text-white/30 uppercase tracking-widest mb-2">Google Search Preview</p>
                 <p className="text-[#1a73e8] text-[16px] font-medium hover:underline">{form.seoTitle || form.title}</p>
                 <p className="text-[13px] text-[#4d5156]">bizbackerz.com › blog › {form.slug || 'post-slug'}</p>
                 <p className="text-[13px] text-[#4d5156] leading-[1.5]">{form.seoDescription || form.excerpt || 'Meta description will appear here…'}</p>
@@ -949,6 +1062,194 @@ function TeamMemberRow({ member, onEdit, onDelete }) {
   )
 }
 
+/* ─── Booking Card ────────────────────────────────────────── */
+function BookingCard({ booking, onCancel, onDelete }) {
+  const [confirmDel, setConfirmDel] = useState(false)
+  const [confirmCan, setConfirmCan] = useState(false)
+  const [busy, setBusy] = useState(false)
+
+  const statusColors = {
+    pending:   { bg: 'rgba(245,158,11,0.12)',  border: 'rgba(245,158,11,0.3)',  text: '#f59e0b' },
+    confirmed: { bg: 'rgba(16,185,129,0.12)',  border: 'rgba(16,185,129,0.3)', text: '#10b981' },
+    cancelled: { bg: 'rgba(239,68,68,0.10)',   border: 'rgba(239,68,68,0.25)', text: '#ef4444' },
+  }
+  const sc = statusColors[booking.status] || statusColors.pending
+
+  async function doCancel() {
+    setBusy(true)
+    await onCancel(booking._id)
+    setBusy(false)
+    setConfirmCan(false)
+  }
+
+  async function doDelete() {
+    setBusy(true)
+    await onDelete(booking._id)
+    setBusy(false)
+    setConfirmDel(false)
+  }
+
+  return (
+    <div className="rounded-xl border border-white/[0.07] p-5 space-y-4 group hover:border-white/[0.12] transition-all duration-200"
+      style={{ background: 'rgba(6,15,29,0.6)' }}>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-full bg-brand-500/15 border border-brand-500/25 flex items-center justify-center flex-shrink-0">
+            <User className="w-4 h-4 text-brand-400" />
+          </div>
+          <div>
+            <p className="text-[14px] font-semibold text-white">{booking.name}</p>
+            <p className="text-[11px] text-white/35">{new Date(booking.createdAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}</p>
+          </div>
+        </div>
+        <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full"
+          style={{ background: sc.bg, border: `1px solid ${sc.border}`, color: sc.text }}>
+          {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+        </span>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[13px]">
+        <div className="flex items-center gap-2 text-white/55">
+          <Mail className="w-3.5 h-3.5 text-white/25 flex-shrink-0" />
+          <a href={`mailto:${booking.email}`} className="hover:text-brand-400 transition-colors truncate">{booking.email}</a>
+        </div>
+        <div className="flex items-center gap-2 text-white/55">
+          <Phone className="w-3.5 h-3.5 text-white/25 flex-shrink-0" />
+          <span>{booking.phone}</span>
+        </div>
+        <div className="flex items-center gap-2 text-white/55">
+          <MapPin className="w-3.5 h-3.5 text-white/25 flex-shrink-0" />
+          <span>{booking.country}</span>
+        </div>
+        <div className="flex items-center gap-2 text-white/55">
+          <Clock className="w-3.5 h-3.5 text-white/25 flex-shrink-0" />
+          <span className="text-white/80 font-medium">{booking.slotDisplayUser}</span>
+        </div>
+      </div>
+
+      {/* Actions */}
+      <div className="flex items-center justify-end gap-2 pt-1 border-t border-white/[0.05]">
+        {confirmCan ? (
+          <div className="flex items-center gap-2">
+            <span className="text-[12px] text-amber-400">Cancel booking?</span>
+            <button onClick={doCancel} disabled={busy}
+              className="w-7 h-7 rounded-lg bg-amber-500/20 hover:bg-amber-500/35 text-amber-400 flex items-center justify-center transition-all duration-150">
+              <Check className="w-3.5 h-3.5" />
+            </button>
+            <button onClick={() => setConfirmCan(false)}
+              className="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/10 text-white/40 flex items-center justify-center transition-all duration-150">
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        ) : confirmDel ? (
+          <div className="flex items-center gap-2">
+            <span className="text-[12px] text-red-400">Delete permanently?</span>
+            <button onClick={doDelete} disabled={busy}
+              className="w-7 h-7 rounded-lg bg-red-500/20 hover:bg-red-500/35 text-red-400 flex items-center justify-center transition-all duration-150">
+              <Check className="w-3.5 h-3.5" />
+            </button>
+            <button onClick={() => setConfirmDel(false)}
+              className="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/10 text-white/40 flex items-center justify-center transition-all duration-150">
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        ) : (
+          <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            {booking.status !== 'cancelled' && (
+              <button onClick={() => setConfirmCan(true)} title="Cancel booking"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-semibold text-amber-400/70 bg-amber-500/8 border border-amber-500/15 hover:bg-amber-500/20 hover:text-amber-400 transition-all duration-150">
+                <Ban className="w-3.5 h-3.5" /> Cancel
+              </button>
+            )}
+            <button onClick={() => setConfirmDel(true)} title="Delete"
+              className="w-7 h-7 rounded-lg bg-red-500/8 text-red-400/60 hover:bg-red-500/20 hover:text-red-400 flex items-center justify-center transition-all duration-150">
+              <Trash2 className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+/* ─── Message Card ────────────────────────────────────────── */
+function MessageCard({ msg, onRead, onDelete }) {
+  const [expanded, setExpanded] = useState(false)
+  const [confirmDel, setConfirmDel] = useState(false)
+  const [busy, setBusy] = useState(false)
+
+  async function doDelete() {
+    setBusy(true)
+    await onDelete(msg._id)
+    setBusy(false)
+  }
+
+  return (
+    <div
+      className={`rounded-xl border p-5 space-y-3 group transition-all duration-200 cursor-pointer hover:border-white/[0.12] ${
+        !msg.read ? 'border-brand-500/25' : 'border-white/[0.07]'
+      }`}
+      style={{ background: msg.read ? 'rgba(6,15,29,0.6)' : 'rgba(42,139,255,0.04)' }}
+      onClick={() => { setExpanded(e => !e); if (!msg.read) onRead(msg._id) }}>
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-center gap-3">
+          {!msg.read && <span className="w-2 h-2 rounded-full bg-brand-400 flex-shrink-0 mt-1" />}
+          <div>
+            <div className="flex flex-wrap items-center gap-2">
+              <p className={`text-[14px] font-semibold ${msg.read ? 'text-white/80' : 'text-white'}`}>{msg.name}</p>
+              <a href={`mailto:${msg.email}`} onClick={e => e.stopPropagation()}
+                className="text-[12px] text-brand-400/70 hover:text-brand-400 transition-colors">{msg.email}</a>
+              {msg.phone && <span className="text-[12px] text-white/35">{msg.phone}</span>}
+            </div>
+            <p className="text-[11px] text-white/30 mt-0.5">
+              {new Date(msg.createdAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-1.5 flex-shrink-0" onClick={e => e.stopPropagation()}>
+          {confirmDel ? (
+            <>
+              <span className="text-[12px] text-red-400">Delete?</span>
+              <button onClick={doDelete} disabled={busy}
+                className="w-7 h-7 rounded-lg bg-red-500/20 hover:bg-red-500/35 text-red-400 flex items-center justify-center transition-all duration-150">
+                <Check className="w-3.5 h-3.5" />
+              </button>
+              <button onClick={() => setConfirmDel(false)}
+                className="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/10 text-white/40 flex items-center justify-center transition-all duration-150">
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </>
+          ) : (
+            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              <button onClick={() => setConfirmDel(true)} title="Delete"
+                className="w-7 h-7 rounded-lg bg-red-500/8 text-red-400/60 hover:bg-red-500/20 hover:text-red-400 flex items-center justify-center transition-all duration-150">
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <p className={`text-[13px] leading-relaxed ${expanded ? 'text-white/70 whitespace-pre-wrap' : 'text-white/50 line-clamp-2'}`}>
+        {msg.message}
+      </p>
+
+      <div className="flex items-center justify-between">
+        <button onClick={e => { e.stopPropagation(); setExpanded(v => !v) }}
+          className="text-[11px] text-white/30 hover:text-white/60 transition-colors">
+          {expanded ? '↑ Show less' : '↓ Read more'}
+        </button>
+        {!msg.read && (
+          <button onClick={e => { e.stopPropagation(); onRead(msg._id) }}
+            className="flex items-center gap-1.5 text-[11px] text-brand-400/60 hover:text-brand-400 transition-colors">
+            <Check className="w-3 h-3" /> Mark as read
+          </button>
+        )}
+      </div>
+    </div>
+  )
+}
+
 /* ─── Main Dashboard ──────────────────────────────────────── */
 export default function AdminDashboard() {
   const navigate = useNavigate()
@@ -978,6 +1279,16 @@ export default function AdminDashboard() {
   const [teamView, setTeamView]             = useState('list')   // list | form
   const [editingMember, setEditingMember]   = useState(null)
   const [memberSaving, setMemberSaving]     = useState(false)
+
+  /* ── Bookings state ── */
+  const [bookings, setBookings]             = useState([])
+  const [bookingsLoading, setBookingsLoading] = useState(false)
+  const [bookingFilter, setBookingFilter]   = useState('all')
+
+  /* ── Messages state ── */
+  const [messages, setMessages]             = useState([])
+  const [messagesLoading, setMessagesLoading] = useState(false)
+  const [unreadCount, setUnreadCount]       = useState(0)
 
   const [toast, setToast] = useState(null)
 
@@ -1037,6 +1348,40 @@ export default function AdminDashboard() {
   }, [])
 
   useEffect(() => { if (section === 'team') loadTeam() }, [section, loadTeam])
+
+  /* ── Fetch bookings ── */
+  const loadBookings = useCallback(async () => {
+    setBookingsLoading(true)
+    try {
+      const params = new URLSearchParams({ limit: 100 })
+      if (bookingFilter !== 'all') params.set('status', bookingFilter)
+      const data = await api(`/api/admin/bookings?${params}`)
+      if (data.success) setBookings(data.bookings || [])
+    } catch {}
+    finally { setBookingsLoading(false) }
+  }, [bookingFilter])
+
+  useEffect(() => { if (section === 'bookings') loadBookings() }, [section, loadBookings])
+
+  /* ── Fetch messages ── */
+  const loadMessages = useCallback(async () => {
+    setMessagesLoading(true)
+    try {
+      const data = await api('/api/admin/messages?limit=100')
+      if (data.success) {
+        setMessages(data.messages || [])
+        setUnreadCount(data.unread || 0)
+      }
+    } catch {}
+    finally { setMessagesLoading(false) }
+  }, [])
+
+  useEffect(() => { if (section === 'messages') loadMessages() }, [section, loadMessages])
+
+  /* ── Fetch unread count on mount (for badge) ── */
+  useEffect(() => {
+    api('/api/admin/messages?limit=1').then(d => { if (d.success) setUnreadCount(d.unread || 0) }).catch(() => {})
+  }, [])
 
 
   /* ── Save blog ── */
@@ -1135,15 +1480,46 @@ export default function AdminDashboard() {
     else showToast(data.error, 'error')
   }
 
+  /* ── Cancel booking ── */
+  async function handleCancelBooking(id) {
+    const data = await api(`/api/admin/bookings/${id}/cancel`, { method: 'PATCH' })
+    if (data.success) { showToast('Booking cancelled.', 'success'); loadBookings() }
+    else showToast(data.error, 'error')
+  }
+
+  /* ── Delete booking ── */
+  async function handleDeleteBooking(id) {
+    const data = await api(`/api/admin/bookings/${id}`, { method: 'DELETE' })
+    if (data.success) { showToast('Booking deleted.', 'success'); loadBookings() }
+    else showToast(data.error, 'error')
+  }
+
+  /* ── Mark message as read ── */
+  async function handleMarkRead(id) {
+    const data = await api(`/api/admin/messages/${id}/read`, { method: 'PATCH' })
+    if (data.success) {
+      setMessages(prev => prev.map(m => m._id === id ? { ...m, read: true } : m))
+      setUnreadCount(prev => Math.max(0, prev - 1))
+    }
+  }
+
+  /* ── Delete message ── */
+  async function handleDeleteMessage(id) {
+    const msg = messages.find(m => m._id === id)
+    const data = await api(`/api/admin/messages/${id}`, { method: 'DELETE' })
+    if (data.success) {
+      showToast('Message deleted.', 'success')
+      if (msg && !msg.read) setUnreadCount(prev => Math.max(0, prev - 1))
+      loadMessages()
+    } else showToast(data.error, 'error')
+  }
+
   function showToast(msg, type = 'success') {
     setToast({ msg, type })
     setTimeout(() => setToast(null), 3500)
   }
 
-  function logout() {
-    localStorage.removeItem('biz_admin_token')
-    navigate('/admin', { replace: true })
-  }
+  /* logout() is the module-level function above — clears cookie + localStorage */
 
   /* ── Blog form view ── */
   if (section === 'blogs' && view === 'form') {
@@ -1227,9 +1603,11 @@ export default function AdminDashboard() {
   }
 
   const navItems = [
-    { id: 'blogs',   icon: BookOpen,      label: 'Blog Posts' },
-    { id: 'reviews', icon: MessageSquare, label: 'Reviews' },
-    { id: 'team',    icon: Users,         label: 'Team' },
+    { id: 'blogs',    icon: BookOpen,      label: 'Blog Posts' },
+    { id: 'reviews',  icon: MessageSquare, label: 'Reviews' },
+    { id: 'team',     icon: Users,         label: 'Team' },
+    { id: 'bookings', icon: Calendar,      label: 'Bookings' },
+    { id: 'messages', icon: Inbox,         label: 'Messages', badge: unreadCount },
   ]
 
   return (
@@ -1255,8 +1633,13 @@ export default function AdminDashboard() {
                 className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13px] font-semibold transition-all duration-150 cursor-pointer ${
                   section === item.id ? 'bg-brand-500/15 text-brand-400' : 'text-white/40 hover:text-white hover:bg-white/5'
                 }`}>
-                <item.icon className="w-4 h-4" />
-                {item.label}
+                <item.icon className="w-4 h-4 flex-shrink-0" />
+                <span className="flex-1">{item.label}</span>
+                {item.badge > 0 && (
+                  <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">
+                    {item.badge > 99 ? '99+' : item.badge}
+                  </span>
+                )}
               </div>
             ))}
           </nav>
@@ -1277,14 +1660,25 @@ export default function AdminDashboard() {
             <div className="flex items-center gap-3">
               {navItems.map(item => (
                 <button key={item.id} onClick={() => setSection(item.id)}
-                  className={`flex items-center gap-2 text-[13px] font-semibold transition-colors duration-150 ${section === item.id ? 'text-brand-400' : 'text-white/30 hover:text-white/60'}`}>
+                  className={`relative flex items-center gap-2 text-[13px] font-semibold transition-colors duration-150 ${section === item.id ? 'text-brand-400' : 'text-white/30 hover:text-white/60'}`}>
                   <item.icon className="w-4 h-4" />
                   <span className="hidden sm:inline">{item.label}</span>
+                  {item.badge > 0 && (
+                    <span className="absolute -top-1.5 -right-1.5 min-w-[14px] h-[14px] px-0.5 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center sm:hidden">
+                      {item.badge > 9 ? '9+' : item.badge}
+                    </span>
+                  )}
                 </button>
               ))}
             </div>
             <div className="flex items-center gap-3">
-              <button onClick={section === 'blogs' ? load : section === 'reviews' ? loadReviews : loadTeam}
+              <button onClick={
+                section === 'blogs'    ? load :
+                section === 'reviews'  ? loadReviews :
+                section === 'team'     ? loadTeam :
+                section === 'bookings' ? loadBookings :
+                loadMessages
+              }
                 className="w-8 h-8 rounded-lg bg-white/5 text-white/40 hover:text-white hover:bg-white/10 flex items-center justify-center transition-all duration-150">
                 <RefreshCw className="w-3.5 h-3.5" />
               </button>
@@ -1438,6 +1832,89 @@ export default function AdminDashboard() {
                         onEdit={member => { setEditingMember(member); setTeamView('form') }}
                         onDelete={handleDeleteMember} />
                     ))}
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* ════ BOOKINGS SECTION ════ */}
+            {section === 'bookings' && (
+              <>
+                {/* Stats */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                  {[
+                    { label: 'Total',     value: bookings.length,                                        icon: Calendar,     color: '#2a8bff' },
+                    { label: 'Confirmed', value: bookings.filter(b => b.status === 'confirmed').length,  icon: CheckCircle,  color: '#10b981' },
+                    { label: 'Pending',   value: bookings.filter(b => b.status === 'pending').length,    icon: Clock,        color: '#f59e0b' },
+                  ].map(s => (
+                    <div key={s.label} className="rounded-xl border border-white/[0.07] p-4" style={{ background: 'rgba(6,15,29,0.7)' }}>
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="text-[11px] text-white/35 font-semibold uppercase tracking-[0.12em]">{s.label}</p>
+                        <s.icon className="w-3.5 h-3.5" style={{ color: s.color }} />
+                      </div>
+                      <p className="text-2xl font-bold text-white" style={{ fontFamily: "'Poppins',sans-serif" }}>{s.value}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Filter */}
+                <div className="flex items-center gap-3">
+                  {['all', 'pending', 'confirmed', 'cancelled'].map(f => (
+                    <button key={f} onClick={() => setBookingFilter(f)}
+                      className={`px-4 py-1.5 rounded-lg text-[12px] font-semibold capitalize transition-all duration-150 ${
+                        bookingFilter === f
+                          ? 'bg-brand-500/20 text-brand-400 border border-brand-500/30'
+                          : 'text-white/35 border border-white/[0.07] hover:text-white/70 hover:border-white/20'
+                      }`}>
+                      {f === 'all' ? 'All' : f.charAt(0).toUpperCase() + f.slice(1)}
+                    </button>
+                  ))}
+                </div>
+
+                {bookingsLoading ? (
+                  <div className="flex items-center justify-center py-20">
+                    <div className="w-8 h-8 border-2 border-brand-500/20 border-t-brand-500 rounded-full animate-spin" />
+                  </div>
+                ) : bookings.length === 0 ? (
+                  <div className="text-center py-20 text-white/25">
+                    <Calendar className="w-10 h-10 mx-auto mb-3 opacity-30" />
+                    <p className="text-[14px] font-semibold">No bookings yet</p>
+                    <p className="text-[12px] mt-1">Bookings submitted via the website will appear here.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {bookings.map(b => <BookingCard key={b._id} booking={b} onCancel={handleCancelBooking} onDelete={handleDeleteBooking} />)}
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* ════ MESSAGES SECTION ════ */}
+            {section === 'messages' && (
+              <>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-[15px] font-bold text-white" style={{ fontFamily: "'Poppins',sans-serif" }}>Contact Messages</h2>
+                    <p className="text-[12px] text-white/35">
+                      {messages.length} message{messages.length !== 1 ? 's' : ''}
+                      {unreadCount > 0 && <span className="ml-2 text-red-400 font-semibold">· {unreadCount} unread</span>}
+                    </p>
+                  </div>
+                </div>
+
+                {messagesLoading ? (
+                  <div className="flex items-center justify-center py-20">
+                    <div className="w-8 h-8 border-2 border-brand-500/20 border-t-brand-500 rounded-full animate-spin" />
+                  </div>
+                ) : messages.length === 0 ? (
+                  <div className="text-center py-20 text-white/25">
+                    <Inbox className="w-10 h-10 mx-auto mb-3 opacity-30" />
+                    <p className="text-[14px] font-semibold">No messages yet</p>
+                    <p className="text-[12px] mt-1">Contact form submissions will appear here.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {messages.map(m => <MessageCard key={m._id} msg={m} onRead={handleMarkRead} onDelete={handleDeleteMessage} />)}
                   </div>
                 )}
               </>

@@ -1,0 +1,19 @@
+{
+  "name": "BizBackerz – Delegate to Dominate",
+  "short_name": "BizBackerz",
+  "description": "Dedicated Virtual Assistance. Delegate to Dominate.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#030912",
+  "theme_color": "#030912",
+  "lang": "en",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/logo/navbar.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

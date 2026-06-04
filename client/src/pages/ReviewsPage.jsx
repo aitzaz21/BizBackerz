@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import PageSEO from '../components/ui/PageSEO'
 import Container from '../components/ui/Container'
 import { ArrowLeft, ExternalLink, Star, ThumbsUp } from 'lucide-react'
 
@@ -211,8 +212,37 @@ export default function ReviewsPage() {
   const starCounts = buildStarCounts(reviews)
   const total = reviews.length
 
+  const reviewsSchema = useMemo(() => {
+  const avgRating = (reviews.reduce((s, r) => s + (r.rating || 5), 0) / reviews.length).toFixed(1)
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'BizBackerz',
+    url: 'https://bizbackerz.com',
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: avgRating,
+      reviewCount: reviews.length,
+      bestRating: 5,
+      worstRating: 1,
+    },
+    review: reviews.map(r => ({
+      '@type': 'Review',
+      author: { '@type': 'Person', name: r.name },
+      reviewRating: { '@type': 'Rating', ratingValue: r.rating || 5, bestRating: 5 },
+      reviewBody: r.text,
+    })),
+  }
+  }, [reviews]) // re-compute only when API updates reviews
+
   return (
     <div className="relative min-h-screen bg-navy-950 overflow-hidden">
+      <PageSEO
+        title="Client Reviews & Testimonials | BizBackerz Virtual Assistants"
+        description="Read 5-star Google reviews from real estate agents, e-commerce sellers, and business owners who use BizBackerz virtual assistant services. See why 50+ clients trust us."
+        canonical="https://bizbackerz.com/reviews"
+        schema={reviewsSchema}
+      />
 
       {/* Background ambience */}
       <div className="pointer-events-none absolute inset-0">
@@ -267,7 +297,7 @@ export default function ReviewsPage() {
                   </span>
                 </div>
 
-                <h1 className="font-display font-bold tracking-[-0.045em] text-white mb-4"
+                <h1 className="font-display font-bold tracking-[0.02em] text-white mb-4"
                   style={{ fontSize: 'clamp(2rem, 5vw, 3.2rem)', lineHeight: 1.08 }}>
                   What Our Clients Are Saying
                 </h1>
@@ -287,8 +317,8 @@ export default function ReviewsPage() {
                   style={{ background: 'linear-gradient(90deg, transparent, rgba(42,139,255,0.5), transparent)' }} />
 
                 <div className="relative text-center mb-6">
-                  <div className="font-display font-black text-white"
-                    style={{ fontSize: 'clamp(3.5rem, 8vw, 5rem)', lineHeight: 1, letterSpacing: '-0.04em' }}>
+                  <div className="font-display font-bold text-white"
+                    style={{ fontSize: 'clamp(3.5rem, 8vw, 5rem)', lineHeight: 1, letterSpacing: '0.02em' }}>
                     5.0
                   </div>
                   <div className="flex justify-center gap-1 my-3">

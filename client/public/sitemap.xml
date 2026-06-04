@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <!-- Static pages (home, about, services, legal, etc.) -->
+  <sitemap>
+    <loc>https://bizbackerz.com/sitemap-pages.xml</loc>
+    <lastmod>2026-06-03</lastmod>
+  </sitemap>
+
+  <!-- Blog posts — generated dynamically by the API from MongoDB -->
+  <sitemap>
+    <loc>https://bizbackerz.com/api/sitemap-blog.xml</loc>
+    <lastmod>2026-06-03</lastmod>
+  </sitemap>
+
+</sitemapindex>

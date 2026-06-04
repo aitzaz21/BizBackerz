@@ -8,7 +8,7 @@ export default function FloatingCTA() {
   const [isTouch, setIsTouch] = useState(false)
 
   useEffect(() => {
-    if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+    if (window.matchMedia('(pointer: coarse)').matches) {
       setIsTouch(true)
     }
 
@@ -55,7 +55,7 @@ export default function FloatingCTA() {
               />
             </span>
 
-            <span className="relative text-white font-display font-bold text-[13px] tracking-[-0.01em] whitespace-nowrap">
+            <span className="relative text-white font-display font-bold text-[13px] tracking-[0.01em] whitespace-nowrap">
               Hire Now!
             </span>
 

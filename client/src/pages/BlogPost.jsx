@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { gsap } from 'gsap'
+import DOMPurify from 'dompurify'
 import Container from '../components/ui/Container'
 import Button from '../components/ui/Button'
 import { Calendar, Clock, ArrowLeft, ArrowRight, Tag, User, Eye, Share2, Twitter, Facebook, Linkedin, Loader2 } from 'lucide-react'
@@ -9,10 +10,12 @@ const API = import.meta.env.VITE_API_URL || 'http://localhost:3001'
 
 /* ─── SEO injector ───────────────────────────────────────── */
 function setBlogPostSEO(blog) {
-  const seoTitle  = blog.seoTitle       || blog.title
-  const seoDesc   = blog.seoDescription || blog.excerpt
-  const ogImage   = blog.ogImage        || blog.coverImage || ''
-  const canonical = `${window.location.origin}/blog/${blog.slug}`
+  const seoTitle   = blog.seoTitle        || blog.title
+  const seoDesc    = blog.seoDescription  || blog.excerpt
+  const ogImage    = blog.ogImage         || blog.coverImage || ''
+  const twTitle    = blog.twitterTitle    || seoTitle
+  const twDesc     = blog.twitterDescription || seoDesc
+  const canonical  = `https://bizbackerz.com/blog/${blog.slug}`
   const dateStr   = blog.createdAt ? new Date(blog.createdAt).toISOString() : new Date().toISOString()
 
   document.title = `${seoTitle} | BizBackerz Blog`
@@ -26,7 +29,7 @@ function setBlogPostSEO(blog) {
   setMeta('description', seoDesc)
   if (blog.seoKeywords) setMeta('keywords', blog.seoKeywords)
   setMeta('author', blog.author || 'BizBackerz')
-  setMeta('robots', 'index, follow')
+  setMeta('robots', blog.noindex ? 'noindex, nofollow' : 'index, follow')
 
   // Open Graph
   setMeta('og:type',            'article',     'property')
@@ -41,14 +44,31 @@ function setBlogPostSEO(blog) {
 
   // Twitter Card
   setMeta('twitter:card',        ogImage ? 'summary_large_image' : 'summary')
-  setMeta('twitter:title',       seoTitle)
-  setMeta('twitter:description', seoDesc)
+  setMeta('twitter:title',       twTitle)
+  setMeta('twitter:description', twDesc)
   if (ogImage) setMeta('twitter:image', ogImage)
+  if (blog.ogImageAlt) setMeta('twitter:image:alt', blog.ogImageAlt)
 
-  // Canonical link
+  // Canonical
   let canon = document.querySelector('link[rel="canonical"]')
   if (!canon) { canon = document.createElement('link'); canon.rel = 'canonical'; document.head.appendChild(canon) }
   canon.href = canonical
+
+  // hreflang — same path on both domains
+  document.querySelectorAll('link[data-blog-hreflang]').forEach(el => el.remove())
+  const path = `/blog/${blog.slug}`
+  ;[
+    { hreflang: 'en-US',     href: `https://bizbackerz.com${path}` },
+    { hreflang: 'en-GB',     href: `https://bizbackerz.co.uk${path}` },
+    { hreflang: 'x-default', href: `https://bizbackerz.com${path}` },
+  ].forEach(({ hreflang, href }) => {
+    const link = document.createElement('link')
+    link.rel      = 'alternate'
+    link.hreflang = hreflang
+    link.href     = href
+    link.setAttribute('data-blog-hreflang', 'true')
+    document.head.appendChild(link)
+  })
 
   // JSON-LD Article schema
   let ld = document.querySelector('#blogpost-ld')
@@ -56,27 +76,39 @@ function setBlogPostSEO(blog) {
   ld.textContent = JSON.stringify({
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
+    '@id': `${canonical}#article`,
     'headline': seoTitle,
+    'name': seoTitle,
     'description': seoDesc,
+    'abstract': blog.excerpt || seoDesc,
     'datePublished': dateStr,
     'dateModified': blog.updatedAt ? new Date(blog.updatedAt).toISOString() : dateStr,
     'author': {
       '@type': 'Organization',
+      '@id': 'https://bizbackerz.com/#organization',
       'name': blog.author || 'BizBackerz',
+      'url': 'https://bizbackerz.com',
     },
     'publisher': {
       '@type': 'Organization',
+      '@id': 'https://bizbackerz.com/#organization',
       'name': 'BizBackerz',
-      'url': window.location.origin,
+      'url': 'https://bizbackerz.com',
       'logo': {
         '@type': 'ImageObject',
-        'url': `${window.location.origin}/logo.png`,
+        'url': 'https://bizbackerz.com/logo/navbar.png',
+        'width': 200,
+        'height': 60,
       },
     },
-    ...(ogImage ? { 'image': ogImage } : {}),
+    ...(ogImage ? { 'image': { '@type': 'ImageObject', 'url': ogImage, 'description': blog.ogImageAlt || blog.coverImageAlt || seoTitle } } : {}),
     'mainEntityOfPage': { '@type': 'WebPage', '@id': canonical },
     'url': canonical,
-    'keywords': blog.seoKeywords || blog.tag || '',
+    'inLanguage': 'en-US',
+    'isPartOf': { '@id': 'https://bizbackerz.com/blog#blog' },
+    'keywords': [blog.focusKeyword, blog.seoKeywords, blog.tag].filter(Boolean).join(', '),
+    ...(blog.readTime ? { 'timeRequired': `PT${blog.readTime}M` } : {}),
+    ...(blog.category ? { 'articleSection': blog.category } : {}),
   })
 
   // BreadcrumbList
@@ -95,11 +127,14 @@ function setBlogPostSEO(blog) {
 
 function cleanupSEO() {
   ['#blogpost-ld', '#blogpost-breadcrumb-ld'].forEach(id => {
-    const el = document.querySelector(id)
-    if (el) el.remove()
+    document.getElementById(id)?.remove()
   })
+  /* Restore canonical to root instead of removing it entirely —
+     PageSEO on the next page will overwrite it, but removing leaves
+     no canonical during the brief transition between pages. */
   const canon = document.querySelector('link[rel="canonical"]')
-  if (canon) canon.remove()
+  if (canon) canon.href = 'https://bizbackerz.com/'
+  document.querySelectorAll('link[data-blog-hreflang]').forEach(el => el.remove())
 }
 
 /* ─── Share buttons ──────────────────────────────────────── */
@@ -192,11 +227,14 @@ export default function BlogPost() {
     return cleanupSEO
   }, [blog])
 
-  // GSAP
+  // GSAP — wrapped in context so tweens are killed on unmount/blog-change
   useEffect(() => {
     if (!blog || window.matchMedia('(pointer: coarse)').matches) return
-    gsap.from('[data-bp-header]', { opacity: 0, y: 20, duration: 1.2, stagger: 0.1, delay: 0.2, ease: 'power2.out' })
-    gsap.from('[data-bp-body]',   { opacity: 0, y: 16, duration: 1.0, delay: 0.5, ease: 'power2.out' })
+    const ctx = gsap.context(() => {
+      gsap.from('[data-bp-header]', { opacity: 0, y: 20, duration: 1.2, stagger: 0.1, delay: 0.2, ease: 'power2.out', immediateRender: false })
+      gsap.from('[data-bp-body]',   { opacity: 0, y: 16, duration: 1.0, delay: 0.5, ease: 'power2.out', immediateRender: false })
+    })
+    return () => ctx.revert()
   }, [blog])
 
   if (loading) return (
@@ -221,13 +259,13 @@ export default function BlogPost() {
   const isHtmlContent = blog.content?.includes('<')
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen">{/* SEO handled by setBlogPostSEO useEffect above */}
 
       {/* ── Hero header ── */}
       <section className="relative pt-8 sm:pt-10 pb-14 overflow-hidden">
         {blog.coverImage && (
           <div className="absolute inset-0 overflow-hidden">
-            <img src={blog.coverImage} alt="" className="w-full h-full object-cover opacity-10" />
+            <img src={blog.coverImage} alt={blog.coverImageAlt || blog.title} className="w-full h-full object-cover opacity-10" />
             <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(3,9,18,0.5), #030912)' }} />
           </div>
         )}
@@ -267,7 +305,7 @@ export default function BlogPost() {
             </div>
 
             {/* Title */}
-            <h1 data-bp-header className="text-3xl sm:text-4xl lg:text-[2.75rem] font-display font-bold text-white leading-[1.1] mb-6 tracking-[-0.03em]">
+            <h1 data-bp-header className="text-3xl sm:text-4xl lg:text-[2.75rem] font-display font-bold text-white leading-[1.1] mb-6 tracking-[0.02em]">
               {blog.title}
             </h1>
 
@@ -299,7 +337,7 @@ export default function BlogPost() {
         <Container>
           <div className="max-w-3xl mx-auto" data-bp-body>
             {isHtmlContent ? (
-              <div className="prose-blog" dangerouslySetInnerHTML={{ __html: blog.content }} />
+              <div className="prose-blog" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(blog.content, { USE_PROFILES: { html: true } }) }} />
             ) : (
               <div className="space-y-6">
                 {(Array.isArray(blog.content) ? blog.content : [blog.content]).map((para, i) => (

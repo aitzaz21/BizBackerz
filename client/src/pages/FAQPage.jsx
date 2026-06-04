@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import Container from '../components/ui/Container'
 import { ArrowLeft, ChevronDown, HelpCircle, ArrowRight } from 'lucide-react'
+import PageSEO from '../components/ui/PageSEO'
 
 const faqs = [
   {
@@ -139,9 +140,51 @@ function FAQItem({ q, a }) {
   )
 }
 
+const FAQ_SCHEMA = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    '@id': 'https://bizbackerz.com/faq#faqpage',
+    name: 'BizBackerz Virtual Assistant FAQ',
+    description: 'Answers to the most common questions about BizBackerz virtual assistant services — setup time, pricing, tools, availability, security, and how we work.',
+    mainEntity: faqs.flatMap(cat => cat.questions.map(q => ({
+      '@type': 'Question',
+      name: q.q,
+      acceptedAnswer: { '@type': 'Answer', text: q.a },
+    }))),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://bizbackerz.com/' },
+      { '@type': 'ListItem', position: 2, name: 'FAQ', item: 'https://bizbackerz.com/faq' },
+    ],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'HowTo',
+    name: 'How to Get Started with BizBackerz',
+    description: 'The 4-step process to start delegating with BizBackerz virtual assistant services.',
+    totalTime: 'PT48H',
+    step: [
+      { '@type': 'HowToStep', position: 1, name: 'Book a Discovery Call', text: 'Book a free 30-minute discovery call at bizbackerz.com/booking. We learn your goals, pain points, and workflow.', url: 'https://bizbackerz.com/booking' },
+      { '@type': 'HowToStep', position: 2, name: 'Get Matched and Onboarded', text: 'We match you with the right virtual assistant and configure all tools and communication channels within 48 hours.' },
+      { '@type': 'HowToStep', position: 3, name: 'Start Delegating Immediately', text: 'Your assistant begins work on day one with daily updates and proactive communication.' },
+      { '@type': 'HowToStep', position: 4, name: 'Scale as You Grow', text: 'Add hours, expand scope, or bring in specialists for additional services as your business grows.' },
+    ],
+  },
+]
+
 export default function FAQPage() {
   return (
     <div className="relative min-h-screen bg-navy-950 overflow-hidden">
+      <PageSEO
+        title="Virtual Assistant FAQ – Common Questions Answered | BizBackerz"
+        description="Answers to the most common questions about BizBackerz virtual assistant services — setup time, pricing, tools, availability, security, and how we work."
+        canonical="https://bizbackerz.com/faq"
+        schema={FAQ_SCHEMA}
+      />
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -left-24 top-0 h-[36rem] w-[36rem] rounded-full blur-[150px]"
           style={{ background: 'rgba(42,139,255,0.09)' }} />
@@ -171,7 +214,7 @@ export default function FAQPage() {
               <span className="section-label">Support</span>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-white tracking-tight mb-4">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-white tracking-[0.02em] mb-4">
               Frequently Asked Questions
             </h1>
             <p className="text-[15px] text-white/55 font-body leading-[1.85] max-w-2xl">

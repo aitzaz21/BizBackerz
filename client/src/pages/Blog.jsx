@@ -1,8 +1,9 @@
-import React, { useEffect, useRef, useState, Suspense, memo } from 'react'
+import React, { useEffect, useRef, useState, useMemo, Suspense, memo } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { Link, useSearchParams } from 'react-router-dom'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import PageSEO from '../components/ui/PageSEO'
 import * as THREE from 'three'
 import Container from '../components/ui/Container'
 import { Calendar, ArrowRight, Clock, Search, Tag, X, Loader2, BookOpen, TrendingUp, Star } from 'lucide-react'
@@ -51,22 +52,29 @@ function setBlogSEO() {
 }
 
 /* ─── Starfield ─────────────────────────────────────────── */
+const BLOG_STAR_COUNT = 120
 const BlogStars = memo(function BlogStars() {
-  const ref = useRef()
+  const ref    = useRef()
+  const lastT  = useRef(0)
   const positions = React.useMemo(() => {
-    const arr = new Float32Array(400 * 3)
-    for (let i = 0; i < 400; i++) {
+    const arr = new Float32Array(BLOG_STAR_COUNT * 3)
+    for (let i = 0; i < BLOG_STAR_COUNT; i++) {
       arr[i * 3]     = (Math.random() - 0.5) * 30
       arr[i * 3 + 1] = (Math.random() - 0.5) * 20
       arr[i * 3 + 2] = (Math.random() - 0.5) * 15
     }
     return arr
   }, [])
-  useFrame(s => { if (ref.current) ref.current.rotation.y = s.clock.elapsedTime * 0.003 })
+  useFrame(s => {
+    const t = s.clock.elapsedTime
+    if (t - lastT.current < 0.05) return
+    lastT.current = t
+    if (ref.current) ref.current.rotation.y = t * 0.003
+  })
   return (
     <points ref={ref}>
       <bufferGeometry>
-        <bufferAttribute attach="attributes-position" count={400} array={positions} itemSize={3} />
+        <bufferAttribute attach="attributes-position" count={BLOG_STAR_COUNT} array={positions} itemSize={3} />
       </bufferGeometry>
       <pointsMaterial size={0.012} color="#50A6B4" transparent opacity={0.4} sizeAttenuation blending={THREE.AdditiveBlending} depthWrite={false} />
     </points>
@@ -94,7 +102,7 @@ function BlogCard({ blog, index }) {
       {/* Cover image or gradient placeholder */}
       <div className="aspect-[16/10] relative overflow-hidden">
         {blog.coverImage ? (
-          <img src={blog.coverImage} alt={blog.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+          <img src={blog.coverImage} alt={blog.coverImageAlt || blog.title} loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
         ) : (
           <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${blog.color}20, ${blog.color}08, rgba(3,9,18,0.85))` }} />
         )}
@@ -211,15 +219,43 @@ export default function BlogPage() {
       gsap.utils.toArray('[data-blog-item]').forEach((item, i) => {
         gsap.from(item, {
           opacity: 0, y: 30, scale: 0.97, duration: 1.2, ease: 'power2.out', delay: i * 0.07,
-          scrollTrigger: { trigger: item, start: 'top 90%', toggleActions: 'play reverse play reverse' },
+          immediateRender: false,
+          scrollTrigger: { trigger: item, start: 'top 75%', toggleActions: 'play reverse play reverse' },
         })
       })
     })
     return () => ctx.revert()
   }, [blogs, loading])
 
+  const blogSchema = useMemo(() => ([
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Blog',
+      '@id': 'https://bizbackerz.com/blog#blog',
+      url: 'https://bizbackerz.com/blog',
+      name: 'BizBackerz Blog – Virtual Assistant Tips & Business Growth',
+      description: 'Expert insights on virtual assistance, business delegation, productivity, social media management, lead generation, and scaling your business.',
+      publisher: { '@id': 'https://bizbackerz.com/#organization' },
+      inLanguage: 'en-US',
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://bizbackerz.com/' },
+        { '@type': 'ListItem', position: 2, name: 'Blog', item: 'https://bizbackerz.com/blog' },
+      ],
+    },
+  ]), [])
+
   return (
     <div ref={pageRef}>
+      <PageSEO
+        title="Virtual Assistant Blog – Tips, Guides & Business Growth | BizBackerz"
+        description="Expert insights on virtual assistance, business delegation, productivity, social media, lead generation, and scaling your business. Read the BizBackerz blog."
+        canonical="https://bizbackerz.com/blog"
+        schema={blogSchema}
+      />
       {/* Starfield */}
       <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 0, pointerEvents: 'none' }}>
         <Canvas camera={{ position: [0, 0, 8], fov: 50 }} dpr={[1, 1.5]}
@@ -237,7 +273,7 @@ export default function BlogPage() {
               <span data-blog-header className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-light text-brand-400 text-xs font-semibold uppercase tracking-[0.15em] mb-5">
                 <BookOpen className="w-3 h-3" /> Our Blog
               </span>
-              <h1 data-blog-header className="text-3xl sm:text-4xl lg:text-5xl font-display font-extrabold leading-[1.08] mb-5">
+              <h1 data-blog-header className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold leading-[1.08] mb-5">
                 Insights & <span className="text-gradient">Articles</span>
               </h1>
               <p data-blog-header className="text-base text-white/55 leading-relaxed max-w-md">

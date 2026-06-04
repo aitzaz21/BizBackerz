@@ -38,7 +38,7 @@ const ORB_VERT = `
 
   float fbm(vec3 p) {
     float v = 0.0, a = 0.5;
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 3; i++) {
       v += a * smoothNoise(p);
       p *= 2.2; a *= 0.5;
     }
@@ -125,14 +125,15 @@ const ATMOS_FRAG = `
 // MAIN GLowing ORB
 
 const GlowingOrb = memo(function GlowingOrb() {
-  const meshRef  = useRef()
-  const wire1Ref = useRef()
-  const wire2Ref = useRef()
-  const ring1Ref = useRef()
-  const ring2Ref = useRef()
-  const ring3Ref = useRef()
-  const ring4Ref = useRef()
-  const innerRef = useRef()
+  const meshRef   = useRef()
+  const wire1Ref  = useRef()
+  const wire2Ref  = useRef()
+  const ring1Ref  = useRef()
+  const ring2Ref  = useRef()
+  const ring3Ref  = useRef()
+  const ring4Ref  = useRef()
+  const innerRef  = useRef()
+  const lastOrbT  = useRef(0)
 
   const orbUniforms = useMemo(() => ({
     uTime:     { value: 0 },
@@ -147,15 +148,20 @@ const GlowingOrb = memo(function GlowingOrb() {
     uIntensity: { value: 2.1 },
   }), [])
 
-  const mainGeo  = useMemo(() => new THREE.SphereGeometry(2.0, 52, 52), [])
+  const mainGeo  = useMemo(() => new THREE.SphereGeometry(2.0, 28, 28), [])
   const wire1Geo = useMemo(() => new THREE.IcosahedronGeometry(2.25, 1), [])
   const wire2Geo = useMemo(() => new THREE.OctahedronGeometry(2.5, 1), [])
-  const glowGeo  = useMemo(() => new THREE.SphereGeometry(2.75, 16, 16), [])
-  const innerGeo = useMemo(() => new THREE.SphereGeometry(1.5,  12, 12), [])
+  const glowGeo  = useMemo(() => new THREE.SphereGeometry(2.75, 12, 12), [])
+  const innerGeo = useMemo(() => new THREE.SphereGeometry(1.5,  10, 10), [])
 
   useFrame((state) => {
     const t = state.clock.elapsedTime
+    /* Shader uniform must update every frame for smooth surface animation */
     orbUniforms.uTime.value = t
+
+    /* Throttle mesh transforms to ~20fps — imperceptible at these slow rotation speeds */
+    if (t - lastOrbT.current < 0.05) return
+    lastOrbT.current = t
 
     if (meshRef.current) {
       meshRef.current.rotation.y = t * 0.05
@@ -164,12 +170,12 @@ const GlowingOrb = memo(function GlowingOrb() {
       meshRef.current.scale.setScalar(breathe)
     }
     if (wire1Ref.current) {
-      wire1Ref.current.rotation.z += 0.0008
-      wire1Ref.current.rotation.x += 0.0003
+      wire1Ref.current.rotation.z += 0.004
+      wire1Ref.current.rotation.x += 0.0015
     }
     if (wire2Ref.current) {
-      wire2Ref.current.rotation.y -= 0.0006
-      wire2Ref.current.rotation.z -= 0.0004
+      wire2Ref.current.rotation.y -= 0.003
+      wire2Ref.current.rotation.z -= 0.002
     }
     if (ring1Ref.current) ring1Ref.current.rotation.z = t * 0.12
     if (ring2Ref.current) ring2Ref.current.rotation.x = t * 0.08
@@ -374,6 +380,7 @@ const BackgroundScene = memo(function BackgroundScene() {
   const mouseRef   = useRef({ x: 0, y: 0 })
   const velRef     = useRef({ x: 0, y: 0 })
   const prevMouse  = useRef({ x: 0, y: 0 })
+  const lastSceneT = useRef(0)
 
   useEffect(() => {
     const h = (e) => {
@@ -421,12 +428,16 @@ const BackgroundScene = memo(function BackgroundScene() {
     })
   }, [])
 
-  useFrame(() => {
+  useFrame((state) => {
     if (!sceneRef.current) return
+    const t = state.clock.elapsedTime
+    /* Cap mouse-tracking updates to ~30fps — lerp at slow factor so interpolation stays smooth */
+    if (t - lastSceneT.current < 0.033) return
+    lastSceneT.current = t
     const { x, y } = mouseRef.current
     const v = velRef.current
-    sceneRef.current.rotation.y = THREE.MathUtils.lerp(sceneRef.current.rotation.y, x * 0.08 + v.x * 0.4, 0.02)
-    sceneRef.current.rotation.x = THREE.MathUtils.lerp(sceneRef.current.rotation.x, -y * 0.05 - v.y * 0.3, 0.02)
+    sceneRef.current.rotation.y = THREE.MathUtils.lerp(sceneRef.current.rotation.y, x * 0.08 + v.x * 0.4, 0.04)
+    sceneRef.current.rotation.x = THREE.MathUtils.lerp(sceneRef.current.rotation.x, -y * 0.05 - v.y * 0.3, 0.04)
     velRef.current.x *= 0.88
     velRef.current.y *= 0.88
   })
@@ -439,7 +450,7 @@ const BackgroundScene = memo(function BackgroundScene() {
           <SatelliteCrystals />
         </group>
       </group>
-      <GalaxyDust count={700} />
+      <GalaxyDust count={280} />
     </>
   )
 })

@@ -1,6 +1,10 @@
 export const servicesData = [
   {
     slug: 'digital-advertising',
+    seo: {
+      title: 'Google Ads & Digital Advertising Services | BizBackerz',
+      description: 'Drive qualified leads with Google Local Service Ads, AI Max, and Performance Max campaigns. BizBackerz manages your digital advertising for 25% more inbound leads at lower cost per acquisition.',
+    },
     color: '#f97316',
     title: 'Digital Advertising',
     category: 'Growth',
@@ -51,6 +55,10 @@ export const servicesData = [
 
   {
     slug: 'administrative-support',
+    seo: {
+      title: 'Virtual Administrative Assistant Services | BizBackerz',
+      description: 'Reclaim 10+ hours a week with BizBackerz virtual administrative assistant services — calendar management, email handling, data entry, and document preparation. 48-hour setup.',
+    },
     color: '#3b82f6',
     title: 'Administrative Support',
     category: 'Operations',
@@ -101,6 +109,10 @@ export const servicesData = [
 
   {
     slug: 'customer-support',
+    seo: {
+      title: 'Virtual Customer Support Services | BizBackerz',
+      description: 'Protect your reputation with BizBackerz virtual customer support — professional ticket management, live chat, email support, and CRM management with a 2-hour average response time.',
+    },
     color: '#8b5cf6',
     title: 'Customer Support',
     category: 'Client Relations',
@@ -151,6 +163,10 @@ export const servicesData = [
 
   {
     slug: 'social-media-management',
+    seo: {
+      title: 'Social Media Management Services | BizBackerz',
+      description: 'Grow your brand with BizBackerz social media management — consistent content creation, community engagement, analytics reporting across Instagram, Facebook, LinkedIn, and TikTok.',
+    },
     color: '#ec4899',
     title: 'Social Media Management',
     category: 'Brand & Content',
@@ -201,6 +217,10 @@ export const servicesData = [
 
   {
     slug: 'content-creation',
+    seo: {
+      title: 'Content Creation Services for Business | BizBackerz',
+      description: 'SEO-optimized blog posts, email sequences, social media copy, and website content crafted in your brand voice. BizBackerz delivers 8+ pieces per month to grow organic traffic.',
+    },
     color: '#f59e0b',
     title: 'Content Creation',
     category: 'Content & Copy',
@@ -251,6 +271,10 @@ export const servicesData = [
 
   {
     slug: 'lead-generation',
+    seo: {
+      title: 'B2B Lead Generation Services | BizBackerz',
+      description: 'Fill your pipeline with 30+ qualified leads per month. BizBackerz delivers B2B lead generation through targeted LinkedIn outreach and cold email campaigns tailored to your ideal customer profile.',
+    },
     color: '#10b981',
     title: 'Lead Generation',
     category: 'Sales & Growth',
@@ -301,6 +325,10 @@ export const servicesData = [
 
   {
     slug: 'project-management',
+    seo: {
+      title: 'Virtual Project Management Services | BizBackerz',
+      description: 'Keep every deadline met with BizBackerz virtual project management — task coordination, stakeholder reporting, and workflow optimization. 100% on-time delivery across all managed projects.',
+    },
     color: '#0ea5e9',
     title: 'Project Management',
     category: 'Operations & Delivery',
@@ -351,6 +379,10 @@ export const servicesData = [
 
   {
     slug: 'accounting-services',
+    seo: {
+      title: 'Virtual Bookkeeping & Accounting Services | BizBackerz',
+      description: 'Keep your books clean with BizBackerz virtual accounting services — daily bookkeeping, invoicing, bank reconciliation, and monthly financial reports. 48-hour invoice turnaround.',
+    },
     color: '#14b8a6',
     title: 'Accounting Services',
     category: 'Finance & Compliance',
@@ -401,6 +433,10 @@ export const servicesData = [
 
   {
     slug: 'marketing-support',
+    seo: {
+      title: 'Virtual Marketing Support Services | BizBackerz',
+      description: 'Double your marketing output with BizBackerz virtual marketing support — campaign management, email marketing, ad copy, landing page content, and weekly ROI reporting.',
+    },
     color: '#d946ef',
     title: 'Marketing Support',
     category: 'Growth & Visibility',
@@ -451,6 +487,10 @@ export const servicesData = [
 
   {
     slug: 'e-commerce-services',
+    seo: {
+      title: 'E-Commerce Virtual Assistant Services | Amazon & Shopify | BizBackerz',
+      description: 'Streamline your online store with BizBackerz e-commerce virtual assistant — product listing optimization, inventory management, order processing, and review management for Amazon, Shopify, and more.',
+    },
     color: '#6366f1',
     title: 'E-Commerce Services',
     category: 'Online Retail',

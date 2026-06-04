@@ -48,16 +48,7 @@ export default function MarqueeStrip() {
       {/* Row 2 ← (opposite direction) */}
       <MarqueeRow items={row2} reverse={true}  speed={28} />
 
-      <style>{`
-        @keyframes marquee {
-          0%   { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-        @keyframes marquee-reverse {
-          0%   { transform: translateX(-50%); }
-          100% { transform: translateX(0); }
-        }
-      `}</style>
+      {/* keyframes live in index.css — no inline <style> to avoid duplication on remount */}
     </div>
   )
 }

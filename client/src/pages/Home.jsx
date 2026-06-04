@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Calendar, Clock, ArrowRight } from 'lucide-react'
+import PageSEO from '../components/ui/PageSEO'
 import Hero        from '../components/sections/Hero'
 import About       from '../components/sections/About'
 import Services    from '../components/sections/Services'
@@ -128,9 +129,152 @@ function HomeBlogsSection() {
   )
 }
 
+const HOME_SCHEMA = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    '@id': 'https://bizbackerz.com/#organization',
+    name: 'BizBackerz',
+    alternateName: 'BizBackerz Virtual Assistance',
+    url: 'https://bizbackerz.com',
+    logo: {
+      '@type': 'ImageObject',
+      '@id': 'https://bizbackerz.com/#logo',
+      url: 'https://bizbackerz.com/logo/navbar.png',
+      width: 200,
+      height: 60,
+      caption: 'BizBackerz – Virtual Assistance Agency',
+    },
+    image: 'https://bizbackerz.com/og-image.jpg',
+    description: 'BizBackerz is a virtual assistance agency headquartered in London, UK, helping 50+ businesses in the US and UK delegate operational tasks to expert virtual assistants. Services include digital advertising, administrative support, social media management, lead generation, customer support, content creation, project management, accounting, marketing support, and e-commerce management.',
+    slogan: 'Delegate to Dominate',
+    foundingDate: '2024',
+    foundingLocation: {
+      '@type': 'Place',
+      name: 'London, United Kingdom',
+    },
+    email: 'Hello@bizbackerz.com',
+    telephone: '+1-904-668-6362',
+    numberOfEmployees: { '@type': 'QuantitativeValue', value: 10 },
+    areaServed: [
+      { '@type': 'Country', name: 'United States' },
+      { '@type': 'Country', name: 'United Kingdom' },
+    ],
+    address: [
+      { '@type': 'PostalAddress', addressLocality: 'London', addressCountry: 'GB' },
+      { '@type': 'PostalAddress', addressRegion: 'Florida', addressCountry: 'US' },
+    ],
+    openingHoursSpecification: {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: ['Monday','Tuesday','Wednesday','Thursday','Friday'],
+      opens: '11:00',
+      closes: '20:00',
+    },
+    knowsAbout: [
+      'Virtual Assistance',
+      'Digital Advertising',
+      'Google Local Service Ads',
+      'AI Max Search Campaigns',
+      'Performance Max Advertising',
+      'Administrative Support',
+      'Social Media Management',
+      'Lead Generation',
+      'Customer Support',
+      'Content Creation',
+      'Project Management',
+      'Bookkeeping and Accounting',
+      'Marketing Support',
+      'E-Commerce Management',
+      'Business Process Delegation',
+      'Generative Engine Optimization',
+      'B2B Lead Generation',
+    ],
+    knowsLanguage: [{ '@type': 'Language', name: 'English' }],
+    brand: {
+      '@type': 'Brand',
+      name: 'BizBackerz',
+      slogan: 'Delegate to Dominate',
+      logo: 'https://bizbackerz.com/logo/navbar.png',
+    },
+    sameAs: [
+      'https://www.facebook.com/BizBackerz',
+      'https://www.instagram.com/bizbackerzltd/',
+      'https://www.linkedin.com/company/105424987/',
+    ],
+    contactPoint: {
+      '@type': 'ContactPoint',
+      telephone: '+1-904-668-6362',
+      contactType: 'customer service',
+      availableLanguage: ['English'],
+      areaServed: ['US', 'GB'],
+      hoursAvailable: {
+        '@type': 'OpeningHoursSpecification',
+        dayOfWeek: ['Monday','Tuesday','Wednesday','Thursday','Friday'],
+        opens: '11:00',
+        closes: '20:00',
+      },
+    },
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: '5.0',
+      reviewCount: '6',
+      bestRating: '5',
+    },
+    hasOfferCatalog: {
+      '@type': 'OfferCatalog',
+      name: 'Virtual Assistant Services',
+      itemListElement: [
+        { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Digital Advertising', url: 'https://bizbackerz.com/services/digital-advertising' } },
+        { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Administrative Support', url: 'https://bizbackerz.com/services/administrative-support' } },
+        { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Customer Support', url: 'https://bizbackerz.com/services/customer-support' } },
+        { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Social Media Management', url: 'https://bizbackerz.com/services/social-media-management' } },
+        { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Content Creation', url: 'https://bizbackerz.com/services/content-creation' } },
+        { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Lead Generation', url: 'https://bizbackerz.com/services/lead-generation' } },
+        { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Project Management', url: 'https://bizbackerz.com/services/project-management' } },
+        { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Accounting Services', url: 'https://bizbackerz.com/services/accounting-services' } },
+        { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Marketing Support', url: 'https://bizbackerz.com/services/marketing-support' } },
+        { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'E-Commerce Services', url: 'https://bizbackerz.com/services/e-commerce-services' } },
+      ],
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': 'https://bizbackerz.com/#website',
+    name: 'BizBackerz',
+    url: 'https://bizbackerz.com',
+    publisher: { '@id': 'https://bizbackerz.com/#organization' },
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: { '@type': 'EntryPoint', urlTemplate: 'https://bizbackerz.com/blog?search={search_term_string}' },
+      'query-input': 'required name=search_term_string',
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    '@id': 'https://bizbackerz.com/#webpage',
+    url: 'https://bizbackerz.com/',
+    name: 'BizBackerz – Virtual Assistant Services | Delegate to Dominate',
+    isPartOf: { '@id': 'https://bizbackerz.com/#website' },
+    about: { '@id': 'https://bizbackerz.com/#organization' },
+    description: 'BizBackerz provides dedicated virtual assistant services for US and UK businesses — admin support, digital advertising, social media management, lead generation, and customer support.',
+    speakable: {
+      '@type': 'SpeakableSpecification',
+      cssSelector: ['[data-hero-desc]', '[data-hero-sub]'],
+    },
+  },
+]
+
 export default function Home() {
   return (
     <>
+      <PageSEO
+        title="BizBackerz – Virtual Assistant Services | Delegate to Dominate"
+        description="BizBackerz provides dedicated virtual assistant services — admin support, digital advertising, social media management, lead generation, and customer support. Start delegating today."
+        canonical="https://bizbackerz.com/"
+        schema={HOME_SCHEMA}
+      />
       <ScrollProgress />
 
       <Hero />

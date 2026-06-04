@@ -84,25 +84,25 @@ export default function FAQSection() {
       // Label fade
       gsap.from('[data-faq-label] .section-label', {
         opacity: 0, x: -20, duration: 1, ease: 'power3.out',
-        scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play reverse play reverse' },
+        scrollTrigger: { trigger: el, start: 'top 71%', toggleActions: 'play reverse play reverse' },
       })
 
       // Masked heading lines
       gsap.from('[data-faq-line]', {
         yPercent: 110, duration: 1.2, stagger: 0.1, ease: 'power4.out',
-        scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play reverse play reverse' },
+        scrollTrigger: { trigger: el, start: 'top 71%', toggleActions: 'play reverse play reverse' },
       })
 
       // Description fade
       gsap.from('[data-faq-desc]', {
         opacity: 0, y: 20, duration: 1, delay: 0.3, ease: 'power2.out',
-        scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play reverse play reverse' },
+        scrollTrigger: { trigger: el, start: 'top 71%', toggleActions: 'play reverse play reverse' },
       })
 
       // FAQ Items
       gsap.from('[data-faq-item]', {
         opacity: 0, y: 40, x: 20, stagger: 0.12, duration: 1, ease: 'power3.out',
-        scrollTrigger: { trigger: el, start: 'top 75%', toggleActions: 'play reverse play reverse' },
+        scrollTrigger: { trigger: el, start: 'top 61%', toggleActions: 'play reverse play reverse' },
       })
     }, el)
 

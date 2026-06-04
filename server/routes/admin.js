@@ -1,10 +1,13 @@
 import express from 'express'
 import jwt from 'jsonwebtoken'
+import bcrypt from 'bcryptjs'
 import rateLimit from 'express-rate-limit'
 import Blog from '../models/Blog.js'
 import Review from '../models/Review.js'
 import TeamMember from '../models/TeamMember.js'
 import SiteSettings from '../models/SiteSettings.js'
+import Booking from '../models/Booking.js'
+import Contact from '../models/Contact.js'
 import auth from '../middleware/auth.js'
 import cloudinary from '../services/cloudinary.js'
 
@@ -12,6 +15,21 @@ const router = express.Router()
 const JWT_SECRET  = () => process.env.JWT_SECRET
 const ADMIN_EMAIL = () => process.env.ADMIN_PANEL_EMAIL || process.env.ADMIN_EMAIL || ''
 const ADMIN_PASS  = () => process.env.ADMIN_PASSWORD || ''
+
+/* Cache the bcrypt hash of the configured password so we never
+   call bcrypt.hash() on every login request.
+   If the env value is already a bcrypt hash (migrated), use it directly. */
+let _cachedHash = null
+async function getAdminHash() {
+  if (_cachedHash) return _cachedHash
+  const plain = ADMIN_PASS()
+  if (plain.startsWith('$2b$') || plain.startsWith('$2a$')) {
+    _cachedHash = plain          // already hashed
+  } else {
+    _cachedHash = await bcrypt.hash(plain, 12)
+  }
+  return _cachedHash
+}
 
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,  // 15 minutes
@@ -22,23 +40,51 @@ const loginLimiter = rateLimit({
 })
 
 /* ── POST /api/admin/login ─────────────────────────────────── */
-router.post('/login', loginLimiter, (req, res) => {
-  const { email, password } = req.body
-  if (!email || !password)
-    return res.status(400).json({ success: false, error: 'Email and password required.' })
+router.post('/login', loginLimiter, async (req, res) => {
+  try {
+    const { email, password } = req.body
+    if (!email || !password)
+      return res.status(400).json({ success: false, error: 'Email and password required.' })
 
-  const secret = JWT_SECRET()
-  if (!secret) return res.status(500).json({ success: false, error: 'Server misconfiguration.' })
+    const secret = JWT_SECRET()
+    if (!secret) return res.status(500).json({ success: false, error: 'Server misconfiguration.' })
 
-  if (email.trim().toLowerCase() !== ADMIN_EMAIL().trim().toLowerCase() || password !== ADMIN_PASS())
-    return res.status(401).json({ success: false, error: 'Invalid credentials.' })
+    /* Constant-time email comparison (prevent user enumeration) */
+    const emailMatch = email.trim().toLowerCase() === ADMIN_EMAIL().trim().toLowerCase()
 
-  const token = jwt.sign({ email: email.trim().toLowerCase(), role: 'admin' }, secret, { expiresIn: '7d' })
-  return res.json({ success: true, token })
+    /* Timing-safe password check via bcrypt — prevents timing attacks */
+    const hash = await getAdminHash()
+    const passMatch = await bcrypt.compare(password, hash)
+
+    if (!emailMatch || !passMatch)
+      return res.status(401).json({ success: false, error: 'Invalid credentials.' })
+
+    const token = jwt.sign({ email: email.trim().toLowerCase(), role: 'admin' }, secret, { expiresIn: '7d' })
+
+    /* Set httpOnly cookie so JS cannot read the token (XSS-resistant) */
+    res.cookie('biz_admin', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000,  // 7 days in ms
+      path: '/',
+    })
+
+    /* Also return token in body — dashboard stores it as fallback during transition */
+    return res.json({ success: true, token })
+  } catch (err) {
+    return res.status(500).json({ success: false, error: 'Login error.' })
+  }
 })
 
 /* ── GET /api/admin/verify ─────────────────────────────────── */
 router.get('/verify', auth, (req, res) => res.json({ success: true, admin: req.admin }))
+
+/* ── POST /api/admin/logout ────────────────────────────────── */
+router.post('/logout', (req, res) => {
+  res.clearCookie('biz_admin', { path: '/', sameSite: 'strict', secure: process.env.NODE_ENV === 'production' })
+  return res.json({ success: true })
+})
 
 /* ── POST /api/admin/upload ────────────────────────────────── */
 router.post('/upload', auth, async (req, res) => {
@@ -280,6 +326,100 @@ router.put('/team-settings', auth, async (req, res) => {
       { upsert: true, new: true },
     )
     return res.json({ success: true, settings: doc.value })
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message })
+  }
+})
+
+/* ═══════════════════════════════════════════════════════════
+   BOOKINGS ROUTES (admin)
+═══════════════════════════════════════════════════════════ */
+
+/* ── GET /api/admin/bookings ───────────────────────────────── */
+router.get('/bookings', auth, async (req, res) => {
+  try {
+    const { status, page = 1, limit = 50 } = req.query
+    const filter = {}
+    if (status && status !== 'all') filter.status = status
+
+    const total = await Booking.countDocuments(filter)
+    const bookings = await Booking.find(filter)
+      .sort({ createdAt: -1 })
+      .skip((+page - 1) * +limit)
+      .limit(+limit)
+      .lean()
+
+    return res.json({ success: true, bookings, total })
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message })
+  }
+})
+
+/* ── PATCH /api/admin/bookings/:id/cancel ──────────────────── */
+router.patch('/bookings/:id/cancel', auth, async (req, res) => {
+  try {
+    const booking = await Booking.findByIdAndUpdate(
+      req.params.id,
+      { status: 'cancelled' },
+      { new: true }
+    )
+    if (!booking) return res.status(404).json({ success: false, error: 'Booking not found.' })
+    return res.json({ success: true, booking })
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message })
+  }
+})
+
+/* ── DELETE /api/admin/bookings/:id ────────────────────────── */
+router.delete('/bookings/:id', auth, async (req, res) => {
+  try {
+    const booking = await Booking.findByIdAndDelete(req.params.id)
+    if (!booking) return res.status(404).json({ success: false, error: 'Booking not found.' })
+    return res.json({ success: true, message: 'Booking deleted.' })
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message })
+  }
+})
+
+/* ═══════════════════════════════════════════════════════════
+   MESSAGES / CONTACT ROUTES (admin)
+═══════════════════════════════════════════════════════════ */
+
+/* ── GET /api/admin/messages ───────────────────────────────── */
+router.get('/messages', auth, async (req, res) => {
+  try {
+    const { page = 1, limit = 50 } = req.query
+    const total  = await Contact.countDocuments()
+    const unread = await Contact.countDocuments({ read: false })
+    const messages = await Contact.find()
+      .sort({ createdAt: -1 })
+      .skip((+page - 1) * +limit)
+      .limit(+limit)
+      .lean()
+
+    return res.json({ success: true, messages, total, unread })
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message })
+  }
+})
+
+/* ── PATCH /api/admin/messages/:id/read ────────────────────── */
+router.patch('/messages/:id/read', auth, async (req, res) => {
+  try {
+    const msg = await Contact.findByIdAndUpdate(req.params.id, { read: true }, { new: true })
+    if (!msg) return res.status(404).json({ success: false, error: 'Message not found.' })
+    return res.json({ success: true, message: msg })
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message })
+  }
+})
+
+/* ── DELETE /api/admin/messages/:id ────────────────────────── */
+router.delete('/messages/:id', auth, async (req, res) => {
+  try {
+    const msg = await Contact.findByIdAndDelete(req.params.id)
+    if (!msg) return res.status(404).json({ success: false, error: 'Message not found.' })
+    return res.json({ success: true, message: 'Message deleted.' })
   } catch (err) {
     return res.status(500).json({ success: false, error: err.message })
   }

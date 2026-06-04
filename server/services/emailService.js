@@ -1,5 +1,15 @@
 import nodemailer from 'nodemailer'
 
+/* Escape user-supplied strings before HTML interpolation */
+function escHtml(str) {
+  return String(str ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
 function createTransporter() {
   return nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
@@ -9,6 +19,10 @@ function createTransporter() {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS,
     },
+    /* Namecheap cPanel issues a *.web-hosting.com cert for their shared
+       infrastructure — the custom mail hostname won't match it.
+       The connection is still fully encrypted; we just skip hostname
+       verification against the cert CN/SAN. */
     tls: { rejectUnauthorized: false },
   })
 }
@@ -54,7 +68,7 @@ function layout(content) {
       <div class="tag">Virtual Assistant Services</div>
     </div>
     <div class="body">${content}</div>
-    <div class="foot">© 2026 BizBackerz · All rights reserved · <a href="https://bizbackerz.com">bizbackerz.com</a></div>
+    <div class="foot">© ${new Date().getFullYear()} BizBackerz · All rights reserved · <a href="https://bizbackerz.com">bizbackerz.com</a></div>
   </div>
 </div>
 </body>
@@ -63,18 +77,19 @@ function layout(content) {
 
 /* ─── Contact form: admin alert ─── */
 export async function sendAdminContactAlert({ name, email, phone, message }) {
+  const sName = escHtml(name), sEmail = escHtml(email), sPhone = escHtml(phone), sMsg = escHtml(message)
   const html = layout(`
     <h2>📬 New Contact Form Message</h2>
     <p>A visitor has submitted the contact form on <strong style="color:#fff">bizbackerz.com</strong>. Details below:</p>
     <div class="info">
-      <div class="row"><span class="lbl">Name</span><span class="val">${name}</span></div>
-      <div class="row"><span class="lbl">Email</span><span class="val"><a href="mailto:${email}" style="color:#2a8bff">${email}</a></span></div>
-      ${phone ? `<div class="row"><span class="lbl">Phone</span><span class="val">${phone}</span></div>` : ''}
-      <div class="row"><span class="lbl">Message</span><span class="val" style="white-space:pre-wrap">${message}</span></div>
+      <div class="row"><span class="lbl">Name</span><span class="val">${sName}</span></div>
+      <div class="row"><span class="lbl">Email</span><span class="val"><a href="mailto:${sEmail}" style="color:#2a8bff">${sEmail}</a></span></div>
+      ${sPhone ? `<div class="row"><span class="lbl">Phone</span><span class="val">${sPhone}</span></div>` : ''}
+      <div class="row"><span class="lbl">Message</span><span class="val" style="white-space:pre-wrap">${sMsg}</span></div>
       <div class="row"><span class="lbl">Received</span><span class="val">${new Date().toLocaleString('en-US', { timeZone: 'America/New_York', dateStyle: 'medium', timeStyle: 'short' })} ET</span></div>
     </div>
     <div class="btn-wrap">
-      <a href="mailto:${email}" class="btn">Reply to ${name}</a>
+      <a href="mailto:${sEmail}" class="btn">Reply to ${sName}</a>
     </div>
     <p class="muted">This message was sent from the Contact page of bizbackerz.com.</p>
   `)
@@ -89,15 +104,16 @@ export async function sendAdminContactAlert({ name, email, phone, message }) {
 
 /* ─── Contact form: user auto-reply ─── */
 export async function sendContactFormEmail({ name, email, message }) {
+  const sName = escHtml(name), sMsg = escHtml(message)
   const html = layout(`
     <div style="text-align:center;margin-bottom:28px">
       <div style="width:64px;height:64px;background:rgba(42,139,255,0.12);border:2px solid rgba(42,139,255,0.35);border-radius:20px;display:inline-flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:16px">✉️</div>
       <h2 style="margin:0">We got your message!</h2>
     </div>
-    <p>Hi <strong style="color:#fff">${name}</strong>,</p>
+    <p>Hi <strong style="color:#fff">${sName}</strong>,</p>
     <p>Thank you for reaching out to BizBackerz. We've received your message and a member of our team will get back to you within <strong style="color:#fff">24 hours</strong>.</p>
     <div class="info">
-      <div class="row"><span class="lbl">Your message</span><span class="val" style="white-space:pre-wrap">${message}</span></div>
+      <div class="row"><span class="lbl">Your message</span><span class="val" style="white-space:pre-wrap">${sMsg}</span></div>
     </div>
     <p>In the meantime, feel free to book a free 30-minute strategy call — it's the fastest way to get started.</p>
     <div class="btn-wrap">
@@ -117,14 +133,15 @@ export async function sendContactFormEmail({ name, email, message }) {
 /* ─── 1. User confirmation request ─── */
 export async function sendConfirmationEmail(booking) {
   const confirmUrl = `${process.env.SERVER_URL || 'http://localhost:3001'}/api/bookings/confirm/${booking.confirmToken}`
+  const sName = escHtml(booking.name), sSlot = escHtml(booking.slotDisplayUser)
 
   const html = layout(`
     <h2>Confirm Your Appointment</h2>
-    <p>Hi <strong style="color:#fff">${booking.name}</strong>,</p>
+    <p>Hi <strong style="color:#fff">${sName}</strong>,</p>
     <p>You've requested a free 30-minute Zoom consultation with the BizBackerz team. Please confirm your appointment by clicking the button below.</p>
     <div class="btn-wrap"><a href="${confirmUrl}" class="btn">✓ &nbsp;Confirm My Appointment</a></div>
     <div class="info">
-      <div class="row"><span class="lbl">Date & Time</span><span class="val">${booking.slotDisplayUser}</span></div>
+      <div class="row"><span class="lbl">Date & Time</span><span class="val">${sSlot}</span></div>
       <div class="row"><span class="lbl">Duration</span><span class="val">30 minutes</span></div>
       <div class="row"><span class="lbl">Format</span><span class="val">Zoom Video Call</span></div>
     </div>
@@ -141,17 +158,18 @@ export async function sendConfirmationEmail(booking) {
 
 /* ─── 2. Admin notification (new pending booking) ─── */
 export async function sendAdminNewBooking(booking) {
+  const b = { name: escHtml(booking.name), email: escHtml(booking.email), phone: escHtml(booking.phone), country: escHtml(booking.country), tz: escHtml(booking.timezone), slotET: escHtml(booking.slotDisplayPKT), slotUser: escHtml(booking.slotDisplayUser) }
   const html = layout(`
     <h2>📅 New Booking Request</h2>
     <p>A new consultation has been requested and is <span class="badge-warn">Pending Confirmation</span> from the client.</p>
     <div class="info">
-      <div class="row"><span class="lbl">Name</span><span class="val">${booking.name}</span></div>
-      <div class="row"><span class="lbl">Email</span><span class="val">${booking.email}</span></div>
-      <div class="row"><span class="lbl">Phone</span><span class="val">${booking.phone}</span></div>
-      <div class="row"><span class="lbl">Country</span><span class="val">${booking.country}</span></div>
-      <div class="row"><span class="lbl">Timezone</span><span class="val">${booking.timezone}</span></div>
-      <div class="row"><span class="lbl">Time (ET)</span><span class="val">${booking.slotDisplayPKT}</span></div>
-      <div class="row"><span class="lbl">Time (Client)</span><span class="val">${booking.slotDisplayUser}</span></div>
+      <div class="row"><span class="lbl">Name</span><span class="val">${b.name}</span></div>
+      <div class="row"><span class="lbl">Email</span><span class="val">${b.email}</span></div>
+      <div class="row"><span class="lbl">Phone</span><span class="val">${b.phone}</span></div>
+      <div class="row"><span class="lbl">Country</span><span class="val">${b.country}</span></div>
+      <div class="row"><span class="lbl">Timezone</span><span class="val">${b.tz}</span></div>
+      <div class="row"><span class="lbl">Time (ET)</span><span class="val">${b.slotET}</span></div>
+      <div class="row"><span class="lbl">Time (Client)</span><span class="val">${b.slotUser}</span></div>
     </div>
     <p class="muted">The client must click the confirmation link in their email before this booking is locked in.</p>
   `)
@@ -166,14 +184,15 @@ export async function sendAdminNewBooking(booking) {
 
 /* ─── 3. User booking confirmed ─── */
 export async function sendBookingConfirmedToUser(booking) {
+  const sName = escHtml(booking.name), sSlot = escHtml(booking.slotDisplayUser)
   const html = layout(`
     <div style="text-align:center;margin-bottom:28px">
       <div style="width:64px;height:64px;background:rgba(56,217,169,0.12);border:2px solid rgba(56,217,169,0.35);border-radius:20px;display:inline-flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:16px">✓</div>
       <h2 style="margin:0">Your Appointment is Confirmed!</h2>
     </div>
-    <p>Hi <strong style="color:#fff">${booking.name}</strong>, your free Zoom consultation with BizBackerz is officially confirmed. We're looking forward to speaking with you!</p>
+    <p>Hi <strong style="color:#fff">${sName}</strong>, your free Zoom consultation with BizBackerz is officially confirmed. We're looking forward to speaking with you!</p>
     <div class="info">
-      <div class="row"><span class="lbl">Date & Time</span><span class="val">${booking.slotDisplayUser}</span></div>
+      <div class="row"><span class="lbl">Date & Time</span><span class="val">${sSlot}</span></div>
       <div class="row"><span class="lbl">Duration</span><span class="val">30 minutes</span></div>
       <div class="row"><span class="lbl">Format</span><span class="val">Zoom Video Call</span></div>
       <div class="row"><span class="lbl">Status</span><span class="val"><span class="badge-ok">✓ Confirmed</span></span></div>
@@ -192,16 +211,17 @@ export async function sendBookingConfirmedToUser(booking) {
 
 /* ─── 4. Admin notification (booking confirmed) ─── */
 export async function sendAdminConfirmed(booking) {
+  const b = { name: escHtml(booking.name), email: escHtml(booking.email), phone: escHtml(booking.phone), country: escHtml(booking.country), slotET: escHtml(booking.slotDisplayPKT), slotUser: escHtml(booking.slotDisplayUser) }
   const html = layout(`
     <h2>✅ Booking Confirmed</h2>
-    <p><strong style="color:#fff">${booking.name}</strong> has confirmed their appointment. Please prepare the Zoom link and send it to the client.</p>
+    <p><strong style="color:#fff">${b.name}</strong> has confirmed their appointment. Please prepare the Zoom link and send it to the client.</p>
     <div class="info">
-      <div class="row"><span class="lbl">Name</span><span class="val">${booking.name}</span></div>
-      <div class="row"><span class="lbl">Email</span><span class="val"><a href="mailto:${booking.email}" style="color:#2a8bff">${booking.email}</a></span></div>
-      <div class="row"><span class="lbl">Phone</span><span class="val">${booking.phone}</span></div>
-      <div class="row"><span class="lbl">Country</span><span class="val">${booking.country}</span></div>
-      <div class="row"><span class="lbl">Time (ET)</span><span class="val">${booking.slotDisplayPKT}</span></div>
-      <div class="row"><span class="lbl">Time (Client)</span><span class="val">${booking.slotDisplayUser}</span></div>
+      <div class="row"><span class="lbl">Name</span><span class="val">${b.name}</span></div>
+      <div class="row"><span class="lbl">Email</span><span class="val"><a href="mailto:${b.email}" style="color:#2a8bff">${b.email}</a></span></div>
+      <div class="row"><span class="lbl">Phone</span><span class="val">${b.phone}</span></div>
+      <div class="row"><span class="lbl">Country</span><span class="val">${b.country}</span></div>
+      <div class="row"><span class="lbl">Time (ET)</span><span class="val">${b.slotET}</span></div>
+      <div class="row"><span class="lbl">Time (Client)</span><span class="val">${b.slotUser}</span></div>
     </div>
   `)
 

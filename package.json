@@ -11,6 +11,8 @@
     "build": "npm run build -w client",
     "preview": "npm run preview -w client",
     "server": "npm run start -w server",
-    "server:dev": "npm run dev -w server"
+    "server:dev": "npm run dev -w server",
+    "lighthouse": "lhci autorun",
+    "lighthouse:local": "lhci collect --url=http://localhost:4173 --numberOfRuns=1 --config=lighthouserc.js && lhci assert --config=lighthouserc.js"
   }
 }

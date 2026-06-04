@@ -257,8 +257,9 @@ function OrbitRings() {
 }
 
 /* ─── Enhanced Star Cluster ─── */
-function StarCluster({ count = 400 }) {
-  const ref = useRef()
+function StarCluster({ count = 160 }) {
+  const ref    = useRef()
+  const lastT  = useRef(0)
   const scrollRef = useRef(0)
   useScrollProgress(scrollRef)
 
@@ -294,6 +295,8 @@ function StarCluster({ count = 400 }) {
   useFrame((state) => {
     if (!ref.current) return
     const t = state.clock.elapsedTime
+    if (t - lastT.current < 0.05) return
+    lastT.current = t
     ref.current.rotation.y = t * 0.009 + scrollRef.current * 0.65
     ref.current.rotation.x = -0.22 + Math.sin(t * 0.14) * 0.04
     ref.current.position.y = Math.sin(t * 0.1) * 0.22 - scrollRef.current * 0.5
@@ -409,7 +412,7 @@ export default function AboutBackground() {
       <EnergyCore />
       <DNAHelix count={100} />
       <OrbitRings />
-      <StarCluster count={400} />
+      <StarCluster count={160} />
       <DataGrid count={48} />
 
       <NebulaSphere position={[-4.5, 0.8,  -7]}  color="#2a8bff" scale={3.4}  opacity={0.026} speed={0.038} />

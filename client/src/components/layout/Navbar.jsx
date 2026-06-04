@@ -11,6 +11,7 @@ const navLinks = [
   {
     label: 'Services', href: '/services',
     children: [
+      { label: 'Digital Advertising',     href: '/services/digital-advertising' },
       { label: 'Administrative Support',  href: '/services/administrative-support' },
       { label: 'Accounting Services',     href: '/services/accounting-services' },
       { label: 'Social Media Management', href: '/services/social-media-management' },

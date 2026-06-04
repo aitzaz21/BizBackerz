@@ -16,45 +16,47 @@ export default function SiteLoader({ onComplete }) {
   const loaderRef = useRef(null)
   const topRef    = useRef(null)
   const botRef    = useRef(null)
-  const ctrRef    = useRef(null)   // counter text
-  const barRef    = useRef(null)   // progress bar fill
+  const ctrRef    = useRef(null)
+  const barRef    = useRef(null)
   const logoRef   = useRef(null)
   const labelRef  = useRef(null)
 
   useEffect(() => {
-    /* Safety: if GSAP never fires onComplete (e.g. tab backgrounded, RAF paused),
-       force-complete after 8 s so the loader never blocks the page permanently */
-    const safetyTimer = setTimeout(() => onComplete?.(), 8000)
+    /* Skip loader on repeat visits within the same session — 0ms blocked LCP */
+    if (sessionStorage.getItem('bb_loaded')) {
+      onComplete?.()
+      return
+    }
+    sessionStorage.setItem('bb_loaded', '1')
+
+    /* Safety: force-complete after 4s if GSAP stalls (tab backgrounded, RAF paused) */
+    const safetyTimer = setTimeout(() => onComplete?.(), 4000)
 
     const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
 
-    /* ── 1. Logo + label appear ── */
-    tl.from(logoRef.current, { scale: 0.75, opacity: 0, duration: 0.9 })
-    tl.from(labelRef.current, { opacity: 0, y: 10, duration: 0.7 }, '-=0.4')
+    /* ── 1. Logo + label appear — faster ── */
+    tl.from(logoRef.current, { scale: 0.75, opacity: 0, duration: 0.35 })
+    tl.from(labelRef.current, { opacity: 0, y: 8, duration: 0.3 }, '-=0.2')
 
-    /* ── 2. Counter  000 → 100 (runs alongside logo) ── */
+    /* ── 2. Counter 000 → 100 — reduced from 2.0s to 0.8s ── */
     const counter = { val: 0 }
     tl.to(counter, {
       val: 100,
-      duration: 2.0,
+      duration: 0.8,
       ease: 'power2.inOut',
       onUpdate() {
         const v = Math.round(counter.val)
-        if (ctrRef.current) {
-          ctrRef.current.textContent = v.toString().padStart(3, '0')
-        }
-        if (barRef.current) {
-          barRef.current.style.transform = `scaleX(${v / 100})`
-        }
+        if (ctrRef.current) ctrRef.current.textContent = v.toString().padStart(3, '0')
+        if (barRef.current) barRef.current.style.transform = `scaleX(${v / 100})`
       },
-    }, '-=0.6')
+    }, '-=0.25')
 
-    /* ── 3. Brief pause, then curtain splits ── */
+    /* ── 3. Curtain splits — reduced from 1.05s to 0.55s ── */
     tl.to(
       [topRef.current, botRef.current],
       {
         yPercent: (i) => (i === 0 ? -100 : 100),
-        duration: 1.05,
+        duration: 0.55,
         ease: 'power4.inOut',
         stagger: 0,
         onComplete: () => {
@@ -62,7 +64,7 @@ export default function SiteLoader({ onComplete }) {
           gsap.set(loaderRef.current, { display: 'none' })
         },
       },
-      '+=0.15'
+      '+=0.05'
     )
 
     return () => {

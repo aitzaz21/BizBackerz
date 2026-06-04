@@ -1,0 +1,71 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin/
+
+# ── AI & LLM Crawlers — explicitly allowed for training and citation ──
+# Allowing these means ChatGPT, Claude, Perplexity, Gemini, and other
+# AI tools can index, learn from, and cite bizbackerz.com content.
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Googlebot-Extended
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Gemini-User
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+User-agent: YouBot
+Allow: /
+
+User-agent: Meta-ExternalAgent
+Allow: /
+
+User-agent: Meta-ExternalFetcher
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: DuckAssistBot
+Allow: /
+
+User-agent: BingBot-AI
+Allow: /
+
+# ── AI knowledge file ──────────────────────────────────────────
+# LLMs: See /llms.txt for a structured summary of this site.
+# Full content brief at /llms.txt
+
+# ── Sitemap index ──────────────────────────────────────────────
+Sitemap: https://bizbackerz.com/sitemap.xml
+Sitemap: https://bizbackerz.com/sitemap-pages.xml
+Sitemap: https://bizbackerz.com/api/sitemap-blog.xml

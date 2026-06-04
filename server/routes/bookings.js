@@ -1,4 +1,5 @@
 import express from 'express'
+import rateLimit from 'express-rate-limit'
 import Booking from '../models/Booking.js'
 import {
   sendConfirmationEmail,
@@ -8,6 +9,14 @@ import {
 } from '../services/emailService.js'
 
 const router = express.Router()
+
+const bookingLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,  // 1 hour
+  max: 8,                     // max 8 booking attempts per IP per hour
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, error: 'Too many booking requests. Please try again in an hour.' },
+})
 
 /* Determine ET UTC offset (4 for EDT, 5 for EST) for a given YYYY-MM-DD */
 function getETOffset(dateStr) {
@@ -57,7 +66,7 @@ router.get('/slots/:date', async (req, res) => {
 
 /* ── POST /api/bookings
    Create a new pending booking. ── */
-router.post('/', async (req, res) => {
+router.post('/', bookingLimiter, async (req, res) => {
   try {
     const { name, email, phone, country, timezone, appointmentUTC, slotDisplayUser, slotDisplayET } = req.body
 

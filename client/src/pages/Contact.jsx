@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { gsap } from 'gsap'
 import Container from '../components/ui/Container'
 import Button from '../components/ui/Button'
+import PageSEO from '../components/ui/PageSEO'
 import RobotCursorTracker from '../components/ui/RobotCursorTracker'
 import { Phone, Mail, MapPin, Send, Clock, ArrowUpRight, CheckCircle2 } from 'lucide-react'
 
@@ -86,27 +87,52 @@ function FloatingTextarea({ label, name, value, onChange, required, rows = 5, on
 }
 
 /* ── Info Card ─────────────────────────────────────────────── */
-function InfoCard({ icon: Icon, title, value, href, color, delay = 0 }) {
+function InfoCard({ icon: Icon, title, value, href, color, delay = 0, className = '' }) {
   return (
     <motion.a
       href={href}
       target={href?.startsWith('http') ? '_blank' : undefined}
       rel="noopener noreferrer"
-      initial={{ opacity: 0, y: 16 }}
+      initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay, duration: 0.6, ease: 'easeOut' }}
-      whileHover={{ y: -2 }}
-      className="glass rounded-2xl p-4 flex items-center gap-3.5 hover:border-white/10 transition-all duration-400 group cursor-pointer"
+      transition={{ delay, duration: 0.5, ease: 'easeOut' }}
+      whileHover={{ y: -3, transition: { duration: 0.18 } }}
+      className={`group relative overflow-hidden rounded-xl p-3.5 flex flex-col gap-2.5 cursor-pointer ${className}`}
+      style={{ background: 'rgba(8,16,34,0.8)', border: `1px solid ${color}25` }}
     >
+      {/* Top accent line */}
       <div
-        className="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center"
-        style={{ background: `linear-gradient(135deg, ${color}22, ${color}0a)` }}
-      >
-        <Icon className="w-4.5 h-4.5" style={{ color }} />
+        className="absolute top-0 left-0 right-0 h-[1.5px] pointer-events-none"
+        style={{ background: `linear-gradient(90deg, ${color}85, ${color}30, transparent 70%)` }}
+      />
+      {/* Hover glow */}
+      <div
+        className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        style={{ background: `radial-gradient(130% 110% at 0% 0%, ${color}14 0%, transparent 60%)` }}
+      />
+
+      {/* Row 1 — icon + arrow */}
+      <div className="relative flex items-center justify-between">
+        <div
+          className="w-8 h-8 rounded-lg flex items-center justify-center"
+          style={{ background: `${color}16`, border: `1px solid ${color}28` }}
+        >
+          <Icon className="w-3.5 h-3.5" style={{ color }} />
+        </div>
+        <ArrowUpRight
+          className="w-3 h-3 opacity-0 group-hover:opacity-55 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-200"
+          style={{ color }}
+        />
       </div>
-      <div className="min-w-0">
-        <p className="text-[10px] text-white/30 font-body font-bold uppercase tracking-[0.1em] mb-0.5">{title}</p>
-        <p className="text-[13px] font-display font-semibold text-white/65 group-hover:text-white transition-colors truncate">{value}</p>
+
+      {/* Row 2 — label + value */}
+      <div className="relative">
+        <p className="text-[9px] font-bold uppercase tracking-[0.15em] mb-1" style={{ color: `${color}cc` }}>
+          {title}
+        </p>
+        <p className="text-[13px] font-semibold text-white leading-snug">
+          {value}
+        </p>
       </div>
     </motion.a>
   )
@@ -241,6 +267,11 @@ export default function ContactPage() {
 
   return (
     <div ref={pageRef} className="relative min-h-screen overflow-hidden bg-[#02050a]">
+      <PageSEO
+        title="Contact BizBackerz – Hire a Virtual Assistant"
+        description="Get in touch with BizBackerz to hire a dedicated virtual assistant. Call (904) 668-6362 or email Hello@bizbackerz.com. Available Mon–Fri, 11:00 AM – 8:00 PM ET."
+        canonical="https://bizbackerz.com/contact"
+      />
       <MeshOrbs />
 
       <div className="relative z-10">
@@ -253,9 +284,9 @@ export default function ContactPage() {
                   <span className="w-1.5 h-1.5 rounded-full bg-brand-400 animate-pulse"/>
                   Let's Connect
                 </span>
-                <h1 data-ch className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-display font-extrabold leading-[1.07] mb-4">
+                <h1 data-ch className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-display font-bold leading-[1.07] mb-4">
                   Get In{' '}
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-400 via-brand-300 to-accent-300">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-400 to-accent-400">
                     Touch
                   </span>
                 </h1>
@@ -268,11 +299,11 @@ export default function ContactPage() {
               <div data-ch className="hidden lg:flex items-center gap-3 pb-1">
                 <div className="glass rounded-full px-4 py-2 flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-accent-400 animate-pulse"/>
-                  <span className="text-[12px] font-body font-semibold text-white/60">Mon–Sat · 11AM–8PM ET</span>
+                  <span className="text-[12px] font-body font-normal text-white/55">Mon – Fri{' · '}11:00 AM – 8:00 PM ET</span>
                 </div>
                 <div className="glass rounded-full px-4 py-2 flex items-center gap-2">
                   <MapPin className="w-3.5 h-3.5 text-red-400"/>
-                  <span className="text-[12px] font-body font-semibold text-white/60">London, UK · Remote Global</span>
+                  <span className="text-[12px] font-body font-normal text-white/55">London, UK{' · '}Remote Global</span>
                 </div>
               </div>
             </div>
@@ -287,11 +318,11 @@ export default function ContactPage() {
               {/* ── LEFT: Form ──────────────────────────────── */}
               <div data-ch>
                 {/* Info cards — mobile (above form) */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6 lg:hidden">
-                  <InfoCard icon={Phone} title="US" value="(904) 668-6362" href="tel:+19046686362" color="#3b82f6" delay={0.1}/>
-                  <InfoCard icon={Phone} title="UK" value="+44 7366 419570" href="tel:+447366419570" color="#8b5cf6" delay={0.15}/>
-                  <InfoCard icon={Mail} title="Email" value="Hello@bizbackerz.com" href="mailto:Hello@bizbackerz.com" color="#10b981" delay={0.2}/>
-                  <InfoCard icon={Clock} title="Hours" value="11AM–8PM ET" href="/booking" color="#f59e0b" delay={0.25}/>
+                <div className="grid grid-cols-2 gap-3 mb-6 lg:hidden">
+                  <InfoCard icon={Phone} title="US Phone" value="(904) 668-6362" href="tel:+19046686362" color="#3b82f6" delay={0.1}/>
+                  <InfoCard icon={Phone} title="UK Phone" value="+44 7366 419570" href="tel:+447366419570" color="#8b5cf6" delay={0.15}/>
+                  <InfoCard icon={Mail} title="Email Us" value="Hello@bizbackerz.com" href="mailto:Hello@bizbackerz.com" color="#10b981" delay={0.2}/>
+                  <InfoCard icon={Clock} title="Office Hours" value="Mon–Fri · 11:00 AM – 8:00 PM ET" href="/booking" color="#f59e0b" delay={0.25}/>
                 </div>
 
                 {/* Form card */}
@@ -318,7 +349,7 @@ export default function ContactPage() {
                         >
                           <CheckCircle2 className="w-7 h-7 text-accent-400"/>
                         </motion.div>
-                        <h3 className="text-2xl font-display font-extrabold text-white mb-2">Message Sent!</h3>
+                        <h3 className="text-2xl font-display font-bold text-white mb-2">Message Sent!</h3>
                         <p className="text-[14px] text-white/45 font-body">We'll be in touch with you very soon.</p>
                       </motion.div>
                     ) : (
@@ -388,14 +419,14 @@ export default function ContactPage() {
                       <MapPin className="w-4 h-4 text-red-400"/>
                     </div>
                     <div>
-                      <p className="text-[10px] text-white/30 font-body font-bold uppercase tracking-[0.1em] mb-0.5">Our Location</p>
+                      <p className="text-[10px] text-white/30 font-body font-medium uppercase tracking-[0.1em] mb-0.5">Our Location</p>
                       <p className="text-[13px] font-display font-semibold text-white/65 group-hover:text-white transition-colors">
                         London, United Kingdom
                         <span className="text-white/35 font-body font-normal text-[12px] ml-2">· Remote operations worldwide</span>
                       </p>
                     </div>
                   </div>
-                  <span className="flex-shrink-0 inline-flex items-center gap-1.5 text-[11px] font-body font-bold text-brand-400 group-hover:gap-2 transition-all duration-300 uppercase tracking-[0.1em]">
+                  <span className="flex-shrink-0 inline-flex items-center gap-1.5 text-[11px] font-body font-medium text-brand-400 group-hover:gap-2 transition-all duration-300 uppercase tracking-[0.1em]">
                     Maps
                     <ArrowUpRight className="w-3 h-3 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"/>
                   </span>
@@ -407,10 +438,10 @@ export default function ContactPage() {
 
                 {/* Info cards — desktop */}
                 <div className="hidden lg:grid grid-cols-2 gap-3 w-full">
-                  <InfoCard icon={Phone} title="US" value="(904) 668-6362" href="tel:+19046686362" color="#3b82f6" delay={0.2}/>
-                  <InfoCard icon={Phone} title="UK" value="+44 7366 419570" href="tel:+447366419570" color="#8b5cf6" delay={0.25}/>
-                  <InfoCard icon={Mail} title="Email" value="Hello@bizbackerz.com" href="mailto:Hello@bizbackerz.com" color="#10b981" delay={0.3}/>
-                  <InfoCard icon={Clock} title="Hours" value="11AM – 8PM ET" href="/booking" color="#f59e0b" delay={0.35}/>
+                  <InfoCard icon={Phone} title="US Phone" value="(904) 668-6362" href="tel:+19046686362" color="#3b82f6" delay={0.2}/>
+                  <InfoCard icon={Phone} title="UK Phone" value="+44 7366 419570" href="tel:+447366419570" color="#8b5cf6" delay={0.25}/>
+                  <InfoCard icon={Mail} title="Email Us" value="Hello@bizbackerz.com" href="mailto:Hello@bizbackerz.com" color="#10b981" delay={0.3}/>
+                  <InfoCard icon={Clock} title="Office Hours" value="Mon–Fri · 11:00 AM – 8:00 PM ET" href="/booking" color="#f59e0b" delay={0.35}/>
                 </div>
 
                 {/* Robot mascot */}
@@ -428,7 +459,7 @@ export default function ContactPage() {
                   {/* BAXZ label */}
                   <div className="mt-3 flex items-center gap-2">
                     <div className="w-1.5 h-1.5 rounded-full bg-accent-400 animate-pulse"/>
-                    <span className="text-[11px] font-body font-bold text-white/35 uppercase tracking-[0.15em]">BAXZ · BizBackerz AI</span>
+                    <span className="text-[11px] font-body font-medium text-white/35 uppercase tracking-[0.15em]">BAXZ{' · '}BizBackerz AI</span>
                   </div>
                 </div>
 
