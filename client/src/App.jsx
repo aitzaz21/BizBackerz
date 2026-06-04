@@ -209,7 +209,7 @@ function AppContent({ onLoaded }) {
               <Route path="/terms"               element={<TermsPage />} />
               <Route path="/faq"                 element={<FAQPage />} />
 
-              {/* ── Legacy WordPress permalink redirects (client-side fallback) ── */}
+              {/* ── Legacy slug redirects (Google-indexed old URLs) ── */}
 
               {/* Pages */}
               <Route path="/about-us"            element={<Navigate to="/about"   replace />} />
@@ -233,17 +233,6 @@ function AppContent({ onLoaded }) {
               <Route path="/how-virtual-assistant-services-for-small-businesses-can-save-you-20-hours-a-week" element={<Navigate to="/blog/virtual-assistant-small-business-save-20-hours"       replace />} />
               <Route path="/how-an-amazon-virtual-assistant"   element={<Navigate to="/blog/amazon-real-estate-virtual-assistant-services-2026" replace />} />
               <Route path="/10-tasks-you-should-outsource"     element={<Navigate to="/blog" replace />} />
-
-              {/* WordPress system paths */}
-              <Route path="/wp-admin"            element={<Navigate to="/admin"   replace />} />
-              <Route path="/wp-admin/*"          element={<Navigate to="/admin"   replace />} />
-              <Route path="/wp-login.php"        element={<Navigate to="/admin"   replace />} />
-              <Route path="/feed"                element={<Navigate to="/blog"    replace />} />
-              <Route path="/feed/*"              element={<Navigate to="/blog"    replace />} />
-              <Route path="/category/*"          element={<Navigate to="/blog"    replace />} />
-              <Route path="/tag/*"               element={<Navigate to="/blog"    replace />} />
-              <Route path="/author/*"            element={<Navigate to="/"        replace />} />
-              <Route path="/page/:n"             element={<Navigate to="/blog"    replace />} />
 
               {/* Dev-only SEO check dashboard */}
               {import.meta.env.DEV && SeoCheckPage && (
