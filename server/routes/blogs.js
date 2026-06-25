@@ -1,5 +1,4 @@
 import express from 'express'
-import rateLimit from 'express-rate-limit'
 import Blog from '../models/Blog.js'
 
 const router = express.Router()
@@ -9,14 +8,19 @@ function escapeRegex(str) {
   return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
-/* One view increment per IP per slug per minute — prevents trivial bot inflation */
-const viewLimiter = rateLimit({
-  windowMs: 60 * 1000,
-  max: 1,
-  keyGenerator: (req) => `view:${req.ip}:${req.params.slug}`,
-  standardHeaders: false,
-  legacyHeaders: false,
-})
+/*
+ * In-memory view-count deduplication.
+ * Key: `${ip}:${slug}`, Value: timestamp of last counted view.
+ * One increment per IP per slug per minute — bot inflation prevention.
+ * Cleared periodically to avoid unbounded memory growth.
+ */
+const recentViews = new Map()
+setInterval(() => {
+  const cutoff = Date.now() - 60_000
+  for (const [key, ts] of recentViews) {
+    if (ts < cutoff) recentViews.delete(key)
+  }
+}, 5 * 60_000)
 
 /* ── GET /api/sitemap-blog.xml ──────────────────────────────── */
 router.get('/sitemap-blog.xml', async (req, res) => {
@@ -58,7 +62,7 @@ router.get('/', async (req, res) => {
     }
 
     const total = await Blog.countDocuments(filter)
-    const blogs = await Blog.find(filter, { content: 0 })   // strip content for list
+    const blogs = await Blog.find(filter, { content: 0 })
       .sort({ featured: -1, createdAt: -1 })
       .skip((Math.max(1, +page) - 1) * limit)
       .limit(limit)
@@ -73,19 +77,21 @@ router.get('/', async (req, res) => {
 })
 
 /* ── GET /api/blogs/:slug ──────────────────────────────────── */
-router.get('/:slug', viewLimiter, async (req, res) => {
+router.get('/:slug', async (req, res) => {
   try {
-    /* viewLimiter lets the request through either way; check its header to
-       decide whether to count this visit — avoids rate-limit 429 on readers */
-    const rateHit = res.getHeader('X-RateLimit-Remaining') === '0'
+    const viewKey = `${req.ip}:${req.params.slug}`
+    const now = Date.now()
+    const shouldCount = now - (recentViews.get(viewKey) || 0) > 60_000
 
-    const blog = rateHit
-      ? await Blog.findOne({ slug: req.params.slug, published: true }).lean()
-      : await Blog.findOneAndUpdate(
+    if (shouldCount) recentViews.set(viewKey, now)
+
+    const blog = shouldCount
+      ? await Blog.findOneAndUpdate(
           { slug: req.params.slug, published: true },
           { $inc: { views: 1 } },
           { new: true },
         ).lean()
+      : await Blog.findOne({ slug: req.params.slug, published: true }).lean()
 
     if (!blog) return res.status(404).json({ success: false, error: 'Blog not found.' })
 
