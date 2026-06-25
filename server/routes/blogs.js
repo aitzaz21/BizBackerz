@@ -1,7 +1,22 @@
 import express from 'express'
+import rateLimit from 'express-rate-limit'
 import Blog from '../models/Blog.js'
 
 const router = express.Router()
+
+/* Escape regex meta-characters so user search input is never treated as a pattern */
+function escapeRegex(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+/* One view increment per IP per slug per minute — prevents trivial bot inflation */
+const viewLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 1,
+  keyGenerator: (req) => `view:${req.ip}:${req.params.slug}`,
+  standardHeaders: false,
+  legacyHeaders: false,
+})
 
 /* ── GET /api/sitemap-blog.xml ──────────────────────────────── */
 router.get('/sitemap-blog.xml', async (req, res) => {
@@ -28,39 +43,50 @@ router.get('/sitemap-blog.xml', async (req, res) => {
 /* ── GET /api/blogs ─────────────────────────────────────────── */
 router.get('/', async (req, res) => {
   try {
-    const { tag, search, featured, page = 1, limit = 12 } = req.query
+    const { tag, search, featured, page = 1 } = req.query
+    const limit = Math.min(Math.max(1, +req.query.limit || 12), 100)
     const filter = { published: true }
     if (tag && tag !== 'all') filter.tag = tag
     if (featured === 'true') filter.featured = true
-    if (search) filter.$or = [
-      { title: { $regex: search, $options: 'i' } },
-      { excerpt: { $regex: search, $options: 'i' } },
-      { tag: { $regex: search, $options: 'i' } },
-    ]
+    if (search) {
+      const safe = escapeRegex(String(search).slice(0, 200))
+      filter.$or = [
+        { title:   { $regex: safe, $options: 'i' } },
+        { excerpt: { $regex: safe, $options: 'i' } },
+        { tag:     { $regex: safe, $options: 'i' } },
+      ]
+    }
 
     const total = await Blog.countDocuments(filter)
     const blogs = await Blog.find(filter, { content: 0 })   // strip content for list
       .sort({ featured: -1, createdAt: -1 })
-      .skip((+page - 1) * +limit)
-      .limit(+limit)
+      .skip((Math.max(1, +page) - 1) * limit)
+      .limit(limit)
       .lean()
 
     const tags = await Blog.distinct('tag', { published: true })
 
-    return res.json({ success: true, blogs, total, page: +page, pages: Math.ceil(total / +limit), tags })
+    return res.json({ success: true, blogs, total, page: +page, pages: Math.ceil(total / limit), tags })
   } catch (err) {
     return res.status(500).json({ success: false, error: err.message })
   }
 })
 
 /* ── GET /api/blogs/:slug ──────────────────────────────────── */
-router.get('/:slug', async (req, res) => {
+router.get('/:slug', viewLimiter, async (req, res) => {
   try {
-    const blog = await Blog.findOneAndUpdate(
-      { slug: req.params.slug, published: true },
-      { $inc: { views: 1 } },
-      { new: true },
-    ).lean()
+    /* viewLimiter lets the request through either way; check its header to
+       decide whether to count this visit — avoids rate-limit 429 on readers */
+    const rateHit = res.getHeader('X-RateLimit-Remaining') === '0'
+
+    const blog = rateHit
+      ? await Blog.findOne({ slug: req.params.slug, published: true }).lean()
+      : await Blog.findOneAndUpdate(
+          { slug: req.params.slug, published: true },
+          { $inc: { views: 1 } },
+          { new: true },
+        ).lean()
+
     if (!blog) return res.status(404).json({ success: false, error: 'Blog not found.' })
 
     const related = await Blog.find(

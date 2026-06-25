@@ -5,11 +5,17 @@ import StarterKit from '@tiptap/starter-kit'
 import TiptapLink from '@tiptap/extension-link'
 import TiptapImage from '@tiptap/extension-image'
 import TiptapUnderline from '@tiptap/extension-underline'
+import { TextAlign as TiptapTextAlign } from '@tiptap/extension-text-align'
+import { TextStyle as TiptapTextStyle, Color as TiptapColor } from '@tiptap/extension-text-style'
+import { Subscript as TiptapSubscript } from '@tiptap/extension-subscript'
+import { Superscript as TiptapSuperscript } from '@tiptap/extension-superscript'
+import { Table as TiptapTable, TableRow as TiptapTableRow, TableHeader as TiptapTableHeader, TableCell as TiptapTableCell } from '@tiptap/extension-table'
 import {
   Plus, Pencil, Trash2, Eye, EyeOff, LogOut, Search, Filter, RefreshCw,
   ChevronDown, ChevronUp, BarChart2, FileText, Globe, Check, X,
   Bold, Italic, Underline as UnderlineIcon, List, ListOrdered, Quote, Code, Link2,
-  Image as ImageIcon, Minus, Type, AlignLeft, Save, Send, AlertCircle, Star,
+  Image as ImageIcon, Minus, Type, AlignLeft, AlignCenter, AlignRight, AlignJustify,
+  Save, Send, AlertCircle, Star, Table, Subscript, Superscript,
   BookOpen, Tag, Clock, Calendar, User, Users, Palette, Settings,
   MessageSquare, Upload, HelpCircle, Mail, Phone, MapPin, Ban, CheckCircle, Inbox,
 } from 'lucide-react'
@@ -101,8 +107,6 @@ function ImageUploadButton({ onUploaded, label = 'Upload' }) {
 function stripInlineColors(html) {
   return html.replace(/style="([^"]*)"/gi, (_, styles) => {
     const cleaned = styles
-      .replace(/\bcolor\s*:\s*[^;]+;?\s*/gi, '')
-      .replace(/\bbackground(?:-color)?\s*:\s*[^;]+;?\s*/gi, '')
       .replace(/\bfont-family\s*:\s*[^;]+;?\s*/gi, '')
       .trim().replace(/;+$/, '')
     return cleaned ? `style="${cleaned}"` : ''
@@ -113,8 +117,6 @@ function RichEditor({ value, onChange }) {
   const editor = useEditor({
     immediatelyRender: true,
     extensions: [
-      /* StarterKit bundles Link/Underline in v3 — disable them so our
-         explicitly-configured versions don't collide (duplicate-extension warning) */
       StarterKit.configure({ link: false, underline: false }),
       TiptapUnderline,
       TiptapLink.configure({
@@ -125,6 +127,15 @@ function RichEditor({ value, onChange }) {
       TiptapImage.configure({
         HTMLAttributes: { style: 'max-width:100%;border-radius:8px;margin:12px 0;' },
       }),
+      TiptapTextAlign.configure({ types: ['heading', 'paragraph'] }),
+      TiptapTextStyle,
+      TiptapColor,
+      TiptapSubscript,
+      TiptapSuperscript,
+      TiptapTable.configure({ resizable: false }),
+      TiptapTableRow,
+      TiptapTableHeader,
+      TiptapTableCell,
     ],
     content: stripInlineColors(value || ''),
     editorProps: {
@@ -136,6 +147,9 @@ function RichEditor({ value, onChange }) {
     onUpdate: ({ editor }) => onChange(stripInlineColors(editor.getHTML())),
   })
 
+  const [sourceMode, setSourceMode] = useState(false)
+  const [sourceHtml, setSourceHtml] = useState('')
+
   /* Sync external value into the editor only when it genuinely differs and
      the user isn't actively typing (prevents cursor jumps / feedback loop) */
   useEffect(() => {
@@ -145,6 +159,12 @@ function RichEditor({ value, onChange }) {
       editor.commands.setContent(incoming, false)
     }
   }, [value, editor])
+
+  function toggleSourceMode() {
+    if (!sourceMode) setSourceHtml(editor ? editor.getHTML() : (value || ''))
+    else if (editor) editor.commands.setContent(sourceHtml, false)
+    setSourceMode(v => !v)
+  }
 
   function handleLink() {
     if (!editor) return
@@ -205,27 +225,132 @@ function RichEditor({ value, onChange }) {
   return (
     <div className="rounded-xl border border-white/[0.08] overflow-hidden" style={{ background: 'rgba(6,15,29,0.6)' }}>
       <div className="flex flex-wrap items-center gap-0.5 px-3 py-2 border-b border-white/[0.07]" style={{ background: 'rgba(0,0,0,0.3)' }}>
-        <ToolBtn icon={Bold}          label="Bold (Ctrl+B)"      active={editor.isActive('bold')}              onPress={() => c().toggleBold().run()} />
-        <ToolBtn icon={Italic}        label="Italic (Ctrl+I)"    active={editor.isActive('italic')}            onPress={() => c().toggleItalic().run()} />
-        <ToolBtn icon={UnderlineIcon} label="Underline (Ctrl+U)" active={editor.isActive('underline')}         onPress={() => c().toggleUnderline().run()} />
-        <div className="w-px h-5 bg-white/10 mx-1" />
-        <ToolBtn icon={Type}          label="Heading 2"          active={editor.isActive('heading', { level: 2 })} onPress={() => c().toggleHeading({ level: 2 }).run()} />
-        <ToolBtn icon={Type}          label="Heading 3"          active={editor.isActive('heading', { level: 3 })} onPress={() => c().toggleHeading({ level: 3 }).run()} />
-        <ToolBtn icon={AlignLeft}     label="Paragraph"          active={editor.isActive('paragraph')}         onPress={() => c().setParagraph().run()} />
-        <div className="w-px h-5 bg-white/10 mx-1" />
-        <ToolBtn icon={List}          label="Bullet List"        active={editor.isActive('bulletList')}        onPress={() => c().toggleBulletList().run()} />
-        <ToolBtn icon={ListOrdered}   label="Numbered List"      active={editor.isActive('orderedList')}       onPress={() => c().toggleOrderedList().run()} />
-        <ToolBtn icon={Quote}         label="Blockquote"         active={editor.isActive('blockquote')}        onPress={() => c().toggleBlockquote().run()} />
-        <ToolBtn icon={Code}          label="Code Block"         active={editor.isActive('codeBlock')}         onPress={() => c().toggleCodeBlock().run()} />
-        <div className="w-px h-5 bg-white/10 mx-1" />
-        <ToolBtn icon={Link2}         label="Insert Link"        active={editor.isActive('link')}              onPress={handleLink} />
-        <ToolBtn icon={ImageIcon}     label="Insert Image"       onPress={handleImage} />
-        <ToolBtn icon={Minus}         label="Divider"            onPress={() => c().setHorizontalRule().run()} />
-        <div className="w-px h-5 bg-white/10 mx-1" />
-        <ToolBtn icon={RefreshCw}     label="Clear Formatting"   onPress={() => c().unsetAllMarks().clearNodes().run()} />
+        {!sourceMode && (
+          <>
+            {/* Text style */}
+            <ToolBtn icon={Bold}          label="Bold (Ctrl+B)"      active={editor.isActive('bold')}        onPress={() => c().toggleBold().run()} />
+            <ToolBtn icon={Italic}        label="Italic (Ctrl+I)"    active={editor.isActive('italic')}      onPress={() => c().toggleItalic().run()} />
+            <ToolBtn icon={UnderlineIcon} label="Underline (Ctrl+U)" active={editor.isActive('underline')}   onPress={() => c().toggleUnderline().run()} />
+            <ToolBtn icon={Subscript}     label="Subscript"          active={editor.isActive('subscript')}   onPress={() => c().toggleSubscript().run()} />
+            <ToolBtn icon={Superscript}   label="Superscript"        active={editor.isActive('superscript')} onPress={() => c().toggleSuperscript().run()} />
+
+            <div className="w-px h-5 bg-white/10 mx-1" />
+
+            {/* Headings */}
+            <ToolBtn icon={Type} label="Heading 1" active={editor.isActive('heading', { level: 1 })} onPress={() => c().toggleHeading({ level: 1 }).run()} />
+            <ToolBtn icon={Type} label="Heading 2" active={editor.isActive('heading', { level: 2 })} onPress={() => c().toggleHeading({ level: 2 }).run()} />
+            <ToolBtn icon={Type} label="Heading 3" active={editor.isActive('heading', { level: 3 })} onPress={() => c().toggleHeading({ level: 3 }).run()} />
+            <ToolBtn icon={AlignLeft} label="Paragraph" active={editor.isActive('paragraph')} onPress={() => c().setParagraph().run()} />
+
+            <div className="w-px h-5 bg-white/10 mx-1" />
+
+            {/* Alignment */}
+            <ToolBtn icon={AlignLeft}    label="Align Left"    active={editor.isActive({ textAlign: 'left' })}    onPress={() => c().setTextAlign('left').run()} />
+            <ToolBtn icon={AlignCenter}  label="Align Center"  active={editor.isActive({ textAlign: 'center' })}  onPress={() => c().setTextAlign('center').run()} />
+            <ToolBtn icon={AlignRight}   label="Align Right"   active={editor.isActive({ textAlign: 'right' })}   onPress={() => c().setTextAlign('right').run()} />
+            <ToolBtn icon={AlignJustify} label="Justify"       active={editor.isActive({ textAlign: 'justify' })} onPress={() => c().setTextAlign('justify').run()} />
+
+            <div className="w-px h-5 bg-white/10 mx-1" />
+
+            {/* Lists & blocks */}
+            <ToolBtn icon={List}          label="Bullet List"  active={editor.isActive('bulletList')}  onPress={() => c().toggleBulletList().run()} />
+            <ToolBtn icon={ListOrdered}   label="Numbered List" active={editor.isActive('orderedList')} onPress={() => c().toggleOrderedList().run()} />
+            <ToolBtn icon={Quote}         label="Blockquote"   active={editor.isActive('blockquote')}  onPress={() => c().toggleBlockquote().run()} />
+            <ToolBtn icon={Code}          label="Code Block"   active={editor.isActive('codeBlock')}   onPress={() => c().toggleCodeBlock().run()} />
+
+            <div className="w-px h-5 bg-white/10 mx-1" />
+
+            {/* Table */}
+            <ToolBtn icon={Table} label="Insert Table (3×3)"
+              onPress={() => c().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()} />
+            {editor.isActive('table') && (
+              <>
+                <button type="button" onMouseDown={e => { e.preventDefault(); c().addColumnAfter().run() }}
+                  title="Add Column After"
+                  className="px-1.5 py-1 rounded text-[9px] font-bold text-white/40 hover:text-white hover:bg-white/10 transition-all duration-150 leading-none">
+                  +Col
+                </button>
+                <button type="button" onMouseDown={e => { e.preventDefault(); c().addRowAfter().run() }}
+                  title="Add Row After"
+                  className="px-1.5 py-1 rounded text-[9px] font-bold text-white/40 hover:text-white hover:bg-white/10 transition-all duration-150 leading-none">
+                  +Row
+                </button>
+                <button type="button" onMouseDown={e => { e.preventDefault(); c().deleteColumn().run() }}
+                  title="Delete Column"
+                  className="px-1.5 py-1 rounded text-[9px] font-bold text-red-400/50 hover:text-red-400 hover:bg-red-500/10 transition-all duration-150 leading-none">
+                  -Col
+                </button>
+                <button type="button" onMouseDown={e => { e.preventDefault(); c().deleteRow().run() }}
+                  title="Delete Row"
+                  className="px-1.5 py-1 rounded text-[9px] font-bold text-red-400/50 hover:text-red-400 hover:bg-red-500/10 transition-all duration-150 leading-none">
+                  -Row
+                </button>
+                <button type="button" onMouseDown={e => { e.preventDefault(); c().deleteTable().run() }}
+                  title="Delete Table"
+                  className="px-1.5 py-1 rounded text-[9px] font-bold text-red-400/50 hover:text-red-400 hover:bg-red-500/10 transition-all duration-150 leading-none">
+                  Del Table
+                </button>
+              </>
+            )}
+
+            <div className="w-px h-5 bg-white/10 mx-1" />
+
+            {/* Insert */}
+            <ToolBtn icon={Link2}     label="Insert Link"   active={editor.isActive('link')} onPress={handleLink} />
+            <ToolBtn icon={ImageIcon} label="Insert Image"  onPress={handleImage} />
+            <ToolBtn icon={Minus}     label="Divider"       onPress={() => c().setHorizontalRule().run()} />
+
+            <div className="w-px h-5 bg-white/10 mx-1" />
+
+            {/* Text color picker */}
+            <div className="relative flex items-center" title="Text Color">
+              <label className="w-7 h-7 rounded flex items-center justify-center cursor-pointer text-white/50 hover:text-white hover:bg-white/10 transition-all duration-150 relative">
+                <Palette className="w-3.5 h-3.5" />
+                <input type="color" defaultValue="#ffffff"
+                  onChange={e => editor.chain().focus().setColor(e.target.value).run()}
+                  className="absolute inset-0 opacity-0 cursor-pointer w-full h-full" />
+              </label>
+            </div>
+            <button type="button" onMouseDown={e => { e.preventDefault(); c().unsetColor().run() }}
+              title="Remove Color"
+              className="w-7 h-7 rounded flex items-center justify-center text-white/30 hover:text-white hover:bg-white/10 transition-all duration-150 text-[10px] font-bold">
+              A
+            </button>
+
+            <div className="w-px h-5 bg-white/10 mx-1" />
+
+            <ToolBtn icon={RefreshCw} label="Clear Formatting" onPress={() => c().unsetAllMarks().clearNodes().run()} />
+          </>
+        )}
+        {sourceMode && (
+          <span className="text-[11px] text-amber-400/70 font-semibold tracking-wide px-1">HTML Source</span>
+        )}
+        <button
+          type="button"
+          title={sourceMode ? 'Switch to Visual Editor' : 'Edit Raw HTML'}
+          onMouseDown={e => { e.preventDefault(); toggleSourceMode() }}
+          className={`ml-auto px-2.5 py-1 rounded text-[11px] font-bold transition-all duration-150 flex-shrink-0 ${
+            sourceMode
+              ? 'bg-amber-500/15 text-amber-400 border border-amber-500/25 hover:bg-amber-500/25'
+              : 'text-white/35 border border-white/[0.07] hover:text-white/70 hover:bg-white/[0.07]'
+          }`}
+        >
+          {sourceMode ? 'Visual' : '</>'}
+        </button>
       </div>
 
-      <EditorContent editor={editor} />
+      {sourceMode ? (
+        <textarea
+          value={sourceHtml}
+          onChange={e => { setSourceHtml(e.target.value); onChange(e.target.value) }}
+          className="w-full p-5 text-[13px] text-green-400/80 leading-[1.8] outline-none resize-y font-mono"
+          style={{ minHeight: 320, background: 'transparent', border: 'none' }}
+          placeholder={'Enter HTML here…\ne.g. <h2>Section Title</h2>\n<p>Your paragraph text…</p>\n<table><thead><tr><th>Col 1</th></tr></thead><tbody><tr><td>Data</td></tr></tbody></table>'}
+          spellCheck={false}
+        />
+      ) : (
+        <EditorContent editor={editor} />
+      )}
     </div>
   )
 }

@@ -670,14 +670,23 @@ html.lenis, html.lenis body {
 .rich-content ul, .rich-content ol,
 .prose-blog ul,  .prose-blog ol {
   margin: 0.8em 0;
-  padding-left: 1.4em;
+  padding-left: 1.6em;
   color: rgba(255,255,255,0.68) !important;
   line-height: 1.8;
+}
+.rich-content ul, .prose-blog ul {
+  list-style-type: disc;
+}
+.rich-content ol, .prose-blog ol {
+  list-style-type: decimal;
 }
 .rich-content li, .prose-blog li {
   margin: 0.3em 0;
   color: rgba(255,255,255,0.68) !important;
+  display: list-item;
 }
+.rich-content ul ul, .prose-blog ul ul { list-style-type: circle; }
+.rich-content ul ul ul, .prose-blog ul ul ul { list-style-type: square; }
 
 .rich-content blockquote, .prose-blog blockquote {
   border-left: 3px solid rgba(42,139,255,0.5);
@@ -718,3 +727,43 @@ html.lenis, html.lenis body {
 }
 .rich-content strong, .prose-blog strong { color: rgba(255,255,255,0.9) !important; }
 .rich-content em, .prose-blog em { color: rgba(255,255,255,0.7) !important; }
+.rich-content sup, .prose-blog sup { vertical-align: super; font-size: 0.75em; }
+.rich-content sub, .prose-blog sub { vertical-align: sub; font-size: 0.75em; }
+.rich-content table, .prose-blog table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.25em 0;
+  font-size: 0.9em;
+  overflow: hidden;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.rich-content th, .prose-blog th {
+  background: rgba(42,139,255,0.12);
+  color: rgba(255,255,255,0.9);
+  font-weight: 600;
+  text-align: left;
+  padding: 10px 14px;
+  border: 1px solid rgba(255,255,255,0.1);
+  font-size: 0.85em;
+  letter-spacing: 0.02em;
+}
+.rich-content td, .prose-blog td {
+  padding: 9px 14px;
+  border: 1px solid rgba(255,255,255,0.07);
+  color: rgba(255,255,255,0.65);
+  vertical-align: top;
+}
+.rich-content tr:nth-child(even) td, .prose-blog tr:nth-child(even) td {
+  background: rgba(255,255,255,0.02);
+}
+/* TipTap table selected cell highlight */
+.rich-content .selectedCell, .prose-blog .selectedCell {
+  background: rgba(42,139,255,0.15) !important;
+}
+.rich-content p[style*="text-align"], .prose-blog p[style*="text-align"],
+.rich-content h1[style*="text-align"], .prose-blog h1[style*="text-align"],
+.rich-content h2[style*="text-align"], .prose-blog h2[style*="text-align"],
+.rich-content h3[style*="text-align"], .prose-blog h3[style*="text-align"] {
+  display: block;
+}

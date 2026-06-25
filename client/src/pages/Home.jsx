@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, lazy, Suspense } from 'react'
 import { Link } from 'react-router-dom'
 import { Calendar, Clock, ArrowRight } from 'lucide-react'
 import PageSEO from '../components/ui/PageSEO'
 import Hero        from '../components/sections/Hero'
 import About       from '../components/sections/About'
 import Services    from '../components/sections/Services'
-import VideoSection from '../components/sections/VideoSection'
 import CTA         from '../components/sections/CTA'
 import ProcessSection from '../components/sections/ProcessSection'
 import FAQSection     from '../components/sections/FAQSection'
@@ -13,6 +12,8 @@ import MarqueeStrip   from '../components/ui/MarqueeStrip'
 import KineticStrip   from '../components/ui/KineticStrip'
 import ScrollProgress from '../components/ui/ScrollProgress'
 import Container      from '../components/ui/Container'
+
+const VideoSection = lazy(() => import('../components/sections/VideoSection'))
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:3001'
 
@@ -34,6 +35,8 @@ function HomeBlogCard({ blog }) {
           <img
             src={blog.coverImage}
             alt={blog.title}
+            loading="lazy"
+            decoding="async"
             className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
           />
         ) : (
@@ -312,7 +315,9 @@ export default function Home() {
         speed={1.1}
       />
 
-      <VideoSection />
+      <Suspense fallback={null}>
+        <VideoSection />
+      </Suspense>
       <HomeBlogsSection />
       <FAQSection />
       <CTA />

@@ -11,15 +11,14 @@ const MAX_MESSAGE = 5000
 
 router.post('/contact', async (req, res) => {
   try {
-    let { name, email, phone, message } = req.body
+    /* Trim before required check — whitespace-only values must not pass */
+    const name    = String(req.body.name    || '').trim().slice(0, MAX_NAME)
+    const email   = String(req.body.email   || '').trim().slice(0, MAX_EMAIL)
+    const phone   = String(req.body.phone   || '').trim().slice(0, MAX_PHONE)
+    const message = String(req.body.message || '').trim().slice(0, MAX_MESSAGE)
 
     if (!name || !email || !message)
       return res.status(400).json({ success: false, error: 'Name, email, and message are required.' })
-
-    name    = String(name).trim().slice(0, MAX_NAME)
-    email   = String(email).trim().slice(0, MAX_EMAIL)
-    phone   = phone ? String(phone).trim().slice(0, MAX_PHONE) : ''
-    message = String(message).trim().slice(0, MAX_MESSAGE)
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
       return res.status(400).json({ success: false, error: 'Please enter a valid email address.' })
@@ -38,12 +37,19 @@ router.post('/contact', async (req, res) => {
 
 router.post('/lead', async (req, res) => {
   try {
-    let { name, email, company, service } = req.body
-    if (!name || !email) return res.status(400).json({ success: false, error: 'Name and email required.' })
-    name    = String(name).trim().slice(0, MAX_NAME)
-    email   = String(email).trim().slice(0, MAX_EMAIL)
-    company = company ? String(company).trim().slice(0, 200) : ''
-    service = service ? String(service).trim().slice(0, 200) : ''
+    /* Trim before required check */
+    const name    = String(req.body.name    || '').trim().slice(0, MAX_NAME)
+    const email   = String(req.body.email   || '').trim().slice(0, MAX_EMAIL)
+    const company = String(req.body.company || '').trim().slice(0, 200)
+    const service = String(req.body.service || '').trim().slice(0, 200)
+
+    if (!name || !email)
+      return res.status(400).json({ success: false, error: 'Name and email required.' })
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+      return res.status(400).json({ success: false, error: 'Please enter a valid email address.' })
+
+    void company; void service  // captured but not yet persisted — reserved for future Lead model
     return res.json({ success: true, message: 'We received your request.' })
   } catch {
     return res.status(500).json({ success: false, error: 'Server error.' })

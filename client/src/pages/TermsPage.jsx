@@ -5,6 +5,27 @@ import Container from '../components/ui/Container'
 import { ArrowLeft, FileText } from 'lucide-react'
 import PageSEO from '../components/ui/PageSEO'
 
+const TERMS_SCHEMA = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    '@id': 'https://bizbackerz.com/terms#webpage',
+    url: 'https://bizbackerz.com/terms',
+    name: 'Terms & Conditions | BizBackerz Virtual Assistance',
+    description: 'BizBackerz terms and conditions governing the use of our virtual assistant services, service agreements, and client responsibilities.',
+    isPartOf: { '@id': 'https://bizbackerz.com/#website' },
+    about: { '@id': 'https://bizbackerz.com/#organization' },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home',               item: 'https://bizbackerz.com/' },
+      { '@type': 'ListItem', position: 2, name: 'Terms & Conditions', item: 'https://bizbackerz.com/terms' },
+    ],
+  },
+]
+
 const sections = [
   {
     title: '1. Acceptance of Terms',
@@ -102,6 +123,7 @@ export default function TermsPage() {
         title="Terms & Conditions | BizBackerz Virtual Assistance"
         description="BizBackerz terms and conditions governing the use of our virtual assistant services, service agreements, and client responsibilities."
         canonical="https://bizbackerz.com/terms"
+        schema={TERMS_SCHEMA}
       />
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute right-0 top-0 h-[30rem] w-[30rem] rounded-full blur-[150px]"

@@ -1,76 +1,31 @@
 import React, { useRef, useEffect, useState } from 'react'
-import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Container from '../ui/Container'
 import { Play, Pause } from 'lucide-react'
-import { motion } from 'framer-motion'
+
+const VIDEO_SRC = 'https://cdn.coverr.co/videos/coverr-team-working-in-an-office-1584/1080p.mp4'
 
 export default function VideoSection() {
-  const sectionRef    = useRef(null)
-  const videoRef      = useRef(null)
-  const containerRef  = useRef(null)
+  const sectionRef = useRef(null)
+  const videoRef   = useRef(null)
   const [isPlaying, setIsPlaying] = useState(false)
 
   useEffect(() => {
-    const section   = sectionRef.current
-    const container = containerRef.current
-    if (!section || !container) return
+    const section = sectionRef.current
+    if (!section) return
 
-    const isMobile = window.matchMedia('(pointer: coarse)').matches
-
-    const ctx = gsap.context(() => {
-      if (!isMobile) {
-        /* ── Header label ── */
-        gsap.from('[data-vid-label]', {
-          opacity: 0, x: -20,
-          duration: 1, ease: 'power3.out',
-          scrollTrigger: { trigger: section, start: 'top 61%', toggleActions: 'play reverse play reverse' },
-        })
-
-        /* ── Heading clip-path reveal ── */
-        gsap.from('[data-vid-line]', {
-          yPercent: 112,
-          duration: 1.3, stagger: 0.1, ease: 'power4.out',
-          scrollTrigger: { trigger: section, start: 'top 60%', toggleActions: 'play reverse play reverse' },
-        })
-
-        gsap.from('[data-vid-desc]', {
-          opacity: 0, y: 18,
-          duration: 1, ease: 'power2.out',
-          scrollTrigger: { trigger: section, start: 'top 56%', toggleActions: 'play reverse play reverse' },
-        })
-
-        /* ── Video zoom-in on scroll — tighter window for a crisper pop ── */
-        gsap.fromTo(container,
-          { scale: 0.82, opacity: 0, filter: 'blur(10px)', borderRadius: '3rem' },
-          {
-            scale: 1, opacity: 1, filter: 'blur(0px)', borderRadius: '1.5rem',
-            ease: 'power1.out',
-            scrollTrigger: {
-              trigger: container, start: 'top 71%', end: 'top 18%', scrub: 1.4,
-            },
-          }
-        )
-
-        /* ── Parallax on scroll past ── */
-        gsap.to(container, {
-          y: -55,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: container, start: 'top center', end: 'bottom top', scrub: 2,
-          },
-        })
-      }
-    }, section)
-
-    /* ── Auto-play when in view ── */
     const observer = new IntersectionObserver(
       ([entry]) => {
+        const vid = videoRef.current
+        if (!vid) return
         if (entry.isIntersecting) {
-          videoRef.current?.play().catch(() => {})
+          if (!vid.src) {
+            vid.src = VIDEO_SRC
+            vid.load()
+          }
+          vid.play().catch(() => {})
           setIsPlaying(true)
         } else {
-          videoRef.current?.pause()
+          vid.pause()
           setIsPlaying(false)
         }
       },
@@ -78,7 +33,7 @@ export default function VideoSection() {
     )
     observer.observe(section)
 
-    return () => { ctx.revert(); observer.disconnect() }
+    return () => observer.disconnect()
   }, [])
 
   const togglePlay = () => {
@@ -126,11 +81,9 @@ export default function VideoSection() {
             <video
               ref={videoRef}
               className="w-full h-full object-cover"
-              loop muted playsInline preload="metadata"
+              loop muted playsInline preload="none"
               poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1920 1080'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%230a1628'/%3E%3Cstop offset='50%25' stop-color='%230654e8' stop-opacity='0.3'/%3E%3Cstop offset='100%25' stop-color='%2338d9a9' stop-opacity='0.2'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect fill='url(%23g)' width='1920' height='1080'/%3E%3C/svg%3E"
-            >
-              <source src="https://cdn.coverr.co/videos/coverr-team-working-in-an-office-1584/1080p.mp4" type="video/mp4" />
-            </video>
+            />
 
             <div className="absolute inset-0 bg-gradient-to-t from-navy-950/65 via-transparent to-navy-950/25 z-10" />
 
@@ -140,10 +93,8 @@ export default function VideoSection() {
               className="absolute inset-0 z-20 flex items-center justify-center cursor-pointer group"
               aria-label={isPlaying ? 'Pause' : 'Play'}
             >
-              <motion.div
-                whileHover={{ scale: 1.12 }}
-                whileTap={{ scale: 0.93 }}
-                className={`w-20 h-20 rounded-full flex items-center justify-center transition-all duration-500 ${
+              <div
+                className={`w-20 h-20 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 ${
                   isPlaying
                     ? 'bg-white/10 backdrop-blur-md opacity-0 group-hover:opacity-100'
                     : 'bg-brand-500/90 backdrop-blur-sm glow-brand animate-pulse-glow'
@@ -153,7 +104,7 @@ export default function VideoSection() {
                   ? <Pause className="w-8 h-8 text-white" />
                   : <Play  className="w-8 h-8 text-white ml-1" />
                 }
-              </motion.div>
+              </div>
             </button>
 
             {/* Bottom info strip */}

@@ -68,13 +68,18 @@ router.get('/slots/:date', async (req, res) => {
    Create a new pending booking. ── */
 router.post('/', bookingLimiter, async (req, res) => {
   try {
-    const { name, email, phone, country, timezone, appointmentUTC, slotDisplayUser, slotDisplayET } = req.body
+    /* Sanitize strings before validation so whitespace-only values are caught */
+    const name     = String(req.body.name     || '').trim().slice(0, 100)
+    const email    = String(req.body.email    || '').trim().slice(0, 254)
+    const phone    = String(req.body.phone    || '').trim().slice(0, 30)
+    const country  = String(req.body.country  || '').trim().slice(0, 100)
+    const timezone = String(req.body.timezone || '').trim().slice(0, 100)
+    const { appointmentUTC, slotDisplayUser, slotDisplayET } = req.body
 
     if (!name || !email || !phone || !country || !timezone || !appointmentUTC) {
       return res.status(400).json({ success: false, error: 'All fields are required.' })
     }
 
-    // Basic email format guard
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return res.status(400).json({ success: false, error: 'Please enter a valid email address.' })
     }
@@ -84,12 +89,20 @@ router.post('/', bookingLimiter, async (req, res) => {
       return res.status(400).json({ success: false, error: 'Invalid appointment time.' })
     }
 
-    // Slot must be in the future
     if (apptDate <= new Date()) {
       return res.status(400).json({ success: false, error: 'Please select a future time slot.' })
     }
 
-    // Check slot availability (race-condition-safe: use findOneAndUpdate later if needed)
+    /* Slot must be no more than 60 days in the future */
+    const maxFuture = new Date()
+    maxFuture.setDate(maxFuture.getDate() + 60)
+    if (apptDate > maxFuture) {
+      return res.status(400).json({ success: false, error: 'Please select a date within the next 60 days.' })
+    }
+
+    /* Atomic slot reservation — reduces (but does not fully eliminate) the
+       check-then-insert race window. A unique index on appointmentUTC in the
+       Booking collection is the definitive solution for true atomicity. */
     const conflict = await Booking.findOne({
       appointmentUTC: apptDate,
       status: { $in: ['pending', 'confirmed'] },

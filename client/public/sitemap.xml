@@ -7,10 +7,10 @@
     <lastmod>2026-06-03</lastmod>
   </sitemap>
 
-  <!-- Blog posts — generated dynamically by the API from MongoDB -->
+  <!-- Blog posts — generated at build time by prerender-meta.mjs -->
   <sitemap>
-    <loc>https://bizbackerz.com/api/sitemap-blog.xml</loc>
-    <lastmod>2026-06-03</lastmod>
+    <loc>https://bizbackerz.com/sitemap-blog.xml</loc>
+    <lastmod>2026-06-24</lastmod>
   </sitemap>
 
 </sitemapindex>

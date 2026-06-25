@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState, useMemo, Suspense, memo } from 'rea
 import { Canvas, useFrame } from '@react-three/fiber'
 import { Link, useSearchParams } from 'react-router-dom'
 import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import PageSEO from '../components/ui/PageSEO'
 import * as THREE from 'three'
 import Container from '../components/ui/Container'
@@ -10,46 +9,6 @@ import { Calendar, ArrowRight, Clock, Search, Tag, X, Loader2, BookOpen, Trendin
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:3001'
 
-/* ─── SEO helper ─────────────────────────────────────────── */
-function setBlogSEO() {
-  document.title = 'Blog & Insights | BizBackerz — Virtual Assistant Tips & Business Growth'
-  let desc = document.querySelector('meta[name="description"]')
-  if (!desc) { desc = document.createElement('meta'); desc.name = 'description'; document.head.appendChild(desc) }
-  desc.content = 'Explore BizBackerz blog for expert insights on virtual assistant services, business productivity, delegation strategies, and operational efficiency. Updated regularly.'
-
-  const metas = [
-    ['og:title',       'Blog & Insights | BizBackerz'],
-    ['og:description', 'Expert insights on virtual assistant services, business productivity, and operational efficiency.'],
-    ['og:type',        'website'],
-    ['og:url',         window.location.href],
-    ['og:site_name',   'BizBackerz'],
-    ['twitter:card',   'summary_large_image'],
-    ['twitter:title',  'Blog & Insights | BizBackerz'],
-    ['twitter:description', 'Expert insights on VA services and business growth.'],
-  ]
-  metas.forEach(([name, content]) => {
-    const prop = name.startsWith('og:') ? 'property' : 'name'
-    let el = document.querySelector(`meta[${prop}="${name}"]`)
-    if (!el) { el = document.createElement('meta'); el.setAttribute(prop, name); document.head.appendChild(el) }
-    el.content = content
-  })
-
-  // JSON-LD breadcrumb
-  let ld = document.querySelector('#blog-ld')
-  if (!ld) { ld = document.createElement('script'); ld.type = 'application/ld+json'; ld.id = 'blog-ld'; document.head.appendChild(ld) }
-  ld.textContent = JSON.stringify({
-    '@context': 'https://schema.org',
-    '@type': 'Blog',
-    'name': 'BizBackerz Blog',
-    'description': 'Expert insights on virtual assistant services, business productivity, and operational efficiency.',
-    'url': `${window.location.origin}/blog`,
-    'publisher': {
-      '@type': 'Organization',
-      'name': 'BizBackerz',
-      'url': window.location.origin,
-    },
-  })
-}
 
 /* ─── Starfield ─────────────────────────────────────────── */
 const BLOG_STAR_COUNT = 120
@@ -200,8 +159,6 @@ export default function BlogPage() {
     return () => { cancelled = true }
   }, [search, activeTag, page])
 
-  // SEO
-  useEffect(() => { setBlogSEO() }, [])
 
   // GSAP
   useEffect(() => {
@@ -212,20 +169,6 @@ export default function BlogPage() {
     }, el)
     return () => ctx.revert()
   }, [])
-
-  useEffect(() => {
-    if (loading || window.matchMedia('(pointer: coarse)').matches) return
-    const ctx = gsap.context(() => {
-      gsap.utils.toArray('[data-blog-item]').forEach((item, i) => {
-        gsap.from(item, {
-          opacity: 0, y: 30, scale: 0.97, duration: 1.2, ease: 'power2.out', delay: i * 0.07,
-          immediateRender: false,
-          scrollTrigger: { trigger: item, start: 'top 75%', toggleActions: 'play reverse play reverse' },
-        })
-      })
-    })
-    return () => ctx.revert()
-  }, [blogs, loading])
 
   const blogSchema = useMemo(() => ([
     {

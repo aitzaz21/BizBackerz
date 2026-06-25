@@ -88,11 +88,13 @@ export default function AdminLogin() {
 
             {/* Email */}
             <div className="space-y-1.5">
-              <label className="text-[11px] font-semibold text-white/45 uppercase tracking-[0.12em]">Email</label>
+              <label htmlFor="admin-email" className="text-[11px] font-semibold text-white/45 uppercase tracking-[0.12em]">Email</label>
               <div className="relative">
-                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+                <Mail aria-hidden="true" className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
                 <input
+                  id="admin-email"
                   type="email" value={email} onChange={e => setEmail(e.target.value)} required
+                  autoComplete="username email"
                   placeholder="admin@bizbackerz.com"
                   className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl pl-10 pr-4 py-3 text-[14px] text-white placeholder:text-white/20 outline-none focus:border-brand-500/50 focus:bg-white/[0.06] transition-all duration-200"
                 />
@@ -101,17 +103,23 @@ export default function AdminLogin() {
 
             {/* Password */}
             <div className="space-y-1.5">
-              <label className="text-[11px] font-semibold text-white/45 uppercase tracking-[0.12em]">Password</label>
+              <label htmlFor="admin-password" className="text-[11px] font-semibold text-white/45 uppercase tracking-[0.12em]">Password</label>
               <div className="relative">
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+                <Lock aria-hidden="true" className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
                 <input
+                  id="admin-password"
                   type={showPw ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} required
+                  autoComplete="current-password"
                   placeholder="••••••••••"
                   className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl pl-10 pr-11 py-3 text-[14px] text-white placeholder:text-white/20 outline-none focus:border-brand-500/50 focus:bg-white/[0.06] transition-all duration-200"
                 />
-                <button type="button" onClick={() => setShowPw(v => !v)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors">
-                  {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                <button
+                  type="button"
+                  onClick={() => setShowPw(v => !v)}
+                  aria-label={showPw ? 'Hide password' : 'Show password'}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors"
+                >
+                  {showPw ? <EyeOff aria-hidden="true" className="w-4 h-4" /> : <Eye aria-hidden="true" className="w-4 h-4" />}
                 </button>
               </div>
             </div>

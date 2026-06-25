@@ -13,6 +13,44 @@ import RobotCursorTracker from '../components/ui/RobotCursorTracker'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:3001'
 
+const BOOKING_SCHEMA = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    '@id': 'https://bizbackerz.com/booking#service',
+    name: 'Free Virtual Assistant Discovery Call',
+    url: 'https://bizbackerz.com/booking',
+    description: 'Book a free 30-minute discovery call with BizBackerz. We discuss your business needs and match you with the right virtual assistant within 48 hours — no obligation.',
+    provider: { '@id': 'https://bizbackerz.com/#organization' },
+    areaServed: [
+      { '@type': 'Country', name: 'United States' },
+      { '@type': 'Country', name: 'United Kingdom' },
+    ],
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'USD',
+      name: 'Free 30-Minute Discovery Call',
+      availability: 'https://schema.org/InStock',
+      seller: { '@id': 'https://bizbackerz.com/#organization' },
+    },
+    hoursAvailable: {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: ['Monday','Tuesday','Wednesday','Thursday','Friday'],
+      opens: '09:00',
+      closes: '17:00',
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home',                  item: 'https://bizbackerz.com/' },
+      { '@type': 'ListItem', position: 2, name: 'Book a Consultation',   item: 'https://bizbackerz.com/booking' },
+    ],
+  },
+]
+
 // ─── Timezone options ────────────────────────────────────────
 const TIMEZONE_GROUPS = [
   {
@@ -961,6 +999,7 @@ export default function BookingPage() {
         title="Book a Free Consultation | BizBackerz Virtual Assistants"
         description="Schedule a free 30-minute discovery call with BizBackerz. Choose your time slot and start delegating your business tasks to expert virtual assistants within 48 hours."
         canonical="https://bizbackerz.com/booking"
+        schema={BOOKING_SCHEMA}
       />
       <PageBackground />
 

@@ -1,6 +1,4 @@
-import React, { useEffect, useRef } from 'react'
-import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import React from 'react'
 import Container from '../ui/Container'
 import { MessageCircle, UserCog, TrendingUp, Orbit } from 'lucide-react'
 
@@ -12,68 +10,8 @@ const processSteps = [
 ]
 
 export default function ProcessSection() {
-  const sectionRef = useRef(null)
-
-  useEffect(() => {
-    const el = sectionRef.current
-    if (!el) return
-
-    const isMobile = window.matchMedia('(pointer: coarse)').matches
-    if (isMobile) return
-
-    const ctx = gsap.context(() => {
-      // Label fade
-      gsap.from('[data-process-label] .section-label', {
-        opacity: 0, x: -20, duration: 1, ease: 'power3.out',
-        immediateRender: false,
-        scrollTrigger: { trigger: el, start: 'top 71%', toggleActions: 'play reverse play reverse' },
-      })
-
-      // Masked text reveal for heading
-      gsap.from('[data-process-line]', {
-        yPercent: 110, duration: 1.2, stagger: 0.1, ease: 'power4.out',
-        immediateRender: false,
-        scrollTrigger: { trigger: el, start: 'top 71%', toggleActions: 'play reverse play reverse' },
-      })
-
-      // Paragraph fade
-      gsap.from('[data-process-desc]', {
-        opacity: 0, y: 20, duration: 1, delay: 0.3, ease: 'power2.out',
-        immediateRender: false,
-        scrollTrigger: { trigger: el, start: 'top 71%', toggleActions: 'play reverse play reverse' },
-      })
-
-      // 3D Staggered Cards
-      gsap.from('[data-process-item]', {
-        opacity: 0,
-        y: 60,
-        rotateX: -15,
-        scale: 0.9,
-        stagger: 0.15,
-        duration: 1.2,
-        ease: 'power3.out',
-        transformPerspective: 1000,
-        immediateRender: false,
-        scrollTrigger: { trigger: el, start: 'top 61%', toggleActions: 'play reverse play reverse' },
-      })
-
-      // Line drawing for connectors
-      gsap.from('[data-process-connector]', {
-        scaleX: 0,
-        transformOrigin: 'left center',
-        duration: 1.5,
-        stagger: 0.15,
-        ease: 'power3.inOut',
-        immediateRender: false,
-        scrollTrigger: { trigger: el, start: 'top 53%', toggleActions: 'play reverse play reverse' },
-      })
-    }, el)
-
-    return () => ctx.revert()
-  }, [])
-
   return (
-    <section ref={sectionRef} className="relative py-12 lg:py-16 bg-navy-950 overflow-hidden border-t border-white/[0.06]">
+    <section className="relative py-12 lg:py-16 bg-navy-950 overflow-hidden border-t border-white/[0.06]">
       <Container>
         <div className="mb-10 text-center max-w-2xl mx-auto" data-process-label>
           <span className="section-label mb-4 inline-block">How It Works</span>

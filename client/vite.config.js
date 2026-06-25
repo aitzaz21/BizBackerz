@@ -18,10 +18,10 @@ export default defineConfig({
       },
     },
   },
-  /* In production: drop debugger + noisy logs; keep console.error and console.warn */
+  /* In production: drop debugger + all non-error console calls */
   esbuild: {
     drop: ['debugger'],
-    pure: ['console.log', 'console.debug', 'console.info', 'console.trace'],
+    pure: ['console.log', 'console.debug', 'console.info', 'console.trace', 'console.warn'],
     legalComments: 'none',
   },
   build: {
@@ -60,6 +60,9 @@ export default defineConfig({
 
           /* Lenis smooth scroll */
           if (id.includes('/lenis/')) return 'lenis-vendor'
+
+          /* TipTap rich-text editor — large, only used in admin */
+          if (id.includes('@tiptap/') || id.includes('prosemirror')) return 'tiptap-vendor'
         },
       },
     },

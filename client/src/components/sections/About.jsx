@@ -1,7 +1,4 @@
-import React, { useEffect, useRef } from 'react'
-import { motion } from 'framer-motion'
-import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import React from 'react'
 import Container from '../ui/Container'
 import { Link } from 'react-router-dom'
 import {
@@ -23,93 +20,8 @@ const trustBadges = [
 ]
 
 export default function About() {
-  const sectionRef = useRef(null)
-
-  useEffect(() => {
-    const el = sectionRef.current
-    if (!el) return
-
-    if (window.matchMedia('(pointer: coarse)').matches) return
-
-    const ctx = gsap.context(() => {
-
-      /* ── Label slide from left ── */
-      gsap.from('[data-ab-label]', {
-        opacity: 0, x: -32, duration: 1.2, ease: 'power3.out',
-        immediateRender: false,
-        scrollTrigger: { trigger: el, start: 'top 64%', toggleActions: 'play reverse play reverse' },
-      })
-
-      /* ── Heading lines: clip-reveal upward ── */
-      gsap.from('[data-ab-line]', {
-        yPercent: 110, duration: 1.5, stagger: 0.12, ease: 'power4.out',
-        immediateRender: false,
-        scrollTrigger: { trigger: el, start: 'top 61%', toggleActions: 'play reverse play reverse' },
-      })
-
-      /* ── Body text + checklist: stagger fade up ── */
-      gsap.from('[data-ab-body]', {
-        opacity: 0, y: 32, duration: 1.1, stagger: 0.12, ease: 'power3.out',
-        immediateRender: false,
-        scrollTrigger: { trigger: el, start: 'top 56%', toggleActions: 'play reverse play reverse' },
-      })
-
-      /* ── Left visual: depth reveal with perspective ── */
-      gsap.from('[data-ab-visual]', {
-        opacity: 0, x: -90, rotateY: -14, scale: 0.94,
-        duration: 1.5, ease: 'power3.out', transformPerspective: 1000,
-        immediateRender: false,
-        scrollTrigger: { trigger: el, start: 'top 62%', toggleActions: 'play reverse play reverse' },
-      })
-
-      /* ── Central stat pop ── */
-      gsap.from('[data-ab-stat]', {
-        scale: 0.6, opacity: 0,
-        duration: 1.1, ease: 'back.out(1.9)', delay: 0.45,
-        immediateRender: false,
-        scrollTrigger: { trigger: el, start: 'top 58%', toggleActions: 'play reverse play reverse' },
-      })
-
-      /* ── Cards: slam in from opposite sides ── */
-      gsap.from('[data-ab-card-l]', {
-        opacity: 0, x: -80, rotateY: -10, scale: 0.97,
-        duration: 1.3, ease: 'power3.out', transformPerspective: 1000,
-        immediateRender: false,
-        scrollTrigger: { trigger: '[data-ab-cards]', start: 'top 68%', toggleActions: 'play reverse play reverse' },
-      })
-      gsap.from('[data-ab-card-r]', {
-        opacity: 0, x: 80, rotateY: 10, scale: 0.97,
-        duration: 1.3, delay: 0.14, ease: 'power3.out', transformPerspective: 1000,
-        immediateRender: false,
-        scrollTrigger: { trigger: '[data-ab-cards]', start: 'top 68%', toggleActions: 'play reverse play reverse' },
-      })
-
-      /* ── Trust badges: stagger cascade ── */
-      gsap.from('[data-ab-badge]', {
-        opacity: 0, y: 20, scale: 0.88, duration: 0.75, stagger: 0.1, ease: 'back.out(1.5)',
-        immediateRender: false,
-        scrollTrigger: { trigger: '[data-ab-badges]', start: 'top 72%', toggleActions: 'play reverse play reverse' },
-      })
-
-      /* ── Scroll-driven horizontal rule ── */
-      gsap.fromTo('[data-ab-rule]', { scaleX: 0, transformOrigin: 'left center' }, {
-        scaleX: 1, ease: 'none',
-        scrollTrigger: { trigger: el, start: 'top 66%', end: 'center 40%', scrub: 1.5 },
-      })
-
-      /* ── Subtle parallax on visual card ── */
-      gsap.to('[data-ab-visual]', {
-        y: -30,
-        scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: 2 },
-      })
-
-    }, el)
-
-    return () => ctx.revert()
-  }, [])
-
   return (
-    <section ref={sectionRef} id="about" className="relative py-12 lg:py-20 overflow-hidden">
+    <section id="about" className="relative py-12 lg:py-20 overflow-hidden">
 
       {/* Atmosphere */}
       <div className="absolute top-1/2 left-[-5%] -translate-y-1/2 w-[500px] h-[500px] bg-brand-500/5 rounded-full blur-[160px] pointer-events-none" />
@@ -276,16 +188,13 @@ export default function About() {
 
         {/* ═══ Vision & Mission ═══ */}
         <div data-ab-cards className="grid md:grid-cols-2 gap-5 mb-10">
-          <motion.div
-            data-ab-card-l
-            whileHover={{ y: -8, scale: 1.012 }}
-            transition={{ type: 'spring', stiffness: 280, damping: 22 }}
+          <div
             className="panel-blur group relative rounded-3xl p-8 lg:p-10 cursor-default overflow-hidden border border-white/[0.07] hover:border-white/[0.13] transition-colors duration-500"
             style={{ background: 'rgba(6,15,29,0.55)' }}
           >
             <div className="absolute top-0 left-0 right-0 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-500"
               style={{ background: 'linear-gradient(90deg,transparent,rgba(42,139,255,0.5),transparent)' }} />
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-brand-500/18 to-brand-700/12 flex items-center justify-center mb-6 border border-brand-500/18 group-hover:scale-110 transition-transform duration-500">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-brand-500/18 to-brand-700/12 flex items-center justify-center mb-6 border border-brand-500/18">
               <Target className="w-6 h-6 text-brand-400" />
             </div>
             <h3 className="text-xl font-display font-bold text-white mb-2 leading-snug">
@@ -296,18 +205,15 @@ export default function About() {
               We aim to transform business operations by delivering premium, dependable virtual solutions
               that inspire productivity, foster innovation, and drive sustainable long-term success.
             </p>
-          </motion.div>
+          </div>
 
-          <motion.div
-            data-ab-card-r
-            whileHover={{ y: -8, scale: 1.012 }}
-            transition={{ type: 'spring', stiffness: 280, damping: 22 }}
+          <div
             className="panel-blur group relative rounded-3xl p-8 lg:p-10 cursor-default overflow-hidden border border-white/[0.07] hover:border-accent-500/[0.2] transition-colors duration-500"
             style={{ background: 'rgba(6,15,29,0.55)' }}
           >
             <div className="absolute top-0 left-0 right-0 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-500"
               style={{ background: 'linear-gradient(90deg,transparent,rgba(56,217,169,0.5),transparent)' }} />
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-accent-500/18 to-accent-600/12 flex items-center justify-center mb-6 border border-accent-500/18 group-hover:scale-110 transition-transform duration-500">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-accent-500/18 to-accent-600/12 flex items-center justify-center mb-6 border border-accent-500/18">
               <Sparkles className="w-6 h-6 text-accent-400" />
             </div>
             <h3 className="text-xl font-display font-bold text-white mb-2 leading-snug">Inspiration & Drive</h3>
@@ -316,7 +222,7 @@ export default function About() {
               Driven by an uncompromising commitment to progress, we empower founders to move forward with
               absolute confidence — turning operational bottlenecks into streamlined engines for lasting growth.
             </p>
-          </motion.div>
+          </div>
         </div>
 
         {/* ═══ Social proof mini strip ═══ */}

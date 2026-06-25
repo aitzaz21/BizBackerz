@@ -5,6 +5,27 @@ import PageSEO from '../components/ui/PageSEO'
 import Container from '../components/ui/Container'
 import { ArrowLeft, Shield } from 'lucide-react'
 
+const PRIVACY_SCHEMA = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    '@id': 'https://bizbackerz.com/privacy#webpage',
+    url: 'https://bizbackerz.com/privacy',
+    name: 'Privacy Policy | BizBackerz Virtual Assistance',
+    description: 'BizBackerz privacy policy — how we collect, use, and protect your personal data when you use our virtual assistant services.',
+    isPartOf: { '@id': 'https://bizbackerz.com/#website' },
+    about: { '@id': 'https://bizbackerz.com/#organization' },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home',           item: 'https://bizbackerz.com/' },
+      { '@type': 'ListItem', position: 2, name: 'Privacy Policy', item: 'https://bizbackerz.com/privacy' },
+    ],
+  },
+]
+
 const sections = [
   {
     title: '1. Information We Collect',
@@ -101,6 +122,7 @@ export default function PrivacyPage() {
         description="BizBackerz privacy policy — how we collect, use, and protect your personal data when you use our virtual assistant services."
         canonical="https://bizbackerz.com/privacy"
         noindex={false}
+        schema={PRIVACY_SCHEMA}
       />
       {/* Background */}
       <div className="pointer-events-none absolute inset-0">

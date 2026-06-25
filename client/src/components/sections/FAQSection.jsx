@@ -1,6 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
-import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Container from '../ui/Container'
 import { Plus, Minus } from 'lucide-react'
@@ -71,46 +69,9 @@ function FAQItem({ q, a, i, isOpen, toggle }) {
 
 export default function FAQSection() {
   const [openIndex, setOpenIndex] = useState(0)
-  const sectionRef = useRef(null)
-
-  useEffect(() => {
-    const el = sectionRef.current
-    if (!el) return
-
-    const isMobile = window.matchMedia('(pointer: coarse)').matches
-    if (isMobile) return
-
-    const ctx = gsap.context(() => {
-      // Label fade
-      gsap.from('[data-faq-label] .section-label', {
-        opacity: 0, x: -20, duration: 1, ease: 'power3.out',
-        scrollTrigger: { trigger: el, start: 'top 71%', toggleActions: 'play reverse play reverse' },
-      })
-
-      // Masked heading lines
-      gsap.from('[data-faq-line]', {
-        yPercent: 110, duration: 1.2, stagger: 0.1, ease: 'power4.out',
-        scrollTrigger: { trigger: el, start: 'top 71%', toggleActions: 'play reverse play reverse' },
-      })
-
-      // Description fade
-      gsap.from('[data-faq-desc]', {
-        opacity: 0, y: 20, duration: 1, delay: 0.3, ease: 'power2.out',
-        scrollTrigger: { trigger: el, start: 'top 71%', toggleActions: 'play reverse play reverse' },
-      })
-
-      // FAQ Items
-      gsap.from('[data-faq-item]', {
-        opacity: 0, y: 40, x: 20, stagger: 0.12, duration: 1, ease: 'power3.out',
-        scrollTrigger: { trigger: el, start: 'top 61%', toggleActions: 'play reverse play reverse' },
-      })
-    }, el)
-
-    return () => ctx.revert()
-  }, [])
 
   return (
-    <section ref={sectionRef} className="relative py-12 lg:py-16 bg-navy-950 overflow-hidden border-t border-white/[0.06]">
+    <section className="relative py-12 lg:py-16 bg-navy-950 overflow-hidden border-t border-white/[0.06]">
       {/* Background glow */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-500/5 rounded-full blur-[150px] pointer-events-none translate-x-1/3 -translate-y-1/3" />
       

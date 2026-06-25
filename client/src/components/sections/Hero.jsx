@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { motion } from 'framer-motion'
 import Container from '../ui/Container'
 import Button from '../ui/Button'
 import { ArrowRight, Lightbulb, Rocket, Award, Zap, Star, ChevronDown } from 'lucide-react'
@@ -179,54 +178,45 @@ function OrbitalVisual() {
       </div>
 
       {/* Orbit ring 1 — slow clockwise */}
-      <motion.div
-        animate={{ rotate: 360 }}
-        transition={{ duration: 32, repeat: Infinity, ease: 'linear' }}
-        style={{
-          position: 'absolute',
-          width: 240, height: 240,
-          borderRadius: '50%',
-          border: '1px dashed rgba(42,139,255,0.14)',
-        }}
-      />
+      <div style={{
+        position: 'absolute',
+        width: 240, height: 240,
+        borderRadius: '50%',
+        border: '1px dashed rgba(42,139,255,0.14)',
+        animation: 'spin 32s linear infinite',
+      }} />
 
       {/* Orbit ring 2 — counter-clockwise with glowing dot */}
-      <motion.div
-        animate={{ rotate: -360 }}
-        transition={{ duration: 18, repeat: Infinity, ease: 'linear' }}
-        style={{
-          position: 'absolute',
-          width: 180, height: 180,
-          borderRadius: '50%',
-          border: '1px solid rgba(56,217,169,0.12)',
-        }}
-      >
+      <div style={{
+        position: 'absolute',
+        width: 180, height: 180,
+        borderRadius: '50%',
+        border: '1px solid rgba(56,217,169,0.12)',
+        animation: 'spin 18s linear infinite reverse',
+      }}>
         <div style={{
           position: 'absolute', top: -5, left: '50%', transform: 'translateX(-50%)',
           width: 10, height: 10, borderRadius: '50%',
           background: '#38d9a9',
           boxShadow: '0 0 14px #38d9a9, 0 0 32px rgba(56,217,169,0.55)',
         }} />
-      </motion.div>
+      </div>
 
       {/* Orbit ring 3 — innermost, blue dot */}
-      <motion.div
-        animate={{ rotate: 360 }}
-        transition={{ duration: 11, repeat: Infinity, ease: 'linear' }}
-        style={{
-          position: 'absolute',
-          width: 124, height: 124,
-          borderRadius: '50%',
-          border: '1px solid rgba(42,139,255,0.10)',
-        }}
-      >
+      <div style={{
+        position: 'absolute',
+        width: 124, height: 124,
+        borderRadius: '50%',
+        border: '1px solid rgba(42,139,255,0.10)',
+        animation: 'spin 11s linear infinite',
+      }}>
         <div style={{
           position: 'absolute', top: -4, left: '50%', transform: 'translateX(-50%)',
           width: 8, height: 8, borderRadius: '50%',
           background: '#2a8bff',
           boxShadow: '0 0 10px #2a8bff, 0 0 22px rgba(42,139,255,0.55)',
         }} />
-      </motion.div>
+      </div>
 
       {/* Central content */}
       <div className="relative z-10 text-center">
@@ -243,37 +233,27 @@ function OrbitalVisual() {
 
       {/* Badge chips around orbit */}
       <div className="absolute top-4 right-4">
-        <motion.div
-          animate={{ y: [0, -5, 0] }}
-          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+        <div
           className="panel-blur flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-accent-500/25"
-          style={{ background: 'rgba(56,217,169,0.08)' }}
+          style={{ background: 'rgba(56,217,169,0.08)', animation: 'float 4s ease-in-out infinite' }}
         >
           <span className="w-1.5 h-1.5 rounded-full bg-accent-400 animate-pulse flex-shrink-0" />
           <span className="text-[9px] font-body font-bold text-accent-400/80 uppercase tracking-[0.18em]">Live</span>
-        </motion.div>
+        </div>
       </div>
 
       <div className="absolute bottom-4 left-4">
-        <motion.div
-          animate={{ y: [0, 5, 0] }}
-          transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 0.8 }}
-          className="text-center"
-        >
+        <div className="text-center" style={{ animation: 'float 3.5s ease-in-out 0.8s infinite' }}>
           <div className="text-[1.1rem] font-display font-bold text-gradient leading-none">98%</div>
           <p className="text-[7px] text-white/28 font-body font-bold uppercase tracking-[0.16em] mt-0.5">Satisfaction</p>
-        </motion.div>
+        </div>
       </div>
 
       <div className="absolute bottom-4 right-4">
-        <motion.div
-          animate={{ y: [0, 4, 0] }}
-          transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1.2 }}
-          className="text-center"
-        >
+        <div className="text-center" style={{ animation: 'float 5s ease-in-out 1.2s infinite' }}>
           <div className="text-[1.1rem] font-display font-bold text-gradient leading-none">50+</div>
           <p className="text-[7px] text-white/28 font-body font-bold uppercase tracking-[0.16em] mt-0.5">Clients</p>
-        </motion.div>
+        </div>
       </div>
     </div>
   )
@@ -634,11 +614,9 @@ export default function Hero() {
             {/* Feature cards — compact below orbital */}
             <div className="space-y-2.5">
               {features.map((f) => (
-                <motion.div
+                <div
                   key={f.title}
                   data-hero-card
-                  whileHover={{ y: -2, scale: 1.008 }}
-                  transition={{ type: 'spring', stiffness: 340, damping: 26 }}
                   className="group glass card-glow rounded-xl p-4 cursor-default relative overflow-hidden"
                 >
                   <div
@@ -658,7 +636,7 @@ export default function Hero() {
                         boxShadow: `0 4px 16px ${f.color}14`,
                       }}
                     >
-                      <f.icon className="w-4 h-4 transition-transform duration-500 group-hover:scale-110" style={{ color: f.color }} />
+                      <f.icon className="w-4 h-4" style={{ color: f.color }} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="font-display font-semibold text-white text-[13px] leading-snug">{f.title}</h3>
@@ -669,15 +647,13 @@ export default function Hero() {
                       </span>
                     </div>
                   </div>
-                </motion.div>
+                </div>
               ))}
             </div>
 
             {/* Social proof */}
-            <motion.div
+            <div
               data-hero-card
-              whileHover={{ scale: 1.01 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 24 }}
               className="mt-3 flex items-center gap-4 px-4 py-3 rounded-2xl cursor-default"
               style={{ background: 'rgba(42,139,255,0.045)', border: '1px solid rgba(42,139,255,0.09)' }}
             >
@@ -696,7 +672,7 @@ export default function Hero() {
                 </div>
                 <p className="text-[11px] text-white/30 font-body">Trusted by 50+ business owners</p>
               </div>
-            </motion.div>
+            </div>
 
             {/* Scroll cue */}
             <div data-hero-scroll className="hidden lg:flex flex-col items-center gap-1.5 mt-8 opacity-0">

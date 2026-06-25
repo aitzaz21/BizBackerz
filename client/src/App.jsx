@@ -219,6 +219,7 @@ function AppContent({ onLoaded }) {
               <Route path="/faqs"                element={<Navigate to="/faq"     replace />} />
 
               {/* Services */}
+              <Route path="/digital-advertising"     element={<Navigate to="/services/digital-advertising"     replace />} />
               <Route path="/administrative-support"  element={<Navigate to="/services/administrative-support"  replace />} />
               <Route path="/accounting-services"     element={<Navigate to="/services/accounting-services"     replace />} />
               <Route path="/social-media-management" element={<Navigate to="/services/social-media-management" replace />} />
@@ -239,7 +240,7 @@ function AppContent({ onLoaded }) {
                 <Route path="/seo-check" element={<SeoCheckPage />} />
               )}
 
-              <Route path="*"                    element={<NotFoundPage />} />
+              <Route path="*"                    element={<Navigate to="/" replace />} />
             </Routes>
           </Suspense>
         </main>
@@ -255,6 +256,7 @@ function AdminRoutes() {
       <Routes>
         <Route path="/admin"           element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/admin/*"         element={<Navigate to="/admin" replace />} />
       </Routes>
     </Suspense>
   )

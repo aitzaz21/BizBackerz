@@ -68,4 +68,4 @@ Allow: /
 # ── Sitemap index ──────────────────────────────────────────────
 Sitemap: https://bizbackerz.com/sitemap.xml
 Sitemap: https://bizbackerz.com/sitemap-pages.xml
-Sitemap: https://bizbackerz.com/api/sitemap-blog.xml
+Sitemap: https://bizbackerz.com/sitemap-blog.xml

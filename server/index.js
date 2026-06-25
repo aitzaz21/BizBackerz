@@ -21,7 +21,10 @@ const PORT = process.env.PORT || 3001
 // ── Security headers ─────────────────────────────────────────
 app.use(helmet({
   crossOriginResourcePolicy: { policy: 'cross-origin' },
-  contentSecurityPolicy: false,   // CSP handled by the frontend build
+  contentSecurityPolicy: false,          // API returns JSON — CSP applies to HTML pages only (set in .htaccess)
+  hsts: { maxAge: 31536000, includeSubDomains: true },
+  frameguard: { action: 'deny' },
+  referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
 }))
 
 // ── CORS ─────────────────────────────────────────────────────

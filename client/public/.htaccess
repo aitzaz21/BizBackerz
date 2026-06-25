@@ -41,13 +41,12 @@ Options -MultiViews
 # ═════════════════════════════════════════════════════════════════
 <IfModule mod_headers.c>
   Header always set X-Content-Type-Options    "nosniff"
-  Header always set X-Frame-Options           "SAMEORIGIN"
+  Header always set X-Frame-Options           "DENY"
   Header always set X-XSS-Protection         "1; mode=block"
   Header always set Referrer-Policy           "strict-origin-when-cross-origin"
   Header always set Permissions-Policy        "camera=(), microphone=(), geolocation=()"
-  # HSTS — DISABLED. Do not enable includeSubDomains/preload unless every
-  # subdomain has valid SSL, as it locks them to HTTPS for the max-age period.
-  # Header always set Strict-Transport-Security "max-age=31536000"
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+  Header always set Content-Security-Policy   "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://api.fontshare.com https://fonts.googleapis.com; font-src 'self' https://api.fontshare.com https://fonts.gstatic.com; img-src 'self' data: blob: https://res.cloudinary.com https://www.googletagmanager.com https://www.google-analytics.com; connect-src 'self' https://bizbackerz.onrender.com https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com https://region1.google-analytics.com https://region1.analytics.google.com; media-src 'self' https://cdn.coverr.co blob:; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; worker-src 'self' blob:"
 
   # Cache headers for hashed static files (Vite output)
   <FilesMatch "\.(js|css|woff2?|ttf|eot|svg|png|jpg|jpeg|webp|ico)$">
@@ -82,6 +81,7 @@ RewriteRule ^faqs$                   /faq            [R=301,L]
 # ═════════════════════════════════════════════════════════════════
 # 3. SERVICE PAGE REDIRECTS  (old slug → /services/slug)
 # ═════════════════════════════════════════════════════════════════
+RewriteRule ^digital-advertising$       /services/digital-advertising       [R=301,L]
 RewriteRule ^administrative-support$   /services/administrative-support   [R=301,L]
 RewriteRule ^accounting-services$      /services/accounting-services      [R=301,L]
 RewriteRule ^social-media-management$  /services/social-media-management  [R=301,L]

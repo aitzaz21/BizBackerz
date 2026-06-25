@@ -2,6 +2,14 @@ import React, { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { gsap } from 'gsap'
 import DOMPurify from 'dompurify'
+
+/* Force rel="noopener noreferrer" on every target="_blank" link after sanitizing.
+   This must run before the first sanitize call so the hook is in place. */
+DOMPurify.addHook('afterSanitizeAttributes', (node) => {
+  if (node.tagName === 'A' && node.getAttribute('target') === '_blank') {
+    node.setAttribute('rel', 'noopener noreferrer')
+  }
+})
 import Container from '../components/ui/Container'
 import Button from '../components/ui/Button'
 import { Calendar, Clock, ArrowLeft, ArrowRight, Tag, User, Eye, Share2, Twitter, Facebook, Linkedin, Loader2 } from 'lucide-react'
@@ -337,7 +345,10 @@ export default function BlogPost() {
         <Container>
           <div className="max-w-3xl mx-auto" data-bp-body>
             {isHtmlContent ? (
-              <div className="prose-blog" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(blog.content, { USE_PROFILES: { html: true } }) }} />
+              <div className="prose-blog" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(blog.content, {
+                USE_PROFILES: { html: true },
+                ADD_ATTR: ['style', 'colspan', 'rowspan', 'target', 'rel'],
+              }) }} />
             ) : (
               <div className="space-y-6">
                 {(Array.isArray(blog.content) ? blog.content : [blog.content]).map((para, i) => (

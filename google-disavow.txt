@@ -1,0 +1,60 @@
+# BizBackerz.com — Google Disavow File
+# Generated: 24 June 2026 | Prepared from Semrush backlink export (100 top backlinks, ~123 referring domains)
+# Review this file before submitting at: https://search.google.com/search-console/disavow-links
+#
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION 1 — AGED-DOMAIN / LINK-FARM NETWORK (26 domains)
+# All share the identical page template "Where to buy 🔥 aged domains and
+# backlinks from [domain]" and identical URL hashes. Classic PBN/link-selling
+# ring. Completely unrelated niches. AS = 0 across the board.
+# ─────────────────────────────────────────────────────────────────────────────
+domain:domainwork.space
+domain:hebagh.cv
+domain:homefinance.co.in
+domain:mp3fresh.net
+domain:topleveldomains.space
+domain:tyres.pro
+domain:uaewebdirectory.info
+domain:way2check.art
+domain:websitescrawl.art
+domain:1000.co.in
+domain:alltopleveldomains.space
+domain:carplz.com
+domain:cheapsmmprovider.info
+domain:cheapsmmprovider.online
+domain:corrector.in
+domain:findinfo.in
+domain:gamerkun.com
+domain:getonline.co.in
+domain:linksnatcher.art
+domain:prashikshan.in
+domain:preparation.co.in
+domain:procycling.org
+domain:queries.co.in
+domain:taxies.biz
+domain:theface.in
+#
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION 2 — SPAM / TYPOSQUAT DIRECTORIES (2 domains)
+# ─────────────────────────────────────────────────────────────────────────────
+# Typosquat of google.com ("goooogla") running an SEO spam directory
+domain:goooogla.com
+# "Directory Pages Index" with /dlrlsseo/ and /best-seo-service/ paths — spam SEO directory
+domain:factmags.com
+#
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION 3 — SEO DOMAIN SCRAPERS (3 domains)
+# Sites with "seo domain research" title and /domain/domain/part/34799 URL
+# pattern. No editorial value; auto-catalogued domains. All links are nofollow
+# but included here to clean the profile signal.
+# ─────────────────────────────────────────────────────────────────────────────
+domain:knows.sbs
+domain:wants.cfd
+domain:takes.sbs
+#
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION 4 — SPAM BLOG (1 subdomain, NOT entire blogspot.com)
+# Random-character subdomain name (hbyxxnycxs), random-character page title
+# (hbyxxnyq). No real content. Nofollow but a signal-noise source.
+# ─────────────────────────────────────────────────────────────────────────────
+domain:hbyxxnycxs.blogspot.com

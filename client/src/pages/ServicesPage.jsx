@@ -113,27 +113,37 @@ export default function ServicesPage() {
     return () => clearTimeout(timer)
   }, [location.hash])
 
-  const servicesListSchema = useMemo(() => ({
-    '@context': 'https://schema.org',
-    '@type': 'ItemList',
-    name: 'BizBackerz Virtual Assistant Services',
-    description: '10 premium virtual assistant services for US and UK businesses',
-    url: 'https://bizbackerz.com/services',
-    numberOfItems: services.length,
-    itemListElement: services.map((s, i) => ({
-      '@type': 'ListItem',
-      position: i + 1,
-      name: s.title,
-      url: `https://bizbackerz.com/services/${s.slug}`,
-      item: {
-        '@type': 'Service',
+  const servicesListSchema = useMemo(() => ([
+    {
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      name: 'BizBackerz Virtual Assistant Services',
+      description: '10 premium virtual assistant services for US and UK businesses',
+      url: 'https://bizbackerz.com/services',
+      numberOfItems: services.length,
+      itemListElement: services.map((s, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
         name: s.title,
-        description: s.text,
         url: `https://bizbackerz.com/services/${s.slug}`,
-        provider: { '@type': 'Organization', name: 'BizBackerz', url: 'https://bizbackerz.com' },
-      },
-    })),
-  }), []) // services array is module-level constant, no deps needed
+        item: {
+          '@type': 'Service',
+          name: s.title,
+          description: s.text,
+          url: `https://bizbackerz.com/services/${s.slug}`,
+          provider: { '@id': 'https://bizbackerz.com/#organization' },
+        },
+      })),
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home',     item: 'https://bizbackerz.com/' },
+        { '@type': 'ListItem', position: 2, name: 'Services', item: 'https://bizbackerz.com/services' },
+      ],
+    },
+  ]), []) // services array is module-level constant, no deps needed
 
   return (
     <div ref={pageRef}>

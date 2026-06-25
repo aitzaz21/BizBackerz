@@ -86,8 +86,10 @@
     <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://bizbackerz.onrender.com" crossorigin />
     <link rel="dns-prefetch" href="//www.googletagmanager.com" />
     <link rel="dns-prefetch" href="//www.google-analytics.com" />
+    <link rel="dns-prefetch" href="//cdn.coverr.co" />
 
     <!-- ══════════════════════════════════════════
          FONTS — non-render-blocking async load
@@ -115,16 +117,23 @@
     {
       "@context": "https://schema.org",
       "@type": "Organization",
+      "@id": "https://bizbackerz.com/#organization",
       "name": "BizBackerz",
       "alternateName": "BizBackerz Virtual Assistance",
       "url": "https://bizbackerz.com",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://bizbackerz.com/logo/navbar.png"
+        "@id": "https://bizbackerz.com/#logo",
+        "url": "https://bizbackerz.com/logo/navbar.png",
+        "width": 200,
+        "height": 60,
+        "caption": "BizBackerz – Virtual Assistance Agency"
       },
-      "description": "Dedicated virtual assistance services — administrative support, social media management, lead generation, customer support, content creation, and more.",
+      "description": "BizBackerz is a virtual assistance agency headquartered in London, UK, helping 50+ businesses in the US and UK delegate operational tasks to expert virtual assistants.",
+      "slogan": "Delegate to Dominate",
+      "foundingDate": "2024",
       "telephone": "+1-904-668-6362",
-      "email": "bizbackerz@gmail.com",
+      "email": "Hello@bizbackerz.com",
       "address": [
         {
           "@type": "PostalAddress",
@@ -148,16 +157,28 @@
         "opens": "11:00",
         "closes": "20:00"
       },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+1-904-668-6362",
+        "email": "Hello@bizbackerz.com",
+        "contactType": "customer service",
+        "availableLanguage": ["English"],
+        "areaServed": ["US", "GB"]
+      },
       "hasOfferCatalog": {
         "@type": "OfferCatalog",
         "name": "Virtual Assistance Services",
         "itemListElement": [
-          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Administrative Support" } },
-          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Social Media Management" } },
-          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Lead Generation" } },
-          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Customer Support" } },
-          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Content Creation" } },
-          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Accounting Services" } }
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Digital Advertising",       "url": "https://bizbackerz.com/services/digital-advertising" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Administrative Support",    "url": "https://bizbackerz.com/services/administrative-support" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Customer Support",          "url": "https://bizbackerz.com/services/customer-support" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Social Media Management",   "url": "https://bizbackerz.com/services/social-media-management" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Content Creation",          "url": "https://bizbackerz.com/services/content-creation" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Lead Generation",           "url": "https://bizbackerz.com/services/lead-generation" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Project Management",        "url": "https://bizbackerz.com/services/project-management" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Accounting Services",       "url": "https://bizbackerz.com/services/accounting-services" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Marketing Support",         "url": "https://bizbackerz.com/services/marketing-support" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "E-Commerce Services",       "url": "https://bizbackerz.com/services/e-commerce-services" } }
         ]
       }
     }

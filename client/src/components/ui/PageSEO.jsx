@@ -20,14 +20,19 @@ export default function PageSEO({
 }) {
   const { pathname } = useLocation()
 
+  /* Normalize path: strip trailing slash on all routes except root */
+  const normPath = pathname !== '/' && pathname.endsWith('/')
+    ? pathname.slice(0, -1)
+    : pathname
+
   const fullTitle    = title       || DEFAULT_TITLE
   const fullDesc     = description || DEFAULT_DESC
-  const canonicalUrl = canonical   || `${BASE_URL}${pathname}`
+  const canonicalUrl = canonical   || `${BASE_URL}${normPath}`
   const ogImage      = image       || DEFAULT_IMAGE
 
-  /* hreflang: same path on both domains */
-  const usUrl      = `${BASE_URL}${pathname}`
-  const ukUrl      = `${UK_URL}${pathname}`
+  /* hreflang: same normalized path on both domains */
+  const usUrl      = `${BASE_URL}${normPath}`
+  const ukUrl      = `${UK_URL}${normPath}`
 
   useEffect(() => {
     const prev = {

@@ -9,27 +9,53 @@ import { Phone, Mail, MapPin, Send, Clock, ArrowUpRight, CheckCircle2 } from 'lu
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:3001'
 
+const CONTACT_SCHEMA = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'ContactPage',
+    '@id': 'https://bizbackerz.com/contact#webpage',
+    url: 'https://bizbackerz.com/contact',
+    name: 'Contact BizBackerz – Hire a Virtual Assistant',
+    description: 'Get in touch with BizBackerz to hire a dedicated virtual assistant. Call (904) 668-6362 or email Hello@bizbackerz.com. Available Mon–Fri, 11:00 AM – 8:00 PM ET.',
+    isPartOf: { '@id': 'https://bizbackerz.com/#website' },
+    about: { '@id': 'https://bizbackerz.com/#organization' },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home',    item: 'https://bizbackerz.com/' },
+      { '@type': 'ListItem', position: 2, name: 'Contact', item: 'https://bizbackerz.com/contact' },
+    ],
+  },
+]
+
 /* ── Floating Label Input ─────────────────────────────────── */
-function FloatingInput({ label, name, type = 'text', value, onChange, required, onFocus, onBlur }) {
+function FloatingInput({ label, name, type = 'text', value, onChange, required, onFocus, onBlur, autoComplete }) {
   const [focused, setFocused] = useState(false)
   const filled = value && value.length > 0
+  const inputId = `contact-${name}`
 
   return (
     <div className="relative">
       <label
+        htmlFor={inputId}
         className={`absolute left-4 pointer-events-none transition-all duration-250 z-10 font-body
           ${focused || filled
             ? 'top-2 text-[10px] font-bold uppercase tracking-[0.12em] text-brand-400'
             : 'top-4 text-[14px] text-white/35'
           }`}
       >
-        {label}{required && <span className="text-brand-400 ml-0.5">*</span>}
+        {label}{required && <span className="text-brand-400 ml-0.5" aria-hidden="true">*</span>}
+        {required && <span className="sr-only">(required)</span>}
       </label>
       <input
+        id={inputId}
         type={type}
         name={name}
         value={value}
         required={required}
+        autoComplete={autoComplete}
         onChange={onChange}
         onFocus={() => { setFocused(true); onFocus?.() }}
         onBlur={() => { setFocused(false); onBlur?.() }}
@@ -42,6 +68,7 @@ function FloatingInput({ label, name, type = 'text', value, onChange, required, 
         animate={{ scaleX: focused ? 1 : 0, opacity: focused ? 1 : 0 }}
         transition={{ duration: 0.35, ease: 'easeOut' }}
         style={{ originX: 0 }}
+        aria-hidden="true"
         className="absolute bottom-0 left-0 w-full h-[1.5px] bg-gradient-to-r from-brand-400 via-brand-300 to-transparent rounded-b-xl pointer-events-none"
       />
     </div>
@@ -51,19 +78,23 @@ function FloatingInput({ label, name, type = 'text', value, onChange, required, 
 function FloatingTextarea({ label, name, value, onChange, required, rows = 5, onFocus, onBlur }) {
   const [focused, setFocused] = useState(false)
   const filled = value && value.length > 0
+  const textareaId = `contact-${name}`
 
   return (
     <div className="relative">
       <label
+        htmlFor={textareaId}
         className={`absolute left-4 pointer-events-none transition-all duration-250 z-10 font-body
           ${focused || filled
             ? 'top-2 text-[10px] font-bold uppercase tracking-[0.12em] text-brand-400'
             : 'top-4 text-[14px] text-white/35'
           }`}
       >
-        {label}{required && <span className="text-brand-400 ml-0.5">*</span>}
+        {label}{required && <span className="text-brand-400 ml-0.5" aria-hidden="true">*</span>}
+        {required && <span className="sr-only">(required)</span>}
       </label>
       <textarea
+        id={textareaId}
         name={name}
         value={value}
         rows={rows}
@@ -245,11 +276,15 @@ export default function ContactPage() {
     setSubmitting(true)
     setError('')
     try {
+      const controller = new AbortController()
+      const timeoutId  = setTimeout(() => controller.abort(), 10000)
       const res  = await fetch(`${API}/api/contact`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
+        signal: controller.signal,
       })
+      clearTimeout(timeoutId)
       const data = await res.json()
       if (!res.ok) { setError(data.error || 'Something went wrong. Please try again.'); return }
       setSubmitted(true)
@@ -271,6 +306,7 @@ export default function ContactPage() {
         title="Contact BizBackerz – Hire a Virtual Assistant"
         description="Get in touch with BizBackerz to hire a dedicated virtual assistant. Call (904) 668-6362 or email Hello@bizbackerz.com. Available Mon–Fri, 11:00 AM – 8:00 PM ET."
         canonical="https://bizbackerz.com/contact"
+        schema={CONTACT_SCHEMA}
       />
       <MeshOrbs />
 
@@ -364,12 +400,12 @@ export default function ContactPage() {
                           </div>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="space-y-4">
+                        <form onSubmit={handleSubmit} className="space-y-4" noValidate>
                           <div className="grid sm:grid-cols-2 gap-4">
-                            <FloatingInput label="Your Name" name="name" value={form.name} onChange={handleChange} required onFocus={handleFocus} onBlur={handleBlur}/>
-                            <FloatingInput label="Email Address" name="email" type="email" value={form.email} onChange={handleChange} required onFocus={handleFocus} onBlur={handleBlur}/>
+                            <FloatingInput label="Your Name" name="name" value={form.name} onChange={handleChange} required onFocus={handleFocus} onBlur={handleBlur} autoComplete="name"/>
+                            <FloatingInput label="Email Address" name="email" type="email" value={form.email} onChange={handleChange} required onFocus={handleFocus} onBlur={handleBlur} autoComplete="email"/>
                           </div>
-                          <FloatingInput label="Phone Number (optional)" name="phone" type="tel" value={form.phone} onChange={handleChange} onFocus={handleFocus} onBlur={handleBlur}/>
+                          <FloatingInput label="Phone Number (optional)" name="phone" type="tel" value={form.phone} onChange={handleChange} onFocus={handleFocus} onBlur={handleBlur} autoComplete="tel"/>
                           <FloatingTextarea label="Your Message" name="message" value={form.message} onChange={handleChange} required rows={5} onFocus={handleFocus} onBlur={handleBlur}/>
 
                           <AnimatePresence>
